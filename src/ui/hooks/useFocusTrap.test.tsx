@@ -78,4 +78,29 @@ describe('useFocusTrap', () => {
     const { getByTestId } = render(<Harness active includeInputs={false} />);
     expect(document.activeElement).toBe(getByTestId('dialog'));
   });
+
+  it('does not attempt to restore focus when the previously focused element has been removed', () => {
+    const outside = document.createElement('button');
+    outside.textContent = 'doomed-trigger';
+    document.body.appendChild(outside);
+    outside.focus();
+    expect(document.activeElement).toBe(outside);
+
+    const { rerender } = render(<Harness active />);
+    outside.remove();
+    rerender(<Harness active={false} />);
+    expect(document.activeElement).not.toBe(outside);
+    expect(document.body.contains(outside)).toBe(false);
+  });
+
+  it('does not re-focus the first element when a fresh onEscape arrow re-renders the parent', () => {
+    const { getByLabelText, rerender } = render(
+      <Harness active onEscape={() => {}} />,
+    );
+    const middle = getByLabelText('middle') as HTMLInputElement;
+    middle.focus();
+    expect(document.activeElement).toBe(middle);
+    rerender(<Harness active onEscape={() => {}} />);
+    expect(document.activeElement).toBe(middle);
+  });
 });

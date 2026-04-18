@@ -1,5 +1,5 @@
 import type { RefObject } from 'preact';
-import { useEffect } from 'preact/hooks';
+import { useEffect, useRef } from 'preact/hooks';
 
 interface UseFocusTrapOptions {
   /** The container whose descendants the trap applies to. */
@@ -30,6 +30,12 @@ function focusableWithin(root: HTMLElement): HTMLElement[] {
  * focus to the previously focused element on deactivate.
  */
 export function useFocusTrap({ containerRef, active, onEscape }: UseFocusTrapOptions): void {
+  // Hold onEscape in a ref so callers don't have to memoize it — keeping it in
+  // the effect deps would tear down and re-run the trap (and snap focus back to
+  // the first element) on every parent re-render that produces a fresh arrow.
+  const onEscapeRef = useRef(onEscape);
+  onEscapeRef.current = onEscape;
+
   useEffect(() => {
     if (!active) return;
     const container = containerRef.current;
@@ -48,7 +54,7 @@ export function useFocusTrap({ containerRef, active, onEscape }: UseFocusTrapOpt
     const onKeyDown = (event: KeyboardEvent): void => {
       if (event.key === 'Escape') {
         event.stopPropagation();
-        onEscape?.();
+        onEscapeRef.current?.();
         return;
       }
       if (event.key !== 'Tab') return;
@@ -80,7 +86,13 @@ export function useFocusTrap({ containerRef, active, onEscape }: UseFocusTrapOpt
     container.addEventListener('keydown', onKeyDown);
     return () => {
       container.removeEventListener('keydown', onKeyDown);
-      previouslyFocused?.focus?.();
+      // If the previously-focused element has been removed from the DOM while
+      // the modal was open (e.g. its owning row was deleted), skip restoration —
+      // calling .focus() on a detached node silently no-ops and strands focus
+      // on <body>.
+      if (previouslyFocused && document.body.contains(previouslyFocused)) {
+        previouslyFocused.focus();
+      }
     };
-  }, [active, containerRef, onEscape]);
+  }, [active, containerRef]);
 }
