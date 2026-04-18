@@ -11,11 +11,11 @@
 2. **Phase 1.5: Chrome Web Store publication** — in progress
 
    *De-risk (do first, in parallel with local prep):*
-   - Register Chrome Web Store developer account ($5, 2FA + ID verification — can take days)
+   - ✅ Register Chrome Web Store developer account (done 2026-04-17)
 
    *Pre-publication hardening:*
-   - Fix `//` regex escape hatch: require length > 2 so a bare `//` doesn't compile to match-all (Phase 1 review #8)
-   - Drop unused `scripting` permission from `vite.config.ts` manifest
+   - ✅ Fix `//` regex escape hatch: require length > 2 so a bare `//` doesn't compile to match-all (done 2026-04-17, Phase 1 review #8)
+   - ✅ Drop unused `scripting` permission from `vite.config.ts` manifest (done 2026-04-17)
 
    *Store assets:*
    - Real icons at 16/48/128 (replace 1×1 transparent placeholders in `public/`); SVG source of truth committed
