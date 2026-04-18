@@ -12,7 +12,7 @@ import { Header } from './Header';
 import { RulesTab } from './rules/RulesTab';
 import { TemplatesTab } from './templates/TemplatesTab';
 import { ShortcutsFooter } from './ShortcutsFooter';
-import { promoteStorageToLocal } from './storagePromote';
+import { promoteStorageToLocal } from '../storage/promoteStorageToLocal';
 
 type Tab = 'rules' | 'templates';
 
