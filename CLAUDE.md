@@ -13,6 +13,7 @@ pnpm lint           # eslint (no-error-on-unmatched-pattern so empty src/ works)
 pnpm test           # vitest run (TZ=UTC prefix)
 pnpm test:e2e       # playwright — needs pnpm build first
 pnpm fixtures       # local JSON server at http://127.0.0.1:4391 for manual smoke test
+pnpm icons          # rasterize design/icon-{16,48,128}.svg → public/icon-{16,48,128}.png
 ```
 
 ## Architecture

@@ -18,7 +18,7 @@
    - ✅ Drop unused `scripting` permission from `vite.config.ts` manifest (done 2026-04-17)
 
    *Store assets:*
-   - Real icons at 16/48/128 (replace 1×1 transparent placeholders in `public/`); SVG source of truth committed
+   - ✅ Real icons at 16/48/128 (done 2026-04-17 — SVG sources in `design/`, rasterized via `pnpm icons`, output to `public/`)
    - Screenshots (1280×800) for options page, rendered view, popup
    - ✅ Privacy policy page hosted at a stable URL via GitHub Pages (done 2026-04-17 — `docs/privacy.md` → mattaltermatt.github.io/present-json/privacy/)
 

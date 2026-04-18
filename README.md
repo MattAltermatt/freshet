@@ -161,6 +161,9 @@ docs/superpowers/
 ├── specs/          # design spec
 ├── plans/          # per-phase implementation plans
 └── reviews/        # code-review reports
+
+design/             # SVG source of truth for extension icons (16/48/128)
+scripts/            # one-off dev scripts (e.g. rasterize-icons.mjs)
 ```
 
 ## Testing
