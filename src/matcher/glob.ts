@@ -35,3 +35,25 @@ export function compileGlob(pattern: string, opts: CompileOptions): RegExp {
   }
   return new RegExp(`^${globToRegexBody(pattern)}$`, flags);
 }
+
+/** UI validator: host pattern can be empty (matches anything) or any compilable glob/regex. */
+export function isValidHostPattern(pattern: string): boolean {
+  if (pattern === '') return true;
+  try {
+    compileGlob(pattern, { caseInsensitive: true });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** UI validator: path pattern must be non-empty and compile as a glob or regex. */
+export function isValidPathPattern(pattern: string): boolean {
+  if (pattern === '') return false;
+  try {
+    compileGlob(pattern, { caseInsensitive: false });
+    return true;
+  } catch {
+    return false;
+  }
+}

@@ -1,7 +1,15 @@
 import type { JSX } from 'preact';
 import { useState } from 'preact/hooks';
-import { ToastHost, useStorage, useTheme, type ThemePreference } from '../ui';
+import {
+  ToastHost,
+  useStorage,
+  useTheme,
+  useToast,
+  type ThemePreference,
+} from '../ui';
+import type { Rule, Templates } from '../shared/types';
 import { Header } from './Header';
+import { RulesTab } from './rules/RulesTab';
 
 type Tab = 'rules' | 'templates';
 
@@ -21,7 +29,27 @@ export function App(): JSX.Element {
     onPreferenceChange: (next) =>
       void writeSettings({ ...settings, themePreference: next }),
   });
+
+  const [rules, writeRules] = useStorage<'rules', Rule[]>('rules', []);
+  const [templates] = useStorage<'templates', Templates>('templates', {});
+  const toast = useToast();
+
   const [tab, setTab] = useState<Tab>('rules');
+
+  const handleDelete = (index: number, rule: Rule): void => {
+    const snapshot = [...rules];
+    void writeRules(rules.filter((_, i) => i !== index));
+    toast.push({
+      variant: 'info',
+      message: `Deleted rule ${index + 1} · Undo`,
+      ttlMs: 8000,
+      action: {
+        label: 'Undo',
+        onClick: () => void writeRules(snapshot),
+      },
+    });
+    void rule; // included in the API surface in case a caller wants richer toast copy later
+  };
 
   return (
     <div class="pj-app">
@@ -32,15 +60,20 @@ export function App(): JSX.Element {
         onThemePref={(p) => void writeSettings({ ...settings, themePreference: p })}
       />
       <main class="pj-main">
-        {tab === 'rules' ? <RulesPlaceholder /> : <TemplatesPlaceholder />}
+        {tab === 'rules' ? (
+          <RulesTab
+            rules={rules}
+            templates={templates}
+            onChange={(next) => void writeRules(next)}
+            onDelete={handleDelete}
+          />
+        ) : (
+          <TemplatesPlaceholder />
+        )}
       </main>
       <ToastHost />
     </div>
   );
-}
-
-function RulesPlaceholder(): JSX.Element {
-  return <p class="pj-placeholder">Rules tab — implementation lands in Task 15.</p>;
 }
 
 function TemplatesPlaceholder(): JSX.Element {
