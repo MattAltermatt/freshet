@@ -1,95 +1,108 @@
 # Present-JSON — Roadmap
 
-## Phases
+## Shipped
 
-1. **Phase 1: Core render loop** — done 2026-04-17
-   - MV3 scaffold, content script, service worker, options, popup
-   - Engine + matcher (pure) with unit tests
-   - One bundled starter template
-   - One Playwright E2E smoke test
+- **Phase 1** (2026-04-17) — MV3 scaffold, pure engine + matcher cores, rule matching, bundled starter, E2E smoke.
+- **Phase 2** (2026-04-18) — UX polish redesign across options + popup + top-strip. Preact 10, LiquidJS engine, CodeMirror 6 template editor, `{>` design system with dark mode from day 1, autosave + toasts, split-view Rules + URL tester, Preact popup with URL-hash directive handoff, shadow-DOM top-strip with `⌘⇧J`. Delivered as 5 sequential plans — see `docs/superpowers/plans/2026-04-18-phase2-plan{1..5}-*.md`.
 
-2. **Phase 1.5: Chrome Web Store publication** — paused 2026-04-17 pending Phase 2 polish (resume after Phase 2)
+Pre-publication hardening (regex escape guard, scripting-permission drop, 16/48/128 icons, privacy policy on GH Pages) landed alongside Phase 1/2. Chrome Web Store developer account registered.
 
-   *De-risk:*
-   - ✅ Register Chrome Web Store developer account (done 2026-04-17)
+---
 
-   *Pre-publication hardening:*
-   - ✅ Fix `//` regex escape hatch: require length > 2 so a bare `//` doesn't compile to match-all (done 2026-04-17, Phase 1 review #8)
-   - ✅ Drop unused `scripting` permission from `vite.config.ts` manifest (done 2026-04-17)
+## Now — Pre-release polish sweep
 
-   *Store assets:*
-   - ✅ Real icons at 16/48/128 (done 2026-04-17 — SVG sources in `design/`, rasterized via `pnpm icons`, output to `public/`)
-   - ✅ Privacy policy page hosted at a stable URL via GitHub Pages (done 2026-04-17 — `docs/privacy.md` → mattaltermatt.github.io/present-json/privacy/)
-   - ⏸ Screenshots (1280×800) for options page, rendered view, popup — deferred until Phase 2 polish lands; screenshots of the polished UI will be more compelling
+Editorial + QOL sweep before the Chrome Web Store submission. Aim: "as good as we can make it look." Ordered by impact within each group.
 
-   *Listing + submission (deferred):*
-   - Store listing copy: short description, detailed description, single-purpose statement, permission justifications
-   - Public support contact: GitHub Issues as primary (support *website* → repo issues URL); personal email used only for the required Google contact field
-   - Bump version for first public release (0.1.0 → 1.0.0 candidate)
-   - Build + zip `dist/` submission artifact
-   - Submit for review
+### Functional gaps
 
-3. **Phase 2: UX polish redesign** — done 2026-04-18
+- **Focus trap inside modals** — `RuleEditModal` + `TemplatesToolbar` delete-confirm capture Escape but don't cycle Tab within the dialog. WCAG 2.1.2 / ARIA dialog expectation. Either a roving-focus handler or a tiny focus-trap lib (~1 KB).
+- **`liquidCompletions` after a filter argument** — cursor inside `{{ ts | date: "`<cursor>`"` returns no completions because the regex cascade falls through. Extend `inOutput` detection or add a dedicated `inFilterArg` case.
+- **`walkJsonPaths` hint comment mismatch** — source comment says arrays appear as `items[]` but the implementation emits `items[0]`. Pick `[0]` (valid Liquid accessor), align docs.
 
-   Scope: options page + popup + rendered top-strip, designed as a cohesive system. Spec: [`docs/superpowers/specs/2026-04-18-phase2-ux-polish-design.md`](docs/superpowers/specs/2026-04-18-phase2-ux-polish-design.md).
+### UX — rule + template flows
 
-   Tech swap: Preact 10 (UI) + Handlebars (template runtime) + CodeMirror 6 (template editor).
+- **"+ Add rule for this host" captures the full URL** — popup + top-strip seed only `hostPattern` today; leave `pathPattern = /`. Extend the directive to `#new-rule=<encodeURIComponent(url)>` and pre-fill both patterns from `hostname` + `pathname` (reasonable default: first 1–2 path segments + `/**`).
+- **Quick-attach-template when the rule's template doesn't exist** — inline "+ Create template '<name>'" row inside the dropdown, or adjacent button that seeds a blank template and returns focus to the rule modal. Kills the modal-close → Templates → New → rename → back-to-Rules dance.
+- **URL tester polish** — quick-clear `×` inside the input, heading "Per-rule results" above the list, legend line under the input ("✅ match / — miss / ⚠ shadowed / ○ disabled").
+- **Surface expected `vars.*` from a template into the rule editor** — static scan for `{{ vars.x }}` references, pre-populate rule's Variables panel with expected keys, flag missing/extra keys inline. Eliminates the "why isn't this rendering" mystery when a rule forgot a var.
+- **Theme switcher in the top-strip ⋯ menu** — mirror the options-page theme control inside the strip's menu; subitems "Theme: system / light / dark" with a ✓ on the active one. Ensure the options-page switcher uses the same copy + grouping so the two surfaces read identically.
 
-   Rolled out as 5 sequential plans; each produces working, independently-verifiable software:
+### Brand + polish
 
-   1. **Plan 1 — Foundation**: deps + Vite JSX + `src/ui/` shell (theme tokens, hooks, base components). No user-visible change. — done 2026-04-18
-   2. **Plan 2 — Engine swap**: drop hand-rolled engine for Liquid (LiquidJS — interpreter, CSP-safe in MV3); migrator for existing templates; rewrite starters. — done 2026-04-18
-   3. **Plan 3 — Options page**: split-view rules + URL tester, CodeMirror 6 template editor (hand-rolled Liquid mode + autocomplete), rule-edit modal overhaul with validation + KV editor, `Saved ✓` / Undo toasts, dark mode, keyboard shortcuts footer, per-template sample JSON persistence, `{>` logo theme-aware, storage-area promotion, axe-core WCAG 2.1 AA gate. — done 2026-04-18
-   4. **Plan 4 — Popup**: Preact popup with match status (rule chip + Edit rule deep-link), +Add rule for this host CTA, per-host skip toggle, test-URL quick-jump. URL-hash directive protocol (`#test-url`, `#new-rule:host`, `#edit-rule`) hands off to the options page. Real `.pj-toggle` CSS shipped. Liquid StreamParser advance-guard for lone `{`. axe-core WCAG AA on popup. — done 2026-04-18
-   5. **Plan 5 — Top-strip**: shadow-DOM injected strip, warm cream / warm near-black palette, `{>` brand, env chip (when `vars.env`), rule name, Rendered/Raw toggle-group with `⌘⇧J` via `chrome.commands`, ⋯ menu (Copy URL / Edit rule / Skip this host) with transient toasts, theme reactivity. `Menu` primitive extended with shadow-root-aware outside-click + `trailingIcon` slot. `useTheme` stabilized with `useRef`. Body padding-top shim → `#pj-root` so hostile templates can't clip. axe-core WCAG AA on the strip (light + dark). — done 2026-04-18
+- **Brand audit across external surfaces** — one coherent pass:
+  - **GH Pages site** (`mattaltermatt.github.io/present-json/`): rasterize `design/icon-128.svg` → `docs/logo.png`; set `logo:` in `docs/_config.yml`; add `docs/_includes/head.html` with `<link rel="icon">`, `<meta name="theme-color" content="#ea580c">`, Open Graph + Twitter card tags.
+  - **README.md**: logo at the top, one-liner aligned with the manifest description.
+  - **Options, popup, Templates-tab headers**: `{>` becomes a link to the GH Pages site (new tab via `chrome.tabs.create`). Top-strip `{>` stays decorative (no outbound link on arbitrary host pages).
+  - **Alignment sweep**: manifest `description`, options + popup `<title>`, every visible instance of the `{>` motif — brace + bracket in the same order, orange always on the bracket.
+- **Friendlier starter templates** — inline HTML comments in bundled starters teaching the Liquid grammar we expose (`{% if %}` / `{% for %}`, filters, `vars.*`, sanitizer behavior). Doubles as docs for template authors and LLMs.
+- **Bundled starter with variables** — a real-world example template that exercises `{{ vars.* }}` end-to-end so users discover the variable pipeline.
+- **Collapsible template boxes in the Templates tab** — disclosure-arrow on editor, sample JSON, preview, cheatsheet. Persisted per-user in `settings` or a dedicated `pj_ui_collapse` storage key.
+- **Code/editorial pass** — variable naming (`--pj-*`, `pj-*`, camelCase, storage keys), class-name consistency, dead code, duplicate tokens, stale comments, unused imports, one pass over every user-facing string for voice/tone.
 
-   Behaviors delivered across the 5 plans:
-   - Adopt `{>` palette (`#111827` + `#ea580c` + warm cream `#fef7ed`) as a proper design system; dark mode from day 1 via `prefers-color-scheme` + user override
-   - Rule-edit modal overhaul: pattern examples, inline validation, KV variable editor, enabled-as-header-status
-   - Rules split-view: card stack + URL tester; first-match-wins made visible; drag-to-reorder
-   - Autosave with `Saved ✓` toast + 8 s Undo toast for destructive actions
-   - Templates: CodeMirror 6 + Handlebars grammar + autocomplete; bigger rendered preview; pinned syntax cheatsheet; AI-hint comment header in starters
-   - Keyboard shortcuts visibly documented; `⌘⇧J` raw/rendered toggle wired via `chrome.commands`
+---
 
-4. **Phase 3: Real-world example JSONs** — pending (HIGH priority; unblocks Phase 1.5 store screenshots)
-   - Host static JSON fixtures at `mattaltermatt.github.io/present-json/examples/...` via Jekyll
-   - Bundle 2–3 starter rules + templates targeting real public APIs (candidates: JSONPlaceholder, HTTPBin, GitHub API, PokéAPI, REST Countries)
-   - "Try it now" affordance from the options page first-run empty state
+## Next — Real-world example JSONs (Phase 3)
 
-5. **Phase 4: Extension-conflict handling** — pending (MEDIUM-HIGH; preserves the Phase 2 UX investment post-install)
-   - Detect when the page body has already been modified by another JSON viewer (JSONView, JSON Formatter, etc.) before our content script runs
-   - Show a clear popup warning + actionable guidance ("disable JSONView on this host" or "uninstall to avoid conflicts")
-   - Do NOT try to programmatically take over — that's an arms race
+Unblocks the store screenshots *and* gives the pre-release polish sweep a real testbed.
 
-6. **Phase 5: Expanded test coverage** — pending (MEDIUM; ongoing, rides alongside other phases)
-   - Popup behavior E2E (currently zero coverage)
-   - Options page CRUD E2E (currently zero coverage)
-   - Visual regression via Playwright screenshots, checked into repo
-   - Accessibility audit via `axe-core` in Playwright
-   - Storage quota overflow (90 KB sync → local migration) E2E
+- Host static JSON fixtures at `mattaltermatt.github.io/present-json/examples/...` via Jekyll.
+- Bundle 2–3 starter rules + templates against public APIs. Candidates: JSONPlaceholder, HTTPBin, GitHub API, PokéAPI, REST Countries.
+- First-run empty state gets a "Try it now" affordance that drops the bundled rules in.
 
-7. **Phase 6: Export/import templates** — pending (LOW; nice-to-have, post-store-launch)
-   - Export/import templates with a scrub-before-share dialog that lets user control what's included
+---
 
-8. **Phase 7: Deferred / nice-to-haves** — pending
-   - Form-based template editor
-   - Shared template registry
-   - Non-JSON content support
-   - **QOL: "Create rule from current page"** — one-click action from the popup (and/or context menu) that pre-populates a new rule with the current tab's URL as the pattern, then jumps into the options page's rule-edit modal. Eliminates the manual copy-paste dance. Candidate to graduate into Phase 2 Plan 4 (popup) if it fits; otherwise standalone.
-   - **QOL: "Page is being rendered" indicator** — when the current tab is actively rendered by a rule, make it obvious in the extension surface itself (not just via the rendered page content). Likely mechanism: Chrome action badge (colored dot or short text like ✓) set from the background/content script when a rule fires, cleared otherwise. Candidate to graduate into Phase 2 Plan 4 (popup) alongside the other popup work.
-   - **QOL: Friendlier starter templates** — include inline HTML comments in bundled starters that teach the Liquid syntax we expose (basic interpolation, `{% if %}` / `{% for %}`, `date` / `link` / `num` / `raw` filters, `vars.*` namespace, blank-check idiom, final sanitizer behavior). Makes starters double as documentation for template authors, including LLMs asked to generate new templates. Candidate to graduate into Phase 3 (real-world examples).
-   - **QOL: Remember & optional sample JSON in the Templates editor** — persist the sample JSON per template so live-preview keeps working across sessions without re-pasting. Make the sample field optional: a template with no saved sample just shows a blank preview (or a last-seen-live sample from a matched rule, TBD). Candidate to graduate into Phase 2 Plan 3 (options-page rewrite) where the template editor is being redone.
-   - **Pre-release polish sweep (gate to Chrome Web Store resume)** — before re-submitting to the Chrome Web Store, do a full editorial pass: variable naming (all `--pj-*`, `pj-*`, camelCase identifiers, storage keys), class-name consistency, dead code, duplicate CSS tokens, stale comments, unused imports, and a once-over on every user-facing string for voice/tone. Aim is "as good as we can make it look" — shippable, not just working. Keep this item until the sweep + submission land together. Subitems queued here:
-     - **Focus trap inside modals** — `RuleEditModal` + `TemplatesToolbar` delete-confirm capture Escape but don't cycle Tab within the dialog. WCAG 2.1.2 / ARIA dialog expectation. Add a roving-focus handler or pull in a tiny focus-trap lib (~1 KB).
-     - **liquidCompletions after a filter argument** — cursor inside `{{ ts | date: "`<cursor>`"` returns no completions because the regex cascade falls through. Either extend `inOutput` detection or add a dedicated `inFilterArg` case.
-     - **walkJsonPaths hint comment mismatch** — the source comment says arrays appear as `items[]` but the implementation emits `items[0]` for sub-paths. Pick one convention (likely `[0]` since it's a valid Liquid accessor) and align docs.
-   - **QOL: URL tester polish** — the tester list needs a quick clear button (one-click reset of the input back to empty) and clearer framing so a first-time user can tell what the list below the input represents. Ideas: a heading like "Per-rule results" above the list, a hint line under the input ("Every rule is shown below with ✅ match / — miss / ⚠ shadowed / ○ disabled"), and an X button inside the input. Candidate to graduate into the pre-release polish sweep.
-   - **QOL: Bundled starter with variables** — ship a real-world example template that exercises `{{ vars.* }}` end-to-end (both the rule editor's Variables panel and the template referencing those names). Current starters don't advertise the variable pipeline, so users don't discover it. Candidate to graduate into Phase 3 (real-world examples) alongside the new bundled examples.
-   - **QOL: Surface render state on the extension action icon** — when the current tab is being rendered by a rule, set a success badge on `chrome.action` (e.g. `✓` or a colored dot). When a rule matched but the template failed to compile / render, set an error badge (`!` + red). Gives the user passive confidence that the extension is doing its thing without opening the popup. Mechanism: content-script reports success/error back to the service worker, which calls `chrome.action.setBadgeText` / `setBadgeBackgroundColor` per-tab. Sibling to "Page is being rendered" and subsumes it. Candidate for Phase 4 (extension-conflict handling) since the error case overlaps with conflict detection.
-   - **QOL: Match the LiquidJS playground UX** — the official [LiquidJS playground](https://liquidjs.com/playground.html#PHVsPgp7JS0gZm9yIHBlcnNvbiBpbiBwZW9wbGUgJX0KICA8bGk+CiAgICA8YSBocmVmPSJ7e3BlcnNvbiB8IHByZXBlbmQ6ICJodHRwczovL2V4YW1wbGUuY29tLyJ9fSI+CiAgICAgIHt7IHBlcnNvbiB8IGNhcGl0YWxpemUgfX0KICAgIDwvYT4KICA8L2xpPgp7JS0gZW5kZm9yJX0KPC91bD4K,ewogICJwZW9wbGUiOiBbCiAgICAiYWxpY2UiLAogICAgImJvYiIsCiAgICAiY2Fyb2wiCiAgXQp9Cg==) is the reference UX for a Liquid editor — template on the left, JSON context in a second pane, rendered output on the right, URL-encodes the whole session for shareable links. Our Templates tab should converge on that layout and ergonomics (panel proportions, live-render debounce, share-via-URL). Also link to the playground from the Templates tab header or the syntax cheatsheet — it's the best external reference for Liquid syntax beyond what we ship. Candidate to graduate into a follow-up pass on Plan 3.
-   - **QOL: Theme switcher in the top-strip ⋯ menu** — today theme preference (`system` / `light` / `dark`) can only be changed from the options page's header. Add the same switcher to the rendered top-strip's ⋯ menu (sub-items: "Theme: system / light / dark", currently-selected one has a ✓), and ensure the options-page switcher uses the same copy + grouping so both surfaces read identically. Writes `settings.themePreference`; the existing `useStorage('settings')` wiring makes all three surfaces (options, popup, strip) converge without reload. Candidate to graduate into the pre-release polish sweep.
-   - **QOL: "+ Add rule for this host" should capture the full URL, not just the hostname** — today the popup's `new-rule:host=<host>` directive seeds only `hostPattern` with the tab's hostname and leaves `pathPattern` as the default `/`. The user invariably wants the rule to match the *actual path they're on* (at least the segment depth they clicked from), so the next step is always a manual fiddle. Capture the full URL in the directive — e.g. `#new-rule=<encodeURIComponent(url)>` — and pre-fill both `hostPattern` (from `hostname`) and `pathPattern` (from the pathname, reasonable default like the first one or two segments + `/**`). Also applies to the top-strip's "Copy URL" and any future "create-rule-from-current-page" affordance. Candidate to graduate into the pre-release polish sweep.
-   - **QOL: Quick-attach-a-template when the rule's template doesn't exist yet** — when adding a rule and the Template dropdown has no matching option (fresh install, or user typed a name that isn't a template), surface a one-click path: an inline "+ Create template '<name>'" row inside the dropdown, or a button next to the dropdown that creates a blank template with that name, switches focus to the Templates tab's editor, and returns to the rule-edit modal when the template is saved. Today the dance is: close the modal → go to Templates → New → type name → back to Rules → reopen rule → pick template. Too much. Candidate to graduate into the pre-release polish sweep.
-   - **QOL: Collapsible template boxes in the Templates tab** — when a user has ten+ templates, the editor area and sample-JSON pane stack up and the tab becomes scroll-heavy. Let each top-level box in the Templates tab (editor, sample JSON, preview, cheatsheet) collapse to a single-line header with a disclosure arrow. Remember per-user which are collapsed via `settings` or a dedicated `pj_ui_collapse` storage key. Also applies if the Rules tab grows similar structural density. Candidate to graduate into the pre-release polish sweep.
-   - **QOL: Brand audit across external surfaces** — the GH Pages site at `mattaltermatt.github.io/present-json/` currently renders in plain `jekyll-theme-minimal` defaults (no logo, no favicon, no accent color). Add the `{>` identity: rasterize `design/icon-128.svg` into `docs/logo.png`, set `logo: /present-json/logo.png` in `docs/_config.yml` so the theme's sidebar picks it up, add a `docs/_includes/head.html` override with a `<link rel="icon">` + `<meta name="theme-color" content="#ea580c">` + Open Graph / Twitter card tags for link previews, and verify the privacy page header reads the logo too. While doing this, sweep the other external-facing surfaces for consistency: (a) `README.md` — add the logo at the top, ensure the one-liner matches the manifest description, (b) the (future) Chrome Web Store listing copy — reuse the same tagline + screenshots, (c) the manifest `description` field, (d) the options-page and popup titles, (e) the printed `{>` motif — confirm brace + bracket are always in the same order and the bracket is the orange one, (f) make the `{>` brandmark a **link to the GH Pages site** (`mattaltermatt.github.io/present-json/`) in the popup header, the options-page header, and the Templates-tab header — opens via `chrome.tabs.create` in a new tab; the content-script-injected top-strip keeps its `{>` decorative (no outbound link on arbitrary host pages). One pass, align everything.
-   - **QOL: Surface expected `vars.*` from a template into the rule editor** — when a template references `{{ vars.someName }}`, detect those names (static scan of the Liquid AST or regex) and reflect them back when a rule is being connected to that template. Concretely: (a) the rule-edit modal's Variables panel pre-populates with the template's expected keys (placeholder values, not required), (b) keys the template references but the rule hasn't set are flagged inline ("expected: `adminHost`"), (c) extra keys set on the rule that the template doesn't reference get a dim "unused" tag. Eliminates the "why isn't this rendering" mystery when a rule forgot a var. Candidate to graduate into Phase 2 Plan 3 follow-up or Phase 6 (export/import) where cross-referencing also matters.
+## Deployment — Chrome Web Store submission
+
+Paused 2026-04-17 pending Phase 2 polish. Resume after the pre-release sweep + Phase 3 screenshots are ready.
+
+### Already in place
+- Chrome Web Store developer account registered.
+- Icons 16 / 48 / 128 rasterized in `public/`.
+- Privacy policy hosted at `mattaltermatt.github.io/present-json/privacy/`.
+- `<all_urls>` / `storage` / `tabs` permissions are the minimum set; `scripting` already dropped.
+
+### Still to do (in order)
+
+1. **Screenshots (1280×800)** — options page (Rules + Templates, light + dark), popup (matched + unmatched), rendered page with top-strip. Capture after Phase 3 lands so examples look real.
+2. **Store listing copy** — short description (132 chars), detailed description, single-purpose statement, permission justifications (`storage` / `tabs` / `<all_urls>`).
+3. **Public support contact** — GitHub Issues as the public support URL; personal email used only for the required Google contact field.
+4. **Version bump** — `0.1.0` → `1.0.0` candidate in `vite.config.ts` manifest + `package.json`.
+5. **Build + zip `dist/`** — submission artifact (`pnpm build` then `zip -r present-json-v1.0.0.zip dist`).
+6. **Submit for review** — typical turnaround 1–5 business days; plan buffer for possible back-and-forth on permission justifications.
+
+---
+
+## Post-launch backlog
+
+Ordered by expected impact.
+
+### Extension-conflict handling
+
+Preserves the Phase 2 UX investment post-install.
+
+- Detect when another JSON viewer (JSONView, JSON Formatter, etc.) already mutated `document.body` before our content script ran. Heuristic hook + degraded UI branch already reserved in `src/content/conflictDetect.ts` and `TopStrip` — this phase fills in the detection logic.
+- Show a clear in-popup warning with actionable guidance — "disable JSONView on this host" / "uninstall to avoid conflicts".
+- Do NOT try to programmatically take over the page — arms-race we lose.
+
+### Action-badge render state
+
+- `chrome.action.setBadgeText` from background when a rule fires (success dot or `✓`); error badge (`!` red) when a rule matched but the template failed to compile / render. Signals render state without opening the popup. Error path overlaps with conflict detection — ship together.
+
+### Expanded test coverage (ongoing)
+
+- Visual-regression baselines via Playwright screenshots in `test/e2e/__screenshots__/`; failures break CI.
+- Storage-quota overflow (90 KB sync → local migration) E2E covering the real fallback.
+
+### Templates — UX convergence
+
+- **Match the LiquidJS playground UX** — the [official playground](https://liquidjs.com/playground.html) is the canonical reference: template / JSON / rendered output panels, shareable URL-encoded sessions. Converge our Templates tab on those proportions + the share-via-URL idea. Link the playground from the syntax cheatsheet header.
+
+### Template export / import
+
+- Export / import templates with a scrub-before-share dialog so users control what gets included. Useful once multiple installs or team-sharing starts.
+
+### Nice-to-haves
+
+- Form-based template editor (for non-coder users).
+- Shared template registry (community templates).
+- Non-JSON content support (HTML / CSV / XML content-type routing).
