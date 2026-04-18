@@ -98,6 +98,13 @@ export function TopStrip({
     });
   };
 
+  const openEditTemplate = (): void => {
+    void chrome.runtime.sendMessage({
+      kind: 'pj:open-options',
+      hash: directiveHash.editTemplate(rule.templateName),
+    });
+  };
+
   const skipHost = async (): Promise<void> => {
     const host = window.location.hostname;
     if (!host) return;
@@ -162,9 +169,15 @@ export function TopStrip({
           {env}
         </span>
       ) : null}
-      <span class="pj-rule-name" data-testid="pj-rule-name" title={rule.templateName}>
+      <button
+        type="button"
+        class="pj-rule-name"
+        data-testid="pj-rule-name"
+        title={`Edit template "${rule.templateName}"`}
+        onClick={openEditTemplate}
+      >
         {rule.templateName}
-      </span>
+      </button>
       {degraded ? (
         <span class="pj-degraded" data-testid="pj-degraded">
           ⚠ {degraded.reason}

@@ -66,6 +66,19 @@ test('renders rule name', () => {
   expect(screen.getByTestId('pj-rule-name')).toHaveTextContent('internal-user');
 });
 
+test('clicking the template name sends an open-options edit-template message', () => {
+  const sendMessage = vi.fn();
+  (globalThis as unknown as { chrome: { runtime: { sendMessage: typeof sendMessage } } })
+    .chrome.runtime.sendMessage = sendMessage;
+  render(<TopStrip {...baseProps()} />);
+  fireEvent.click(screen.getByTestId('pj-rule-name'));
+  expect(sendMessage).toHaveBeenCalledTimes(1);
+  const arg = sendMessage.mock.calls[0]![0] as { kind: string; hash: string };
+  expect(arg.kind).toBe('pj:open-options');
+  expect(arg.hash).toContain('#edit-template=');
+  expect(decodeURIComponent(arg.hash.split('=')[1]!)).toBe('internal-user');
+});
+
 test('shows env chip when rule.variables.env is set', () => {
   const p = baseProps();
   p.rule.variables = { env: 'staging' };
