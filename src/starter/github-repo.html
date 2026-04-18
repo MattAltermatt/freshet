@@ -1,0 +1,56 @@
+<div class="pj-gh">
+  <header class="pj-gh__header">
+    <img class="pj-gh__avatar" src="{{owner.avatar_url}}" alt="{{owner.login}} avatar" />
+    <div class="pj-gh__heading">
+      <h1 class="pj-gh__title"><a href="{{html_url}}">{{full_name}}</a></h1>
+      <p class="pj-gh__desc">{{description}}</p>
+      {{#when homepage ""}}{{#else}}<p class="pj-gh__home">→ <a href="{{homepage}}">{{homepage}}</a></p>{{/when}}
+    </div>
+  </header>
+
+  <section class="pj-gh__stats">
+    <div class="pj-gh__stat"><span class="pj-gh__icon">⭐</span><span class="pj-gh__num">{{num stargazers_count}}</span><span class="pj-gh__label">Stars</span></div>
+    <div class="pj-gh__stat"><span class="pj-gh__icon">🍴</span><span class="pj-gh__num">{{num forks_count}}</span><span class="pj-gh__label">Forks</span></div>
+    <div class="pj-gh__stat"><span class="pj-gh__icon">👁</span><span class="pj-gh__num">{{num subscribers_count}}</span><span class="pj-gh__label">Watchers</span></div>
+    <div class="pj-gh__stat"><span class="pj-gh__icon">🐛</span><span class="pj-gh__num">{{num open_issues_count}}</span><span class="pj-gh__label">Open Issues</span></div>
+  </section>
+
+  <section class="pj-gh__meta">
+    <dl>
+      {{#when language ""}}{{#else}}<dt>Language</dt><dd>{{language}}</dd>{{/when}}
+      {{#when license.name ""}}{{#else}}<dt>License</dt><dd>{{license.name}}</dd>{{/when}}
+      <dt>Default branch</dt><dd>{{default_branch}}</dd>
+      <dt>Created</dt><dd>{{date created_at "yyyy-MM-dd"}}</dd>
+      <dt>Last push</dt><dd>{{date pushed_at "yyyy-MM-dd"}}</dd>
+    </dl>
+  </section>
+
+  <section class="pj-gh__topics">
+    {{#each topics}}<span class="pj-gh__chip">{{this}}</span>{{/each}}
+  </section>
+</div>
+
+<style>
+  body { background:#0d1117; margin:0; padding:24px; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif; color:#e6edf3; }
+  .pj-gh { max-width:720px; margin:0 auto; background:#161b22; border:1px solid #30363d; border-radius:8px; overflow:hidden; }
+  .pj-gh__header { display:flex; gap:16px; padding:24px; border-bottom:1px solid #30363d; }
+  .pj-gh__avatar { width:64px; height:64px; border-radius:50%; flex-shrink:0; }
+  .pj-gh__heading { min-width:0; flex:1; }
+  .pj-gh__title { margin:0 0 4px; font-size:20px; font-weight:600; }
+  .pj-gh__title a { color:#2f81f7; text-decoration:none; }
+  .pj-gh__title a:hover { text-decoration:underline; }
+  .pj-gh__desc { margin:0 0 8px; color:#8d96a0; font-size:14px; line-height:1.5; }
+  .pj-gh__home { margin:0; font-size:13px; }
+  .pj-gh__home a { color:#2f81f7; text-decoration:none; }
+  .pj-gh__stats { display:grid; grid-template-columns:repeat(4,1fr); padding:20px 24px; border-bottom:1px solid #30363d; }
+  .pj-gh__stat { display:flex; flex-direction:column; align-items:center; gap:4px; }
+  .pj-gh__icon { font-size:20px; }
+  .pj-gh__num { font-size:18px; font-weight:600; color:#e6edf3; }
+  .pj-gh__label { font-size:11px; color:#8d96a0; text-transform:uppercase; letter-spacing:.5px; }
+  .pj-gh__meta { padding:16px 24px; border-bottom:1px solid #30363d; }
+  .pj-gh__meta dl { display:grid; grid-template-columns:140px 1fr; gap:8px 16px; margin:0; font-size:13px; }
+  .pj-gh__meta dt { color:#8d96a0; font-weight:400; }
+  .pj-gh__meta dd { margin:0; color:#e6edf3; font-weight:500; }
+  .pj-gh__topics { padding:16px 24px; display:flex; flex-wrap:wrap; gap:6px; }
+  .pj-gh__chip { background:rgba(47,129,247,0.15); color:#2f81f7; font-size:12px; padding:3px 10px; border-radius:999px; }
+</style>
