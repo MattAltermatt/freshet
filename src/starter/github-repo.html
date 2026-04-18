@@ -1,38 +1,38 @@
 <div class="pj-gh">
   <header class="pj-gh__header">
-    <img class="pj-gh__avatar" src="{{owner.avatar_url}}" alt="{{owner.login}} avatar" />
+    <img class="pj-gh__avatar" src="{{ owner.avatar_url }}" alt="{{ owner.login }} avatar" />
     <div class="pj-gh__heading">
-      <h1 class="pj-gh__title"><a href="{{html_url}}">{{full_name}}</a></h1>
-      <p class="pj-gh__desc">{{description}}</p>
-      {{#when homepage ""}}{{#else}}<p class="pj-gh__home">→ <a href="{{homepage}}">{{homepage}}</a></p>{{/when}}
+      <h1 class="pj-gh__title"><a href="{{ html_url }}">{{ full_name }}</a></h1>
+      <p class="pj-gh__desc">{{ description }}</p>
+      {% if homepage != blank %}<p class="pj-gh__home">→ <a href="{{ homepage }}">{{ homepage }}</a></p>{% endif %}
     </div>
   </header>
 
-  {{#when archived "true"}}
+  {% if archived %}
     <div class="pj-gh__status pj-gh__status--archived" role="status"><span class="pj-gh__dot"></span>Archived — read-only</div>
-  {{#else}}
+  {% else %}
     <div class="pj-gh__status pj-gh__status--active" role="status"><span class="pj-gh__dot"></span>Active</div>
-  {{/when}}
+  {% endif %}
 
   <section class="pj-gh__stats">
-    <div class="pj-gh__stat"><span class="pj-gh__icon">⭐</span><span class="pj-gh__num">{{num stargazers_count}}</span><span class="pj-gh__label">Stars</span></div>
-    <div class="pj-gh__stat"><span class="pj-gh__icon">🍴</span><span class="pj-gh__num">{{num forks_count}}</span><span class="pj-gh__label">Forks</span></div>
-    <div class="pj-gh__stat"><span class="pj-gh__icon">👁</span><span class="pj-gh__num">{{num subscribers_count}}</span><span class="pj-gh__label">Watchers</span></div>
-    <div class="pj-gh__stat"><span class="pj-gh__icon">🐛</span><span class="pj-gh__num">{{num open_issues_count}}</span><span class="pj-gh__label">Open Issues</span></div>
+    <div class="pj-gh__stat"><span class="pj-gh__icon">⭐</span><span class="pj-gh__num">{{ stargazers_count | num }}</span><span class="pj-gh__label">Stars</span></div>
+    <div class="pj-gh__stat"><span class="pj-gh__icon">🍴</span><span class="pj-gh__num">{{ forks_count | num }}</span><span class="pj-gh__label">Forks</span></div>
+    <div class="pj-gh__stat"><span class="pj-gh__icon">👁</span><span class="pj-gh__num">{{ subscribers_count | num }}</span><span class="pj-gh__label">Watchers</span></div>
+    <div class="pj-gh__stat"><span class="pj-gh__icon">🐛</span><span class="pj-gh__num">{{ open_issues_count | num }}</span><span class="pj-gh__label">Open Issues</span></div>
   </section>
 
   <section class="pj-gh__meta">
     <dl>
-      {{#when language ""}}{{#else}}<dt>Language</dt><dd>{{language}}</dd>{{/when}}
-      {{#when license.name ""}}{{#else}}<dt>License</dt><dd>{{license.name}}</dd>{{/when}}
-      <dt>Default branch</dt><dd>{{default_branch}}</dd>
-      <dt>Created</dt><dd>{{date created_at "yyyy-MM-dd"}}</dd>
-      <dt>Last push</dt><dd>{{date pushed_at "yyyy-MM-dd"}}</dd>
+      {% if language != blank %}<dt>Language</dt><dd>{{ language }}</dd>{% endif %}
+      {% if license.name != blank %}<dt>License</dt><dd>{{ license.name }}</dd>{% endif %}
+      <dt>Default branch</dt><dd>{{ default_branch }}</dd>
+      <dt>Created</dt><dd>{{ created_at | date: "yyyy-MM-dd" }}</dd>
+      <dt>Last push</dt><dd>{{ pushed_at | date: "yyyy-MM-dd" }}</dd>
     </dl>
   </section>
 
   <section class="pj-gh__topics">
-    {{#each topics}}<span class="pj-gh__chip">{{this}}</span>{{/each}}
+    {% for topic in topics %}<span class="pj-gh__chip">{{ topic }}</span>{% endfor %}
   </section>
 </div>
 

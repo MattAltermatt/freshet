@@ -1,15 +1,15 @@
 <div class="pj-row">
   <span class="pj-label">ID</span>
-  <a href="https://{{@adminHost}}/user/{{id}}">{{id}}</a>
+  <a href="https://{{ vars.adminHost }}/user/{{ id }}">{{ id }}</a>
 </div>
 <div class="pj-row">
   <span class="pj-label">Insert Date</span>
-  <span>{{date insertDate}}</span>
+  <span>{{ insertDate | date }}</span>
 </div>
 <div class="pj-row">
   <span class="pj-label">Status</span>
-  {{#when status "UP"}}<span class="pj-up">UP</span>{{/when}}
-  {{#when status "DOWN"}}<span class="pj-down">DOWN</span>{{/when}}
+  {% if status == "UP" %}<span class="pj-up">UP</span>{% endif %}
+  {% if status == "DOWN" %}<span class="pj-down">DOWN</span>{% endif %}
 </div>
 <style>
   .pj-row { display:flex; gap:12px; padding:6px 12px; border-bottom:1px solid #f3f4f6; }

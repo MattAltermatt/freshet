@@ -1,4 +1,4 @@
-<div class="row"><span class="label">ID</span><a href="https://{{@adminHost}}/user/{{id}}">{{id}}</a></div>
-<div class="row"><span class="label">Insert Date</span><span>{{date insertDate "yyyy-MM-dd HH:mm"}}</span></div>
-<div class="row"><span class="label">Status</span>{{#when status "UP"}}<span class="badge-up">UP</span>{{/when}}{{#when status "DOWN"}}<span class="badge-down">DOWN</span>{{/when}}</div>
-<div class="row"><span class="label">Config</span><a href="https://{{@adminHost}}/product/api/v1/{{theValueICareAbout}}">{{theValueICareAbout}}</a></div>
+<div class="row"><span class="label">ID</span><a href="https://{{ vars.adminHost }}/user/{{ id }}">{{ id }}</a></div>
+<div class="row"><span class="label">Insert Date</span><span>{{ insertDate | date: "yyyy-MM-dd HH:mm" }}</span></div>
+<div class="row"><span class="label">Status</span>{% if status == "UP" %}<span class="badge-up">UP</span>{% endif %}{% if status == "DOWN" %}<span class="badge-down">DOWN</span>{% endif %}</div>
+<div class="row"><span class="label">Config</span><a href="https://{{ vars.adminHost }}/product/api/v1/{{ theValueICareAbout }}">{{ theValueICareAbout }}</a></div>
