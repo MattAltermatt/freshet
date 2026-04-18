@@ -209,6 +209,7 @@ export function TemplatesTab({
                     onChange={handleTemplateInput}
                     sampleJson={safeParse(sampleText)}
                     ruleVars={ruleVars}
+                    minHeight="0"
                   />
                   <p class="pj-playground-links" aria-label="LiquidJS playground links">
                     <a
@@ -251,7 +252,7 @@ export function TemplatesTab({
                 </span>
               </button>
               {!collapse.sample ? (
-                <SampleJsonEditor value={sampleText} onChange={handleSampleInput} />
+                <SampleJsonEditor value={sampleText} onChange={handleSampleInput} minHeight="0" />
               ) : null}
             </section>
             <section class="pj-templates-col" data-area="preview" data-collapsed={collapse.preview}>

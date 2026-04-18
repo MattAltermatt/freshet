@@ -677,14 +677,14 @@ button.pj-templates-label:focus-visible {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: var(--pj-bg-subtle);
   color: var(--pj-fg-muted);
-  font-size: 11px;
+  font-size: 14px;
   line-height: 1;
-  margin-right: 8px;
+  margin-right: 10px;
   flex: 0 0 auto;
   transition: background 120ms ease, color 120ms ease;
 }
