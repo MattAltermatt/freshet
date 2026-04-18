@@ -26,6 +26,7 @@ const sampleJson = {
     login: 'facebook',
     avatar_url: 'https://avatars.githubusercontent.com/u/69631?v=4',
   },
+  archived: false,
 };
 
 describe('github-repo starter template', () => {
@@ -73,5 +74,18 @@ describe('github-repo starter template', () => {
   it('hides the license row when license.name is absent', () => {
     const noLicense = render(template, { ...sampleJson, license: { name: '', spdx_id: '' } }, {});
     expect(noLicense).not.toContain('<dt>License</dt>');
+  });
+
+  it('renders the Active status pill when archived is false', () => {
+    expect(html).toContain('pj-gh__status--active" role="status"');
+    expect(html).toContain('>Active</div>');
+    expect(html).not.toContain('pj-gh__status--archived" role="status"');
+  });
+
+  it('renders the Archived status pill when archived is true', () => {
+    const archived = render(template, { ...sampleJson, archived: true }, {});
+    expect(archived).toContain('pj-gh__status--archived" role="status"');
+    expect(archived).toContain('Archived — read-only');
+    expect(archived).not.toContain('pj-gh__status--active" role="status"');
   });
 });

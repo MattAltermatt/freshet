@@ -8,6 +8,12 @@
     </div>
   </header>
 
+  {{#when archived "true"}}
+    <div class="pj-gh__status pj-gh__status--archived" role="status"><span class="pj-gh__dot"></span>Archived — read-only</div>
+  {{#else}}
+    <div class="pj-gh__status pj-gh__status--active" role="status"><span class="pj-gh__dot"></span>Active</div>
+  {{/when}}
+
   <section class="pj-gh__stats">
     <div class="pj-gh__stat"><span class="pj-gh__icon">⭐</span><span class="pj-gh__num">{{num stargazers_count}}</span><span class="pj-gh__label">Stars</span></div>
     <div class="pj-gh__stat"><span class="pj-gh__icon">🍴</span><span class="pj-gh__num">{{num forks_count}}</span><span class="pj-gh__label">Forks</span></div>
@@ -42,6 +48,10 @@
   .pj-gh__desc { margin:0 0 8px; color:#8d96a0; font-size:14px; line-height:1.5; }
   .pj-gh__home { margin:0; font-size:13px; }
   .pj-gh__home a { color:#2f81f7; text-decoration:none; }
+  .pj-gh__status { display:flex; align-items:center; gap:8px; padding:10px 24px; font-size:12px; font-weight:600; letter-spacing:.3px; text-transform:uppercase; border-bottom:1px solid #30363d; }
+  .pj-gh__status--active { background:rgba(35,134,54,0.15); color:#3fb950; }
+  .pj-gh__status--archived { background:rgba(248,81,73,0.15); color:#f85149; }
+  .pj-gh__dot { width:8px; height:8px; border-radius:50%; background:currentColor; box-shadow:0 0 0 2px rgba(255,255,255,0.1); }
   .pj-gh__stats { display:grid; grid-template-columns:repeat(4,1fr); padding:20px 24px; border-bottom:1px solid #30363d; }
   .pj-gh__stat { display:flex; flex-direction:column; align-items:center; gap:4px; }
   .pj-gh__icon { font-size:20px; }
