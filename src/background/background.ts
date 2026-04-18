@@ -19,11 +19,16 @@ async function seedStartersIfEmpty(): Promise<void> {
   const storage = await createStorage(chrome.storage);
   const templates = await storage.getTemplates();
   if (Object.keys(templates).length > 0) return;
-  await storage.setTemplates({
+  // Combined starter bodies exceed the 8 KB per-item quota on chrome.storage.sync
+  // once JSON-encoded. Commit this install to local up-front so the seed write
+  // lands in an area without that limit.
+  await chrome.storage.local.set({ pj_storage_area: 'local' });
+  const localStorage = await createStorage(chrome.storage);
+  await localStorage.setTemplates({
     'internal-user': starterInternalUser,
     'github-repo': starterGithubRepo,
   });
-  await storage.setSchemaVersion(2);
+  await localStorage.setSchemaVersion(2);
 }
 
 async function maybeStorageAreaMigration(): Promise<void> {
