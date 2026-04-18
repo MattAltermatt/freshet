@@ -9,5 +9,8 @@ export { CodeMirrorBox, type CodeMirrorBoxProps } from './components/CodeMirrorB
 
 export { useTheme } from './hooks/useTheme';
 export { useToast, clearAllToasts, type Toast as ToastModel, type ToastInput, type ToastVariant } from './hooks/useToast';
+export { useDebounce } from './hooks/useDebounce';
+export { useStorage } from './hooks/useStorage';
+export { useAutosave, type AutosaveOptions } from './hooks/useAutosave';
 
 export { resolveTheme, applyTheme, type Theme, type ThemePreference } from './theme';
