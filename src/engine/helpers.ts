@@ -1,3 +1,4 @@
+import type { Liquid } from 'liquidjs';
 import { lookup } from './lookup';
 import type { Variables } from '../shared/types';
 
@@ -70,4 +71,23 @@ export function formatDate(input: unknown, fmt: string | undefined): string {
     .replace(/HH/g, pad2(d.getHours()))
     .replace(/mm/g, pad2(d.getMinutes()))
     .replace(/ss/g, pad2(d.getSeconds()));
+}
+
+export function registerFilters(engine: Liquid): void {
+  engine.registerFilter('date', (value: unknown, fmt?: unknown) =>
+    formatDate(value, typeof fmt === 'string' ? fmt : undefined),
+  );
+  engine.registerFilter('num', (value: unknown) => formatNumber(value));
+  engine.registerFilter('link', function (this: unknown, tmpl: unknown) {
+    const ctx = (this as { context?: { environments?: unknown[] } })?.context;
+    const root = (ctx?.environments?.[0] ?? {}) as Record<string, unknown>;
+    const vars = (root['vars'] as Record<string, string>) ?? {};
+    return buildLink(typeof tmpl === 'string' ? tmpl : '', root, vars);
+  });
+  engine.registerFilter('raw', (value: unknown) => {
+    const s = value === undefined || value === null ? '' : String(value);
+    const w = new String(s) as String & { __pjRaw?: true };
+    w.__pjRaw = true;
+    return w;
+  });
 }
