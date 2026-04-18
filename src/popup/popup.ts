@@ -14,7 +14,7 @@ async function boot(): Promise<void> {
 
   document.getElementById('url')!.textContent = url;
 
-  const storage = createStorage(chrome.storage);
+  const storage = await createStorage(chrome.storage);
   const [rules, skipList] = await Promise.all([storage.getRules(), storage.getHostSkipList()]);
   const matched = match(url, rules);
   document.getElementById('rule')!.textContent = matched?.templateName ?? '(none)';

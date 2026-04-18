@@ -13,7 +13,7 @@ async function main(): Promise<void> {
     return;
   }
 
-  const storage = createStorage(chrome.storage);
+  const storage = await createStorage(chrome.storage);
   const [rules, templates, skip] = await Promise.all([
     storage.getRules(),
     storage.getTemplates(),

@@ -8,7 +8,7 @@ async function main(): Promise<void> {
 }
 
 async function seedStartersIfEmpty(): Promise<void> {
-  const storage = createStorage(chrome.storage);
+  const storage = await createStorage(chrome.storage);
   const templates = await storage.getTemplates();
   if (Object.keys(templates).length > 0) return;
   await storage.setTemplates({ 'internal-user': starterInternalUser });

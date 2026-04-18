@@ -12,6 +12,13 @@ describe('sanitize', () => {
     expect(sanitize('<button onclick="bad()">x</button>')).toBe('<button>x</button>');
     expect(sanitize('<img onerror="y">')).toBe('<img>');
   });
+  it('removes unquoted inline event handlers', () => {
+    expect(sanitize('<img onerror=alert(1)>')).toBe('<img>');
+    expect(sanitize('<div onclick=bad>x</div>')).toBe('<div>x</div>');
+  });
+  it('neutralizes data: URLs in href/src', () => {
+    expect(sanitize('<a href="data:text/html,x">x</a>')).toBe('<a href="about:blank">x</a>');
+  });
   it('removes <iframe>, <link>, <object>, <embed>', () => {
     expect(sanitize('<p>a</p><iframe src="x"></iframe>')).toBe('<p>a</p>');
     expect(sanitize('<link rel="import" href="x">')).toBe('');

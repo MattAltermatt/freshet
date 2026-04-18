@@ -13,6 +13,7 @@
    - "Test URL" live indicator in rule-edit modal
    - Additional bundled starter templates
    - Keyboard shortcut to toggle raw/rendered
+   - Glob regex escape hatch: require length > 2 so bare `//` doesn't become match-all (Phase 1 review item #8, followup)
 3. **Phase 3: Deferred / nice-to-haves** — pending
    - Form-based template editor
    - Shared template registry

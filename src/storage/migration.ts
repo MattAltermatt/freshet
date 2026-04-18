@@ -12,6 +12,6 @@ export function needsMigration(payload: Partial<StorageShape>): boolean {
 
 export async function migrateSyncToLocal(api: typeof chrome.storage): Promise<void> {
   const all = await api.sync.get(['rules', 'templates', 'hostSkipList']);
-  await api.local.set(all);
+  await api.local.set({ ...all, pj_storage_area: 'local' });
   await api.sync.clear();
 }

@@ -13,7 +13,7 @@ function globToRegexBody(pattern: string): string {
   let i = 0;
   while (i < pattern.length) {
     if (pattern[i] === '*' && pattern[i + 1] === '*') {
-      out += '.+';
+      out += '.*';
       i += 2;
       continue;
     }

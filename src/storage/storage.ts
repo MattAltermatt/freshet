@@ -3,6 +3,7 @@ import type { Rule, Templates, HostSkipList } from '../shared/types';
 const K_RULES = 'rules';
 const K_TEMPLATES = 'templates';
 const K_SKIP = 'hostSkipList';
+const K_AREA = 'pj_storage_area';
 
 export interface Storage {
   getRules(): Promise<Rule[]>;
@@ -13,8 +14,9 @@ export interface Storage {
   setHostSkipList(list: HostSkipList): Promise<void>;
 }
 
-export function createStorage(api: typeof chrome.storage): Storage {
-  const area = api.sync;
+export async function createStorage(api: typeof chrome.storage): Promise<Storage> {
+  const sentinel = await api.local.get([K_AREA]);
+  const area = (sentinel as Record<string, unknown>)[K_AREA] === 'local' ? api.local : api.sync;
   const getOne = async <T>(key: string, fallback: T): Promise<T> => {
     const result = await area.get([key]);
     return (result[key] as T | undefined) ?? fallback;

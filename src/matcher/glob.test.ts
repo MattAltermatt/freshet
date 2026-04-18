@@ -20,6 +20,14 @@ describe('compileGlob — globs', () => {
     expect(re.test('/api/users/v1')).toBe(true);
     expect(re.test('/api/users/nested/v1')).toBe(true);
   });
+  it('** matches empty sequences (zero chars)', () => {
+    const hostRe = compileGlob('**.server.com', { caseInsensitive: true });
+    expect(hostRe.test('.server.com')).toBe(true);
+    expect(hostRe.test('api.server.com')).toBe(true);
+    const pathRe = compileGlob('/api/**', { caseInsensitive: false });
+    expect(pathRe.test('/api/')).toBe(true);
+    expect(pathRe.test('/api/users')).toBe(true);
+  });
 
   it('escapes regex meta characters in literal text', () => {
     const re = compileGlob('foo.bar+baz(qux)', { caseInsensitive: true });

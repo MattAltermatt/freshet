@@ -2,14 +2,17 @@ import { createStorage } from '../storage/storage';
 import type { Rule, Templates } from '../shared/types';
 import { render } from '../engine/engine';
 
-const storage = createStorage(chrome.storage);
+let storage!: Awaited<ReturnType<typeof createStorage>>;
 
 let rulesCache: Rule[] = [];
 let templatesCache: Templates = {};
 let currentTemplateName: string | null = null;
 
 async function boot(): Promise<void> {
+  storage = await createStorage(chrome.storage);
   setupTabs();
+  setupRulesToolbar();
+  setupTemplatesToolbar();
   await renderRulesTab();
   await renderTemplatesTab();
 }
@@ -29,18 +32,20 @@ function setupTabs(): void {
   tmplBtn.addEventListener('click', () => activate('templates'));
 }
 
-async function renderRulesTab(): Promise<void> {
-  rulesCache = await storage.getRules();
-  templatesCache = await storage.getTemplates();
-  const tbody = byId<HTMLTableSectionElement>('rules-body');
-  tbody.innerHTML = '';
-  rulesCache.forEach((r, i) => tbody.appendChild(renderRuleRow(r, i)));
-
+function setupRulesToolbar(): void {
   byId<HTMLButtonElement>('rules-add').addEventListener('click', () => openRuleDialog(null));
   byId<HTMLButtonElement>('rules-save').addEventListener('click', async () => {
     await storage.setRules(rulesCache);
     setStatus('rules-status', 'Saved.');
   });
+}
+
+async function renderRulesTab(): Promise<void> {
+  rulesCache = await storage.getRules();
+  templatesCache = await storage.getTemplates();
+  const tbody = byId<HTMLTableSectionElement>('rules-body');
+  tbody.replaceChildren();
+  rulesCache.forEach((r, i) => tbody.appendChild(renderRuleRow(r, i)));
 }
 
 function renderRuleRow(rule: Rule, index: number): HTMLTableRowElement {
@@ -135,10 +140,7 @@ function openRuleDialog(index: number | null): void {
   dlg.showModal();
 }
 
-async function renderTemplatesTab(): Promise<void> {
-  templatesCache = await storage.getTemplates();
-  refreshTemplateList();
-
+function setupTemplatesToolbar(): void {
   byId<HTMLButtonElement>('tmpl-new').addEventListener('click', onNew);
   byId<HTMLButtonElement>('tmpl-rename').addEventListener('click', onRename);
   byId<HTMLButtonElement>('tmpl-duplicate').addEventListener('click', onDuplicate);
@@ -149,7 +151,11 @@ async function renderTemplatesTab(): Promise<void> {
   });
   byId<HTMLTextAreaElement>('tmpl-editor').addEventListener('input', schedulePreview);
   byId<HTMLTextAreaElement>('tmpl-preview-json').addEventListener('input', schedulePreview);
+}
 
+async function renderTemplatesTab(): Promise<void> {
+  templatesCache = await storage.getTemplates();
+  refreshTemplateList();
   const names = Object.keys(templatesCache);
   if (names.length > 0) loadTemplate(names[0]!);
 }
