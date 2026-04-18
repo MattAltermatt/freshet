@@ -134,6 +134,8 @@
 .pj-menu-item:hover { background: var(--pj-accent-wash); }
 .pj-menu-item--danger { color: var(--pj-danger); }
 .pj-menu-item-icon { display: inline-flex; width: 16px; justify-content: center; }
+.pj-menu-item-label { flex: 1 1 auto; }
+.pj-menu-item-trailing { display: inline-flex; color: var(--pj-fg-muted); }
 
 /* ───── KVEditor ───── */
 .pj-kv-editor { display: flex; flex-direction: column; gap: var(--pj-space-1); }

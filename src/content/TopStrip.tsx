@@ -118,7 +118,8 @@ export function TopStrip({
     },
     {
       label: 'Edit rule',
-      icon: <span aria-hidden="true">✎&nbsp;↗</span>,
+      icon: <span aria-hidden="true">✎</span>,
+      trailingIcon: <span aria-hidden="true">↗</span>,
       onSelect: openEditRule,
     },
     {

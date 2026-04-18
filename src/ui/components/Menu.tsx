@@ -5,6 +5,8 @@ export interface MenuItem {
   label: string;
   onSelect: () => void;
   icon?: ComponentChildren;
+  /** Rendered to the right of the label — e.g. an "opens in new tab" arrow. */
+  trailingIcon?: ComponentChildren;
   danger?: boolean;
 }
 
@@ -57,7 +59,10 @@ export function Menu({ trigger, items, align = 'right' }: MenuProps): JSX.Elemen
               }}
             >
               {item.icon ? <span class="pj-menu-item-icon">{item.icon}</span> : null}
-              <span>{item.label}</span>
+              <span class="pj-menu-item-label">{item.label}</span>
+              {item.trailingIcon ? (
+                <span class="pj-menu-item-trailing">{item.trailingIcon}</span>
+              ) : null}
             </button>
           ))}
         </div>
