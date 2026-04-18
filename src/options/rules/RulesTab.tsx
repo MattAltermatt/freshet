@@ -37,15 +37,22 @@ export function RulesTab({
     if (!directive) return;
     if (directive.kind === 'test-url') {
       setTesterUrl(directive.url);
-    } else if (directive.kind === 'new-rule') {
+      onDirectiveHandled?.();
+      return;
+    }
+    if (directive.kind === 'new-rule') {
       setNewRuleHost(directive.host);
       setEditing(null);
-    } else if (directive.kind === 'edit-rule') {
-      const idx = rules.findIndex((r) => r.id === directive.ruleId);
-      if (idx >= 0) setEditing(idx);
+      onDirectiveHandled?.();
+      return;
     }
+    // edit-rule: defer until rules are populated from storage, otherwise the
+    // findIndex on the initial empty array silently drops the directive.
+    if (rules.length === 0) return;
+    const idx = rules.findIndex((r) => r.id === directive.ruleId);
+    if (idx >= 0) setEditing(idx);
     onDirectiveHandled?.();
-  }, [directive]);
+  }, [directive, rules]);
 
   const close = (): void => {
     setEditing(undefined);

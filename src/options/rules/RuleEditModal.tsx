@@ -58,6 +58,13 @@ export function RuleEditModal({
   const canSave = !hostErr && !pathErr && !templateErr;
 
   const templateNames = Object.keys(templates);
+  // If the rule points at a template name that isn't present in the templates
+  // record yet (storage race on directive-triggered opens, or stale rule
+  // pointing at a since-renamed template), surface it as a selectable option
+  // so the <select> renders with the right value instead of going blank.
+  const selectOptions = templateNames.includes(rule.templateName) || !rule.templateName
+    ? templateNames
+    : [rule.templateName, ...templateNames];
   const title = initial ? `Edit rule · ${initial.id}` : 'New rule';
 
   return (
@@ -116,7 +123,7 @@ export function RuleEditModal({
                   })
                 }
               >
-                {templateNames.map((name) => (
+                {selectOptions.map((name) => (
                   <option key={name} value={name}>
                     {name}
                   </option>
