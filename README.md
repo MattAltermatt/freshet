@@ -5,7 +5,7 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Manifest V3](https://img.shields.io/badge/Chrome-MV3-brightgreen.svg)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6.svg)
-![Tests](https://img.shields.io/badge/tests-183%20unit%20%2B%2015%20E2E-success.svg)
+![Tests](https://img.shields.io/badge/tests-192%20unit%20%2B%2021%20E2E-success.svg)
 
 Paste a JSON URL into Chrome, get a table instead of a `<pre>`. Works against any host you configure — internal tooling, public APIs, webhooks you're debugging. Templates are small HTML snippets with `{{placeholders}}`; rules map URL patterns to templates.
 
@@ -33,7 +33,7 @@ Paste a JSON URL into Chrome, get a table instead of a `<pre>`. Works against an
 - 💾 **Autosave** — every edit persists immediately; `Saved ✓` toast confirms commits; 8-second Undo toast on destructive actions.
 - 👀 **Live preview** per template with per-template sample JSON persistence.
 - 🧯 **Safe by default** — two-stage security: LiquidJS auto-escapes every `{{ }}` output (explicit `| raw` required to bypass), then a sanitizer strips `<script>`, `<iframe>`, `<link>`, `<object>`, `<embed>`, inline event handlers (including the `<img/onerror=…>` bypass), and neutralizes `javascript:`/`data:`/`vbscript:` URLs. Preview iframe is sandboxed with no same-origin access.
-- 🔀 **Raw-JSON toggle** + **copy URL** from the injected top strip.
+- 🔀 **Shadow-DOM top strip** on matched pages — `{>` brand, env chip (when `vars.env` set), rule name, Rendered / Raw toggle-group (⌘⇧J keyboard shortcut), ⋯ menu with Copy URL, Edit rule (deep-links into the options page), and Skip this host.
 - 🧭 **Preact popup** — match status for the current tab (rule chip + *Edit rule* deep-link), *+ Add rule for this host* one-click jump when nothing matches, test-URL quick-jump that hands off to the options URL tester, per-host skip toggle.
 - ♿ **WCAG 2.1 AA on the popup too** — axe-core sweep covers light + dark.
 - ⚡ **CSP-safe everywhere** — [LiquidJS](https://github.com/harttle/liquidjs) interpreter (no runtime codegen, no `unsafe-eval`); CodeMirror 6 is tree-shaken ESM with no eval path either.
@@ -188,8 +188,8 @@ scripts/            # one-off dev scripts (e.g. rasterize-icons.mjs)
 
 ## Testing
 
-- **Unit** (Vitest): 183 tests covering the engine, matcher, storage facade + migration, fixture-snapshot render, `src/ui/` primitives + hooks, options-page components (RuleCard, UrlTester, Header, liquidCompletions, liquidMode StreamParser, directive parser), popup rendering, and the URL middle-truncation helper.
-- **E2E** (Playwright, headed Chrome): 15 specs — render smoke, LiquidJS CSP smoke, CodeMirror 6 CSP smoke, popup Preact CSP smoke, axe-core WCAG 2.1 AA on the options page, axe-core on the popup (light + dark), options CRUD flows (add rule, delete + undo, URL-tester match/shadowed, template delete-guard, per-template sample JSON persistence), popup match chip, popup skip toggle persistence, popup → options directive handoff.
+- **Unit** (Vitest): 192 tests covering the engine, matcher, storage facade + migration, fixture-snapshot render, `src/ui/` primitives + hooks (including shadow-root-aware Menu outside-click), options-page components (RuleCard, UrlTester, Header, liquidCompletions, liquidMode StreamParser, directive parser), popup rendering, and the URL middle-truncation helper. Content-side adds `TopStrip` + `mountTopStrip` component tests.
+- **E2E** (Playwright, headed Chrome): 21 specs — render smoke, LiquidJS CSP smoke, CodeMirror 6 CSP smoke, popup Preact CSP smoke, top-strip shadow-DOM CSP smoke, axe-core WCAG 2.1 AA on the options page, on the popup (light + dark), and on the top-strip (light + dark), options CRUD flows (add rule, delete + undo, URL-tester match/shadowed, template delete-guard, per-template sample JSON persistence), popup match chip, popup skip toggle persistence, popup → options directive handoff, top-strip rendered-on-matched-page + toggle-raw message + skip-host writes.
 
 The cores (`engine/` + `matcher/`) are deliberately free of `chrome.*` calls — grep to verify. That discipline is what makes the test suite possible in Node.
 

@@ -30,8 +30,11 @@ rg 'chrome\.' src/engine src/matcher
 - `src/matcher/` — URL → rule: `glob.ts` (`**` = `.*`, `/.../` escape hatch), `matcher.ts`
 
 Chrome glue (imports the cores):
-- `src/content/content-script.ts` — parse JSON from `body.innerText`, match, render, replace `documentElement` HTML
-- `src/background/background.ts` — migration + starter seed on install
+- `src/content/content-script.ts` — parse JSON from `body.innerText`, match, render, replace `documentElement` HTML; hands off to `mountTopStrip` for the shadow-DOM strip. Sets `#pj-root` `padding-top: 36px` so rendered content clears the fixed-position strip.
+- `src/content/mountTopStrip.tsx` — creates an `<div id="pj-topstrip-host">` prepended to `document.body`, attaches a shadow root (`mode: 'open'`), injects `topStrip.css?inline` into a `<style>`, renders `<TopStrip />` into the shadow.
+- `src/content/TopStrip.tsx` — Preact strip: `{>` brand, env chip (when `rule.variables.env` set), rule name, Rendered/Raw toggle-group, ⋯ menu (Copy URL / Edit rule / Skip this host), transient toasts for Copy + Skip, theme reactivity via `useTheme({ root: shadowHost })`, message listener for `pj:toggle-raw`. Deep-imports `Menu`, `useStorage`, `useTheme` from `src/ui/*` (not the barrel, per the popup gotcha).
+- `src/content/conflictDetect.ts` — Phase 2 stub; Phase 4 fills in the "another viewer handled this page first" heuristic.
+- `src/background/background.ts` — migration + starter seed on install; relays `chrome.commands.onCommand('toggle-raw')` → active tab (`pj:toggle-raw` message); relays `pj:open-options` messages from the content script to `chrome.tabs.create` (content scripts can't call `chrome.tabs.create` directly in MV3).
 - `src/ui/` — shared Preact component library: `Button`, `Toggle`, `Toast`, `ToastHost`, `Menu`, `KVEditor`, `Cheatsheet`, `CodeMirrorBox` + hooks `useTheme`, `useToast`, `useStorage`, `useDebounce`, `useAutosave` + `theme.css` design tokens (`--pj-*`) + `cmHighlight.ts` (CodeMirror syntax style driven by the same tokens)
 - `src/options/` — Preact SPA (`App.tsx`, `Header.tsx`, `ShortcutsFooter.tsx`, `directives.ts`); `rules/` has `RulesTab`, `RuleStack`, `RuleCard`, `UrlTester`, `PatternField`, `RuleEditModal`; `templates/` has `TemplatesTab`, `TemplatesToolbar`, `TemplateEditor` (CodeMirror 6 + Liquid grammar + autocomplete), `SampleJsonEditor`, `PreviewIframe`, `liquidMode.ts` (hand-rolled CM6 StreamParser), `liquidCompletions.ts`
 - `src/popup/` — Preact SPA (`popup.tsx`, `App.tsx`, `popup.css`). Owns boot + active-tab read; reads `rules` / `hostSkipList` / `settings` via `useStorage`; runs `promoteStorageToLocal()` on boot (same as options). Hands off to the options page via URL-hash directives (`#test-url=…`, `#new-rule:host=…`, `#edit-rule=…`). Popup writes only `hostSkipList`; rules + templates are read-only here.
@@ -52,6 +55,11 @@ Content script is declared **statically** in the manifest (`content_scripts: [{ 
 - **Popup must deep-import from `src/ui/`**, not the `../ui` barrel. The barrel re-exports `CodeMirrorBox` + `pjHighlightStyle` which drag CodeMirror into any bundle importing the barrel; deep-importing `Toggle` / `useStorage` individually keeps popup at ~6 KB gzipped instead of ~95 KB.
 - **Liquid `StreamParser` must advance on every token pass** — a lone `{` that isn't `{{`, `{%`, or `{#` (e.g. inside a `<style>{ }</style>` block) must be consumed as plain text, otherwise CodeMirror throws "Stream parser failed to advance stream". Guarded in `liquidMode.ts` and regression-tested in `liquidMode.test.ts`.
 - **`--pj-accent-strong` vs `--pj-accent`** — the brand orange `#ea580c` is not WCAG AA-contrast-compliant on our light-wash background, so anywhere small text sits on a wash or a solid-orange button uses `--pj-accent-strong` (`#c2410c` in both themes). Reserve `--pj-accent` for large-area surfaces (icons, borders, hover-flash backgrounds).
+- **Top-strip styling lives inside the shadow root.** `src/content/topStrip.css` redeclares the subset of `--pj-*` tokens it needs on `:host` / `:host([data-theme="dark"])` because CSS custom properties don't cross the shadow boundary. If a new token is needed by the strip, add it to both `src/ui/theme.css` (source of truth for options/popup) *and* `src/content/topStrip.css`.
+- **`Menu` outside-click listener detects `ShadowRoot` via `getRootNode()`** and listens on the root rather than `document` when nested. Events in shadow trees are re-targeted to the host, so the document-level handler can't distinguish clicks inside the menu from clicks elsewhere. Shadow-root usage regression-tested in `src/ui/components/Menu.test.tsx`.
+- **`useTheme` captures `matchMedia` once in a `useRef`.** `window.matchMedia(...)` returns a fresh `MediaQueryList` on every call, so caching it stabilizes the `useEffect` deps and avoids re-running `applyTheme` on every parent re-render. Matters for strip consumers that re-render frequently (toasts, mode toggles, storage writes).
+- **`⌘⇧J` is wired via `chrome.commands`** declared in `vite.config.ts`; the background SW forwards `chrome.commands.onCommand('toggle-raw')` → `chrome.tabs.sendMessage(tabId, { kind: 'pj:toggle-raw' })`. `TopStrip` listens via `chrome.runtime.onMessage`. User rebinding stays with Chrome's native `chrome://extensions/shortcuts`.
+- **Content scripts cannot call `chrome.tabs.create` in MV3.** The top-strip's "Edit rule" action sends a `pj:open-options` message to the background SW, which opens the URL. Same pattern any future top-strip action that needs `chrome.tabs.*` should follow.
 ## Storage keys (`chrome.storage.local`)
 
 | Key | Type | Purpose |
@@ -80,5 +88,6 @@ Content script is declared **statically** in the manifest (`content_scripts: [{ 
 - `docs/superpowers/plans/2026-04-18-phase2-plan2-engine-swap.md` — Phase 2 Plan 2 (Liquid engine, shipped)
 - `docs/superpowers/plans/2026-04-18-phase2-plan3-options.md` — Phase 2 Plan 3 (options rewrite, shipped)
 - `docs/superpowers/plans/2026-04-18-phase2-plan4-popup.md` — Phase 2 Plan 4 (popup rewrite, shipped)
+- `docs/superpowers/plans/2026-04-18-phase2-plan5-topstrip.md` — Phase 2 Plan 5 (top-strip rewrite, shipped)
 - `docs/superpowers/reviews/2026-04-17-phase1-review.md` — Phase 1 reviewer notes
 - `ROADMAP.md` — phases + backlog

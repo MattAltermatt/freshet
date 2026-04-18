@@ -1,5 +1,7 @@
 # Phase 2, Plan 5 — Rendered Top-Strip Implementation Plan
 
+> **Status:** Shipped 2026-04-18 on `feature/phase2-plan5-topstrip` → `main`.
+>
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Replace the hand-rolled imperative `buildTopStrip` in `src/content/content-script.ts` with a Preact top-strip that mounts inside a closed shadow DOM on rendered pages. Delivers the spec-locked UX: `{>` brand, orange env chip (when `vars.env` is set), monospace rule name, `Rendered | Raw` toggle-group (orange active state), `⋯` dropdown with *Copy URL* / *Edit rule* / *Skip this host*, `⌘⇧J` keyboard shortcut via `chrome.commands`, theme-reactive (light/dark) from stored `settings.themePreference`.
