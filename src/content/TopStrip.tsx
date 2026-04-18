@@ -113,12 +113,12 @@ export function TopStrip({
   const menuItems: MenuItem[] = [
     {
       label: 'Copy URL',
-      icon: <span aria-hidden="true">↗</span>,
+      icon: <span aria-hidden="true">⧉</span>,
       onSelect: () => void copyUrl(),
     },
     {
       label: 'Edit rule',
-      icon: <span aria-hidden="true">✎</span>,
+      icon: <span aria-hidden="true">✎&nbsp;↗</span>,
       onSelect: openEditRule,
     },
     {
