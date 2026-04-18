@@ -15,7 +15,6 @@ Editorial + QOL sweep before the Chrome Web Store submission. Aim: "as good as w
 
 ### Functional gaps
 
-- **Focus trap inside modals** — `RuleEditModal` + `TemplatesToolbar` delete-confirm capture Escape but don't cycle Tab within the dialog. WCAG 2.1.2 / ARIA dialog expectation. Either a roving-focus handler or a tiny focus-trap lib (~1 KB).
 - **`liquidCompletions` after a filter argument** — cursor inside `{{ ts | date: "`<cursor>`"` returns no completions because the regex cascade falls through. Extend `inOutput` detection or add a dedicated `inFilterArg` case.
 - **`walkJsonPaths` hint comment mismatch** — source comment says arrays appear as `items[]` but the implementation emits `items[0]`. Pick `[0]` (valid Liquid accessor), align docs.
 
