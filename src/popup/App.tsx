@@ -1,6 +1,7 @@
 import type { JSX } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import { promoteStorageToLocal } from '../storage/promoteStorageToLocal';
+import { truncateUrlMiddle } from '../shared/truncateUrl';
 
 interface ActiveTab {
   url: string;
@@ -43,7 +44,19 @@ export function App(): JSX.Element {
 
   return (
     <div class="pj-popup">
-      <p class="pj-popup-placeholder">Tab: {tab.url || '(no URL)'}</p>
+      <header class="pj-popup-header">
+        <span class="pj-logo" aria-hidden="true">
+          <span class="pj-logo-brace">{'{'}</span>
+          <span class="pj-logo-bracket">{'>'}</span>
+        </span>
+        <h1>Present-JSON</h1>
+      </header>
+      <section class="pj-popup-url" aria-label="Active tab URL">
+        <span class="pj-popup-label">Tab URL</span>
+        <code class="pj-popup-url-text" title={tab.url}>
+          {tab.url ? truncateUrlMiddle(tab.url, 44) : '(no URL)'}
+        </code>
+      </section>
     </div>
   );
 }

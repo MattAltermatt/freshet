@@ -8,3 +8,36 @@ body {
 
 .pj-popup { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
 .pj-popup-placeholder { margin: 0; color: var(--pj-muted); }
+
+.pj-popup-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pj-popup-header h1 {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--pj-fg);
+}
+.pj-logo {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 16px;
+  line-height: 1;
+}
+.pj-logo-brace { color: var(--pj-fg); }
+.pj-logo-bracket { color: var(--pj-accent); margin-left: 1px; }
+
+.pj-popup-url { display: flex; flex-direction: column; gap: 2px; }
+.pj-popup-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--pj-muted);
+}
+.pj-popup-url-text {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  color: var(--pj-fg);
+  word-break: break-all;
+}
