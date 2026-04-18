@@ -71,11 +71,13 @@ src/engine/
 
 | Surface | Before | After | Delta | Notes |
 |---|---|---|---|---|
-| content script | ~2.7 KB | 14–18 KB | +11–15 KB | Preact + Handlebars runtime + TopStrip + theme tokens |
-| options | ~5 KB | 80–100 KB | +75–95 KB | CodeMirror dominates; loads only on options-page open |
+| content script | ~2.7 KB | 20–25 KB | +17–22 KB | Preact + Handlebars (compile+runtime) + TopStrip + theme tokens |
+| options | ~5 KB | 120–180 KB | +115–175 KB | CodeMirror dominates; loads only on options-page open |
 | popup | ~0.5 KB | ~5 KB | +4.5 KB | Preact + ui/ |
 
-**Deferred optimization:** precompile templates at save-time in the options page, store compiled function bodies, drop Handlebars compile-time from content script → saves ~13 KB. Not part of Phase 2; architecture does not preclude it.
+Final numbers depend on tree-shaking CodeMirror 6 packages (we only need state/view/language/autocomplete/commands + 2 language modes — full CM6 is modular and tree-shakes well).
+
+**Deferred optimization:** precompile templates at save-time in the options page, store compiled function bodies, drop Handlebars compile-time from content script → saves ~13 KB gzipped in the content script. Not part of Phase 2; architecture does not preclude it.
 
 ## State model & data flow
 
@@ -159,7 +161,7 @@ Background service worker checks `schemaVersion` on install/update. If missing, 
 ### Header (persistent across tabs)
 - `{>` logo + "Present-JSON" title.
 - Tab switcher: Rules | Templates.
-- Storage quota bar: e.g. "12 KB / 90 KB sync" with visual fill; orange > 50%, red > 80%.
+- Storage quota bar: e.g. "12 KB / 100 KB sync" with visual fill. Orange > 50%, red > 80%. A marker at 90 KB labels the auto-migration threshold (sync → local).
 - Theme toggle: sun / moon / auto icon (writes `settings.themePreference`).
 
 ### Rules tab — split view (65/35 split)
@@ -189,7 +191,7 @@ Background service worker checks `schemaVersion` on install/update. If missing, 
 
 ### Rules tab — rule edit modal (overhauled)
 
-- **Header:** "Edit rule" + enabled toggle in the top-right (status indicator, not buried mid-form).
+- **Header:** *"New rule"* (when opened via `+ Add rule`) or *"Edit rule · rule-name"* (when editing an existing rule) + enabled toggle in the top-right (status indicator, not buried mid-form).
 - **Host pattern:**
   - Input field + inline validation (red border + message on invalid glob / regex).
   - Expandable *Examples* panel showing clickable-to-fill patterns: `*.server.com`, `127.0.0.1`, `/^admin.*/`, exact `api.example.com`.
@@ -204,6 +206,7 @@ Background service worker checks `schemaVersion` on install/update. If missing, 
 ### Templates tab
 
 - **Top toolbar:** template selector (click-to-rename inline), `New`, `Duplicate`, `Delete` buttons.
+  - **Delete guard:** if the template is referenced by one or more rules, `Delete` opens a confirmation modal listing the affected rules and offering two paths: *"Delete template and disable affected rules"* (rule's `enabled` flag flips to `false`) or *"Cancel"*. Never delete silently while a rule still points at the template.
 - **Editor (left or top on narrow viewports):** CodeMirror 6 with Handlebars grammar + autocomplete fed by:
   1. Sample-JSON paths (walk the sample JSON's object tree, suggest dotted paths).
   2. Rule variables from the currently-editing rule (if opened from rule-modal context) or all declared variables across rules (fallback).
