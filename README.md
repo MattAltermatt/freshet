@@ -5,7 +5,7 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Manifest V3](https://img.shields.io/badge/Chrome-MV3-brightgreen.svg)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6.svg)
-![Tests](https://img.shields.io/badge/tests-64%20unit%20%2B%201%20E2E-success.svg)
+![Tests](https://img.shields.io/badge/tests-80%20unit%20%2B%201%20E2E-success.svg)
 
 Paste a JSON URL into Chrome, get a table instead of a `<pre>`. Works against any host you configure — internal tooling, public APIs, webhooks you're debugging. Templates are small HTML snippets with `{{placeholders}}`; rules map URL patterns to templates.
 
@@ -168,7 +168,7 @@ scripts/            # one-off dev scripts (e.g. rasterize-icons.mjs)
 
 ## Testing
 
-- **Unit** (Vitest): 64 tests covering the engine, matcher, storage facade, and a full fixture-snapshot render.
+- **Unit** (Vitest): 80 tests covering the engine, matcher, storage facade, fixture-snapshot render, and `src/ui/` components (Button, Toggle, Toast, useTheme).
 - **E2E** (Playwright, headed Chrome): one spec that launches Chromium with the unpacked extension, seeds a rule through the service worker, navigates to the fixture server, and asserts the rendered DOM.
 
 The cores (`engine/` + `matcher/`) are deliberately free of `chrome.*` calls — grep to verify. That discipline is what makes the test suite possible in Node.

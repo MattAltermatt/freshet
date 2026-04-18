@@ -8,7 +8,7 @@ interface ToastProps {
 
 export function Toast({ toast, onDismiss }: ToastProps): JSX.Element {
   return (
-    <div class={`pj-toast pj-toast--${toast.variant}`} role="status" aria-live="polite">
+    <div class={`pj-toast pj-toast--${toast.variant}`}>
       <span class="pj-toast__message">{toast.message}</span>
       {toast.action && (
         <button
