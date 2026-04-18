@@ -14,6 +14,7 @@ export type Templates = Record<string, string>;
 export type HostSkipList = string[];
 
 export interface StorageShape {
+  schemaVersion?: number;
   rules: Rule[];
   templates: Templates;
   hostSkipList: HostSkipList;
