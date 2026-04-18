@@ -11,8 +11,10 @@
   --pj-font: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
   --pj-font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
   display: block;
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 2147483647;
   font-family: var(--pj-font);
   font-size: 12px;
@@ -27,6 +29,7 @@
 }
 
 .pj-topstrip {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -35,6 +38,27 @@
   color: var(--pj-fg);
   border-bottom: 1px solid var(--pj-border);
   box-sizing: border-box;
+}
+
+.pj-toast {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 12px;
+  background: var(--pj-fg);
+  color: var(--pj-bg);
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 11px;
+  line-height: 1.35;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  max-width: 320px;
+  pointer-events: none;
+  animation: pj-toast-in 180ms ease-out;
+}
+.pj-toast--skip { background: var(--pj-accent-strong); color: var(--pj-accent-fg); }
+@keyframes pj-toast-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .pj-logo { font-family: var(--pj-font-mono); font-size: 14px; line-height: 1; }

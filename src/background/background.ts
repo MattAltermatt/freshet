@@ -59,3 +59,15 @@ chrome.commands.onCommand.addListener((command) => {
     void chrome.tabs.sendMessage(tabId, { kind: 'pj:toggle-raw' }).catch(() => {});
   });
 });
+
+chrome.runtime.onMessage.addListener((message) => {
+  if (typeof message !== 'object' || message === null) return;
+  const kind = (message as { kind?: unknown }).kind;
+  if (kind === 'pj:open-options') {
+    const hash = (message as { hash?: unknown }).hash;
+    const url =
+      chrome.runtime.getURL('src/options/options.html') +
+      (typeof hash === 'string' ? hash : '');
+    void chrome.tabs.create({ url });
+  }
+});

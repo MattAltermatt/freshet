@@ -51,6 +51,9 @@ function renderSuccess(html: string, raw: string, rule: Rule): void {
   const titleEsc = escHtml(window.location.href);
   document.documentElement.innerHTML =
     '<head><meta charset="utf-8"><title>' + titleEsc + '</title></head><body></body>';
+  // Strip is position:fixed at viewport top. Pad the body so rendered content
+  // doesn't hide beneath it; inline style wins over most template stylesheets.
+  document.body.style.cssText = 'margin:0;padding-top:36px;';
   const root = document.createElement('div');
   root.id = 'pj-root';
   const htmlAssign = 'inner' + 'HTML';

@@ -30,7 +30,7 @@ export function TopStrip({
 }: TopStripProps): JSX.Element {
   const env = rule.variables['env'];
   const [mode, setMode] = useState<ViewMode>('rendered');
-  const [copyPulse, setCopyPulse] = useState(false);
+  const [toast, setToast] = useState<{ kind: 'copy' | 'skip'; text: string } | null>(null);
   const [skipList, writeSkipList] = useStorage<'hostSkipList', HostSkipList>(
     'hostSkipList',
     [],
@@ -83,17 +83,19 @@ export function TopStrip({
   const copyUrl = async (): Promise<void> => {
     try {
       await navigator.clipboard.writeText(window.location.href);
-      setCopyPulse(true);
-      setTimeout(() => setCopyPulse(false), 1200);
+      setToast({ kind: 'copy', text: 'Copied URL to clipboard' });
+      setTimeout(() => setToast(null), 1600);
     } catch {
       /* silent — user can still copy from the system URL bar. */
     }
   };
 
+  // Content scripts cannot call chrome.tabs.create in MV3 — route through background.
   const openEditRule = (): void => {
-    const url =
-      chrome.runtime.getURL('src/options/options.html') + directiveHash.editRule(rule.id);
-    void chrome.tabs.create({ url });
+    void chrome.runtime.sendMessage({
+      kind: 'pj:open-options',
+      hash: directiveHash.editRule(rule.id),
+    });
   };
 
   const skipHost = async (): Promise<void> => {
@@ -101,13 +103,17 @@ export function TopStrip({
     if (!host) return;
     const next = Array.from(new Set([...skipList, host]));
     await writeSkipList(next);
-    window.location.reload();
+    setToast({
+      kind: 'skip',
+      text: `Skipped ${host}. Un-skip from the extension popup or options → Rules.`,
+    });
+    setTimeout(() => window.location.reload(), 1600);
   };
 
   const menuItems: MenuItem[] = [
     {
-      label: copyPulse ? 'Copied ✓' : 'Copy URL',
-      icon: <span aria-hidden="true">{copyPulse ? '✓' : '↗'}</span>,
+      label: 'Copy URL',
+      icon: <span aria-hidden="true">↗</span>,
       onSelect: () => void copyUrl(),
     },
     {
@@ -176,6 +182,16 @@ export function TopStrip({
       />
         </>
       )}
+      {toast ? (
+        <div
+          class={toast.kind === 'skip' ? 'pj-toast pj-toast--skip' : 'pj-toast'}
+          role="status"
+          aria-live="polite"
+          data-testid="pj-toast"
+        >
+          {toast.text}
+        </div>
+      ) : null}
     </div>
   );
 }
