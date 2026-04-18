@@ -7,6 +7,8 @@ import {
 } from '../storage/migration';
 import starterInternalUser from '../starter/internal-user.html?raw';
 import starterGithubRepo from '../starter/github-repo.html?raw';
+import sampleInternalUser from '../starter/internal-user.sample.json?raw';
+import sampleGithubRepo from '../starter/github-repo.sample.json?raw';
 import { appearanceFor, type BadgeSignal } from './badge';
 
 async function main(): Promise<void> {
@@ -22,7 +24,13 @@ async function seedStartersIfEmpty(): Promise<void> {
   // Combined starter bodies exceed the 8 KB per-item quota on chrome.storage.sync
   // once JSON-encoded. Commit this install to local up-front so the seed write
   // lands in an area without that limit.
-  await chrome.storage.local.set({ pj_storage_area: 'local' });
+  await chrome.storage.local.set({
+    pj_storage_area: 'local',
+    pj_sample_json: {
+      'internal-user': sampleInternalUser,
+      'github-repo': sampleGithubRepo,
+    },
+  });
   const localStorage = await createStorage(chrome.storage);
   await localStorage.setTemplates({
     'internal-user': starterInternalUser,
