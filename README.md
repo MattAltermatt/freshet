@@ -5,7 +5,7 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Manifest V3](https://img.shields.io/badge/Chrome-MV3-brightgreen.svg)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6.svg)
-![Tests](https://img.shields.io/badge/tests-163%20unit%20%2B%209%20E2E-success.svg)
+![Tests](https://img.shields.io/badge/tests-183%20unit%20%2B%2015%20E2E-success.svg)
 
 Paste a JSON URL into Chrome, get a table instead of a `<pre>`. Works against any host you configure — internal tooling, public APIs, webhooks you're debugging. Templates are small HTML snippets with `{{placeholders}}`; rules map URL patterns to templates.
 
@@ -34,7 +34,8 @@ Paste a JSON URL into Chrome, get a table instead of a `<pre>`. Works against an
 - 👀 **Live preview** per template with per-template sample JSON persistence.
 - 🧯 **Safe by default** — two-stage security: LiquidJS auto-escapes every `{{ }}` output (explicit `| raw` required to bypass), then a sanitizer strips `<script>`, `<iframe>`, `<link>`, `<object>`, `<embed>`, inline event handlers (including the `<img/onerror=…>` bypass), and neutralizes `javascript:`/`data:`/`vbscript:` URLs. Preview iframe is sandboxed with no same-origin access.
 - 🔀 **Raw-JSON toggle** + **copy URL** from the injected top strip.
-- 🚫 **Per-host skip** via the popup — disable rendering on one host without deleting the rule.
+- 🧭 **Preact popup** — match status for the current tab (rule chip + *Edit rule* deep-link), *+ Add rule for this host* one-click jump when nothing matches, test-URL quick-jump that hands off to the options URL tester, per-host skip toggle.
+- ♿ **WCAG 2.1 AA on the popup too** — axe-core sweep covers light + dark.
 - ⚡ **CSP-safe everywhere** — [LiquidJS](https://github.com/harttle/liquidjs) interpreter (no runtime codegen, no `unsafe-eval`); CodeMirror 6 is tree-shaken ESM with no eval path either.
 - ♿ **WCAG 2.1 AA** — axe-core passes on the options page; AA-compliant contrast in both light and dark.
 
@@ -164,10 +165,11 @@ src/
 │   ├── theme.css      # --pj-* design tokens (light + dark)
 │   └── cmHighlight.ts # CodeMirror syntax style keyed to the tokens
 ├── options/        # Preact SPA: split-view Rules + CodeMirror Templates
-│   ├── App.tsx / Header.tsx / ShortcutsFooter.tsx / storagePromote.ts
+│   ├── App.tsx / Header.tsx / ShortcutsFooter.tsx
+│   ├── directives.ts  # URL-hash directive parser (#test-url, #new-rule:host, #edit-rule)
 │   ├── rules/         # RulesTab, RuleStack, RuleCard, UrlTester, PatternField, RuleEditModal
 │   └── templates/     # TemplatesTab, TemplatesToolbar, TemplateEditor, SampleJsonEditor, PreviewIframe, liquidMode, liquidCompletions
-├── popup/          # toolbar popup (match status + skip toggle — Phase 2 Plan 4 incoming)
+├── popup/          # Preact popup: match status, +Add rule CTA, test-URL quick-jump, skip toggle
 └── starter/        # bundled starter templates (imported as ?raw)
 
 test/
@@ -186,8 +188,8 @@ scripts/            # one-off dev scripts (e.g. rasterize-icons.mjs)
 
 ## Testing
 
-- **Unit** (Vitest): 163 tests covering the engine, matcher, storage facade + migration, fixture-snapshot render, `src/ui/` primitives + hooks, and options-page components (RuleCard, UrlTester, Header, liquidCompletions).
-- **E2E** (Playwright, headed Chrome): 9 specs — render smoke, LiquidJS CSP smoke, CodeMirror 6 CSP smoke, axe-core WCAG 2.1 AA sweep on the options page, and CRUD flows (add rule, delete + undo, URL-tester match/shadowed reasoning, template delete-guard, per-template sample JSON persistence).
+- **Unit** (Vitest): 183 tests covering the engine, matcher, storage facade + migration, fixture-snapshot render, `src/ui/` primitives + hooks, options-page components (RuleCard, UrlTester, Header, liquidCompletions, liquidMode StreamParser, directive parser), popup rendering, and the URL middle-truncation helper.
+- **E2E** (Playwright, headed Chrome): 15 specs — render smoke, LiquidJS CSP smoke, CodeMirror 6 CSP smoke, popup Preact CSP smoke, axe-core WCAG 2.1 AA on the options page, axe-core on the popup (light + dark), options CRUD flows (add rule, delete + undo, URL-tester match/shadowed, template delete-guard, per-template sample JSON persistence), popup match chip, popup skip toggle persistence, popup → options directive handoff.
 
 The cores (`engine/` + `matcher/`) are deliberately free of `chrome.*` calls — grep to verify. That discipline is what makes the test suite possible in Node.
 

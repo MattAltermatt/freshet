@@ -1,5 +1,7 @@
 # Phase 2, Plan 4 — Popup Rewrite Implementation Plan
 
+> **Status:** Shipped 2026-04-18 on `feature/phase2-plan4-popup` → `main`.
+>
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Replace the hand-rolled `src/popup/popup.ts` DOM code with a Preact popup that delivers the locked UX spec: brand header, active-tab match status with an orange rule chip + *Edit rule* deep-link, *+ Add rule for this host* CTA on no-match, per-host skip toggle, test-URL quick-jump that hands off to the options URL tester, theme-reactive from day one. Popup must reuse the `src/ui/` primitives from Plans 1/3 and converge `.sync`-area data via `promoteStorageToLocal()` on boot (see CLAUDE.md gotcha).
