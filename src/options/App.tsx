@@ -1,5 +1,5 @@
 import type { JSX } from 'preact';
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import {
   ToastHost,
   useStorage,
@@ -12,6 +12,7 @@ import { Header } from './Header';
 import { RulesTab } from './rules/RulesTab';
 import { TemplatesTab } from './templates/TemplatesTab';
 import { ShortcutsFooter } from './ShortcutsFooter';
+import { promoteStorageToLocal } from './storagePromote';
 
 type Tab = 'rules' | 'templates';
 
@@ -22,6 +23,13 @@ interface Settings {
 const DEFAULT_SETTINGS: Settings = { themePreference: 'system' };
 
 export function App(): JSX.Element {
+  // Converge any legacy `.sync`-area data to `.local` before the rest of the
+  // app reads via useStorage. Idempotent after the first run.
+  const [promoted, setPromoted] = useState(false);
+  useEffect(() => {
+    void promoteStorageToLocal().finally(() => setPromoted(true));
+  }, []);
+
   const [settings, writeSettings] = useStorage<'settings', Settings>(
     'settings',
     DEFAULT_SETTINGS,
@@ -70,6 +78,14 @@ export function App(): JSX.Element {
       },
     });
   };
+
+  if (!promoted) {
+    return (
+      <div class="pj-app pj-app--booting">
+        <p class="pj-placeholder">Loading…</p>
+      </div>
+    );
+  }
 
   return (
     <div class="pj-app">

@@ -59,14 +59,15 @@ export function TemplatesTab({
     templateNames[0] ?? null,
   );
 
-  // Keep `current` in sync if the underlying list changes (e.g. after delete).
+  // Keep `current` in sync if the underlying list changes (e.g. after delete)
+  // or if the user switches to a template that was just removed.
   useEffect(() => {
     if (current !== null && templates[current] === undefined) {
       setCurrent(templateNames[0] ?? null);
     } else if (current === null && templateNames.length > 0) {
       setCurrent(templateNames[0] ?? null);
     }
-  }, [templates]);
+  }, [templates, current, templateNames]);
 
   const active = current && templates[current] !== undefined ? current : null;
   const tpl = active ? templates[active] ?? '' : '';
@@ -74,10 +75,12 @@ export function TemplatesTab({
   const ruleVars = collectRuleVars(rules, active);
   const isMigrated = active !== null && migrated.includes(active);
 
-  // Debounced Saved ✓ toast for template edits. Writes to storage are
-  // immediate (above); this hook just confirms the commit visually after the
-  // user stops typing for 600 ms. First render is skipped by useAutosave.
-  useAutosave(active ? `${active}::${tpl}` : '__empty', async () => {}, { delayMs: 600 });
+  // Debounced Saved ✓ toast for template body edits. Writes to storage are
+  // immediate (above); this hook just confirms the commit visually 600 ms
+  // after the user stops typing. We key on the body text only (not the
+  // template name) so that switching templates doesn't trigger a spurious
+  // toast — only real edits fire it. First render is skipped by useAutosave.
+  useAutosave(tpl, async () => {}, { delayMs: 600 });
 
   const handleTemplateInput = (next: string): void => {
     if (!active) return;

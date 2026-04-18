@@ -14,7 +14,7 @@ import { StreamLanguage, type StreamParser } from '@codemirror/language';
  */
 
 interface LiquidState {
-  mode: 'html' | 'output' | 'tag' | 'string' | 'comment';
+  mode: 'html' | 'output' | 'tag' | 'string' | 'comment' | 'hashComment';
   stringQuote: string | null;
 }
 
@@ -37,10 +37,22 @@ const parser: StreamParser<LiquidState> = {
   },
 
   token(stream, state): string | null {
-    // Comment block body (until closing %})
+    // {% comment %}…{% endcomment %} body (until closing %})
     if (state.mode === 'comment') {
       while (!stream.eol()) {
         if (stream.match('%}', true)) {
+          state.mode = 'html';
+          return 'comment';
+        }
+        stream.next();
+      }
+      return 'comment';
+    }
+
+    // {# … #} block-comment body that can span multiple lines.
+    if (state.mode === 'hashComment') {
+      while (!stream.eol()) {
+        if (stream.match('#}', true)) {
           state.mode = 'html';
           return 'comment';
         }
@@ -125,12 +137,13 @@ const parser: StreamParser<LiquidState> = {
     }
 
     // state.mode === 'html'
-    // Enter comment
+    // Enter {# … #} comment. Close on same line OR span until next line.
     if (stream.match('{#', true)) {
       while (!stream.eol()) {
         if (stream.match('#}', true)) return 'comment';
         stream.next();
       }
+      state.mode = 'hashComment';
       return 'comment';
     }
 

@@ -51,7 +51,11 @@ export function PreviewIframe({
   return (
     <iframe
       class="pj-preview-iframe"
-      sandbox="allow-same-origin"
+      // Empty sandbox: no script exec, no same-origin access to storage /
+      // cookies. The preview only renders HTML; any stray on* handler that
+      // slips past `sanitize()` can't reach extension APIs from a sandboxed
+      // null-origin iframe.
+      sandbox=""
       ref={frame}
       title="Template preview"
     />

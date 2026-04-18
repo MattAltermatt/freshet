@@ -16,6 +16,14 @@ describe('sanitize', () => {
     expect(sanitize('<img onerror=alert(1)>')).toBe('<img>');
     expect(sanitize('<div onclick=bad>x</div>')).toBe('<div>x</div>');
   });
+  it('removes inline handlers with slash separator (bypass attempt)', () => {
+    // `<img/onerror=...>` is valid HTML — `/` is an allowed attribute
+    // separator, so the sanitizer must strip handlers introduced that way.
+    expect(sanitize('<img/onerror=alert(1)>')).not.toContain('onerror');
+    expect(sanitize('<img/onerror="alert(1)">')).not.toContain('onerror');
+    expect(sanitize("<img/onerror='alert(1)'>")).not.toContain('onerror');
+    expect(sanitize('<svg/onload=alert(1)>')).not.toContain('onload');
+  });
   it('neutralizes data: URLs in href/src', () => {
     expect(sanitize('<a href="data:text/html,x">x</a>')).toBe('<a href="about:blank">x</a>');
   });

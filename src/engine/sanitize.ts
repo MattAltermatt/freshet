@@ -7,9 +7,12 @@ export function sanitize(html: string): string {
     const selfRe = new RegExp(`<${tag}\\b[^>]*\\/?>`, 'gi');
     out = out.replace(pairedRe, '').replace(selfRe, '');
   }
-  out = out.replace(/\s+on[a-z]+\s*=\s*"[^"]*"/gi, '');
-  out = out.replace(/\s+on[a-z]+\s*=\s*'[^']*'/gi, '');
-  out = out.replace(/\s+on[a-z]+\s*=\s*[^\s>]+/gi, '');
+  // Attribute separator in HTML is any of: whitespace OR "/" (the "/" form
+  // lets attackers craft `<img/onerror=alert(1)>` without a space).
+  // Match either.
+  out = out.replace(/[\s/]+on[a-z]+\s*=\s*"[^"]*"/gi, '');
+  out = out.replace(/[\s/]+on[a-z]+\s*=\s*'[^']*'/gi, '');
+  out = out.replace(/[\s/]+on[a-z]+\s*=\s*[^\s>]+/gi, '');
   out = out.replace(/\b(href|src)\s*=\s*"\s*(?:javascript|data|vbscript):[^"]*"/gi, '$1="about:blank"');
   out = out.replace(/\b(href|src)\s*=\s*'\s*(?:javascript|data|vbscript):[^']*'/gi, '$1="about:blank"');
   return out;

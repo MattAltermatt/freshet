@@ -60,27 +60,31 @@ describe('useAutosave', () => {
     expect(save).toHaveBeenCalledTimes(2);
   });
 
-  it('fires onFailed when retries exhausted', async () => {
+  it('fires onFailed when retries exhausted (initial + maxRetries attempts)', async () => {
     const save = vi.fn().mockRejectedValue(new Error('down'));
     const onFailed = vi.fn();
     const { rerender } = renderHook(
       ({ v }: { v: number }) =>
-        useAutosave(v, save, { delayMs: 50, suppressToast: true, maxRetries: 2, onFailed }),
+        useAutosave(v, save, { delayMs: 50, suppressToast: true, maxRetries: 1, onFailed }),
       { initialProps: { v: 1 } },
     );
     rerender({ v: 2 });
-    // initial attempt
+    // attempt 1 (initial, after delayMs)
     await act(async () => {
       vi.advanceTimersByTime(50);
       await Promise.resolve();
       await Promise.resolve();
     });
-    // retry 1 (delay 500)
+    expect(save).toHaveBeenCalledTimes(1);
+    expect(onFailed).not.toHaveBeenCalled();
+    // attempt 2 (retry, backoff 250 * 2^0 = 250)
     await act(async () => {
-      vi.advanceTimersByTime(500);
+      vi.advanceTimersByTime(250);
       await Promise.resolve();
       await Promise.resolve();
     });
+    expect(save).toHaveBeenCalledTimes(2);
+    // attemptNumber is now 3 on the next call, exceeding maxRetries=1 → onFailed fires
     expect(onFailed).toHaveBeenCalledOnce();
   });
 });

@@ -28,6 +28,11 @@ export function useAutosave<T>(
   const first = useRef(true);
   const latest = useRef<T>(value);
   latest.current = value;
+  // Keep `save` fresh across renders so retries invoke the current closure
+  // (the effect below captures this ref once per value change, but callers
+  // may pass a new save fn per render).
+  const saveRef = useRef(save);
+  saveRef.current = save;
 
   useEffect(() => {
     if (first.current) {
@@ -37,10 +42,12 @@ export function useAutosave<T>(
 
     let cancelled = false;
 
-    const attempt = async (tryN: number): Promise<void> => {
+    /** attemptNumber is 1-indexed; `maxRetries` is the number of retries
+     * after the initial try, so we run up to `maxRetries + 1` attempts total. */
+    const attempt = async (attemptNumber: number): Promise<void> => {
       if (cancelled) return;
       try {
-        await save(latest.current);
+        await saveRef.current(latest.current);
         if (cancelled) return;
         if (!suppressToast) {
           pushToastImpl({ variant: 'success', message: 'Saved ✓', ttlMs: 2000 });
@@ -48,7 +55,7 @@ export function useAutosave<T>(
         onSaved?.();
       } catch (err) {
         if (cancelled) return;
-        if (tryN >= maxRetries) {
+        if (attemptNumber > maxRetries) {
           if (!suppressToast) {
             pushToastImpl({
               variant: 'danger',
@@ -66,7 +73,7 @@ export function useAutosave<T>(
             ttlMs: 1500,
           });
         }
-        setTimeout(() => void attempt(tryN + 1), 250 * 2 ** tryN);
+        setTimeout(() => void attempt(attemptNumber + 1), 250 * 2 ** (attemptNumber - 1));
       }
     };
 

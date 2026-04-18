@@ -233,7 +233,7 @@ input:focus, select:focus, textarea:focus {
   padding: 2px var(--pj-space-2);
   border-radius: 10px;
   background: var(--pj-accent-wash);
-  color: var(--pj-accent);
+  color: var(--pj-accent-strong);
   font-size: var(--pj-font-size-sm);
   font-weight: 600;
 }
@@ -388,14 +388,14 @@ input:focus, select:focus, textarea:focus {
 .pj-link-btn {
   background: transparent;
   border: 0;
-  color: var(--pj-accent);
+  color: var(--pj-accent-strong);
   font: inherit;
   font-size: var(--pj-font-size-sm);
   padding: 0;
   cursor: pointer;
   text-align: left;
 }
-.pj-link-btn:hover { color: var(--pj-accent-hover); text-decoration: underline; }
+.pj-link-btn:hover { color: var(--pj-accent); text-decoration: underline; }
 .pj-examples { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: var(--pj-space-1); }
 .pj-examples li { display: inline-block; }
 .pj-examples code {
@@ -439,7 +439,7 @@ input:focus, select:focus, textarea:focus {
   margin-left: auto;
   background: transparent;
   border: 0;
-  color: var(--pj-accent);
+  color: var(--pj-accent-strong);
   cursor: pointer;
   font: inherit;
   padding: 2px 6px;
@@ -470,7 +470,7 @@ input:focus, select:focus, textarea:focus {
 }
 .pj-flow-input {
   background: var(--pj-accent-wash);
-  color: var(--pj-accent);
+  color: var(--pj-accent-strong);
   border: 1px solid var(--pj-border);
 }
 .pj-flow-output {
@@ -495,7 +495,7 @@ input:focus, select:focus, textarea:focus {
 }
 .pj-role-pill--input {
   background: var(--pj-accent-wash);
-  color: var(--pj-accent);
+  color: var(--pj-accent-strong);
 }
 .pj-role-pill--output {
   background: color-mix(in srgb, var(--pj-success) 18%, var(--pj-bg-elevated));
