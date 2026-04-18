@@ -25,8 +25,10 @@ Two pure cores (Node-tested, zero `chrome.*` calls — verify with grep):
 Chrome glue (imports the cores):
 - `src/content/content-script.ts` — parse JSON from `body.innerText`, match, render, replace `documentElement` HTML
 - `src/background/background.ts` — migration + starter seed on install
-- `src/options/*`, `src/popup/*` — UI
-- `src/storage/` — facade over `chrome.storage`; `createStorage` is async and picks `.sync` or `.local` by reading a `pj_storage_area` sentinel from `.local` (migration writes it at 90KB)
+- `src/ui/` — shared Preact component library: `Button`, `Toggle`, `Toast`, `ToastHost`, `Menu`, `KVEditor`, `Cheatsheet`, `CodeMirrorBox` + hooks `useTheme`, `useToast`, `useStorage`, `useDebounce`, `useAutosave` + `theme.css` design tokens (`--pj-*`) + `cmHighlight.ts` (CodeMirror syntax style driven by the same tokens)
+- `src/options/` — Preact SPA (`App.tsx`, `Header.tsx`, `ShortcutsFooter.tsx`, `storagePromote.ts`); `rules/` has `RulesTab`, `RuleStack`, `RuleCard`, `UrlTester`, `PatternField`, `RuleEditModal`; `templates/` has `TemplatesTab`, `TemplatesToolbar`, `TemplateEditor` (CodeMirror 6 + Liquid grammar + autocomplete), `SampleJsonEditor`, `PreviewIframe`, `liquidMode.ts` (hand-rolled CM6 StreamParser), `liquidCompletions.ts`
+- `src/popup/*` — UI (still imperative pending Plan 4)
+- `src/storage/` — facade over `chrome.storage`; `createStorage` is async and picks `.sync` or `.local` by reading a `pj_storage_area` sentinel from `.local` (migration writes it at 90KB). The options page additionally runs `promoteStorageToLocal()` at boot to converge any legacy sync-area data into local, so the Preact `useStorage` hook (which talks to `.local` only) has authoritative data.
 
 Content script is declared **statically** in the manifest (`content_scripts: [{ matches: ['<all_urls>'] }]`) — dynamic `chrome.scripting.registerContentScripts` doesn't work because @crxjs rewrites source paths at build time.
 
@@ -37,10 +39,17 @@ Content script is declared **statically** in the manifest (`content_scripts: [{ 
 - **Template engine is LiquidJS** (Phase 2 Plan 2, 2026-04-18). Runtime interpreter — no codegen, no runtime JS-eval. This matters for MV3: the extension CSP disallows `'unsafe-eval'`, which blocks Handlebars-style compile-to-function engines (a Handlebars attempt hit this blocker). The `test/e2e/csp-smoke.spec.ts` test guards against CSP regressions on the render path.
 - **Two-stage security**: LiquidJS `outputEscape` auto-escapes every `{{ }}` output unless the `raw` filter marks it safe (via `__pjRaw` marker on a `String` wrapper). Then `sanitize()` runs as the final pass on the full output. Covers: `<script>`, `<iframe>`, `<link>`, `<object>`, `<embed>`, `on*` handlers (quoted and unquoted), `javascript:`/`data:`/`vbscript:` URLs. Never bypass the sanitizer.
 - **Schema v2** (set via `storage.setSchemaVersion(2)`) marks templates as Liquid-syntax. Absence triggers an auto-migrator (`engine/migrate.ts`) on first run after update. Migration is batch-atomic — any single parse-failure rolls back the entire batch and keeps v1 sources for manual fix.
+- **CodeMirror 6 runs under MV3 CSP** — verified by `test/e2e/cm-csp-smoke.spec.ts`. If you add a CM extension / plugin, check it doesn't pull in a transitive dep that uses runtime codegen.
+- **`--pj-accent-strong` vs `--pj-accent`** — the brand orange `#ea580c` is not WCAG AA-contrast-compliant on our light-wash background, so anywhere small text sits on a wash or a solid-orange button uses `--pj-accent-strong` (`#c2410c` in both themes). Reserve `--pj-accent` for large-area surfaces (icons, borders, hover-flash backgrounds).
+- **Options-page storage keys** — `rules`, `templates`, `hostSkipList`, `schemaVersion`, `settings` (`themePreference`), `pj_sample_json` (per-template sample JSON), `pj_migrated_v2` (list of template names showing a migration banner), `pj_storage_area` (sentinel flipping sync↔local).
 
 ## Docs
 
-- `docs/superpowers/specs/2026-04-17-present-json-design.md` — full spec
+- `docs/superpowers/specs/2026-04-17-present-json-design.md` — Phase 1 spec
+- `docs/superpowers/specs/2026-04-18-phase2-ux-polish-design.md` — Phase 2 spec
 - `docs/superpowers/plans/2026-04-17-present-json-phase1.md` — Phase 1 plan (shipped)
-- `docs/superpowers/reviews/2026-04-17-phase1-review.md` — reviewer notes + what was fixed
-- `ROADMAP.md` — phases + Phase 2 backlog
+- `docs/superpowers/plans/2026-04-18-phase2-plan1-foundation.md` — Phase 2 Plan 1 (shipped)
+- `docs/superpowers/plans/2026-04-18-phase2-plan2-engine-swap.md` — Phase 2 Plan 2 (Liquid engine, shipped)
+- `docs/superpowers/plans/2026-04-18-phase2-plan3-options.md` — Phase 2 Plan 3 (options rewrite, shipped)
+- `docs/superpowers/reviews/2026-04-17-phase1-review.md` — Phase 1 reviewer notes
+- `ROADMAP.md` — phases + backlog

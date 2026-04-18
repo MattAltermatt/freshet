@@ -5,7 +5,7 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Manifest V3](https://img.shields.io/badge/Chrome-MV3-brightgreen.svg)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6.svg)
-![Tests](https://img.shields.io/badge/tests-122%20unit%20%2B%202%20E2E-success.svg)
+![Tests](https://img.shields.io/badge/tests-163%20unit%20%2B%209%20E2E-success.svg)
 
 Paste a JSON URL into Chrome, get a table instead of a `<pre>`. Works against any host you configure — internal tooling, public APIs, webhooks you're debugging. Templates are small HTML snippets with `{{placeholders}}`; rules map URL patterns to templates.
 
@@ -24,14 +24,19 @@ Paste a JSON URL into Chrome, get a table instead of a `<pre>`. Works against an
 
 ## Features
 
-- 📝 **Declarative HTML templates** — no JavaScript, no eval; just `{{path.to.value}}`, `{{#when x "y"}}...{{/when}}`, `{{#each items}}...{{/each}}`, `{{date ts "yyyy-MM-dd HH:mm"}}`, `{{link "https://..."}}`.
+- 📝 **Declarative Liquid templates** — no JavaScript, no eval; just `{{ path.to.value }}`, `{% if status == "ok" %}…{% endif %}`, `{% for item in items %}…{% endfor %}`, `{{ ts | date: "yyyy-MM-dd HH:mm" }}`, `{{ "https://host/{{id}}" | link }}`.
 - 🎯 **Per-URL rules** — glob patterns (`*.server.com`, `/api/**`) or raw regex (`/^\/v\d+$/`). First-match wins; ordered; reorderable.
-- 🏷️ **Per-rule variables** — reference with `{{@env}}`, `{{@adminHost}}`. Makes templates portable across environments.
-- 👀 **Live preview** in the options page with sample JSON.
-- 🧯 **Safe by default** — every render pass strips `<script>`, inline event handlers, `<iframe>`, `<link>`, `<object>`, `<embed>`, and neutralizes `javascript:`/`data:`/`vbscript:` URLs.
+- 🏷️ **Per-rule variables** — reference with `{{ vars.env }}`, `{{ vars.adminHost }}`. Makes templates portable across environments.
+- 🪄 **Split-view options page** — rule cards on the left, URL tester on the right. Paste a URL, see exactly which rule matches and why the others don't (shadowed / host-miss / path-miss).
+- 💻 **CodeMirror 6 template editor** — Liquid syntax highlighting, autocomplete over your sample JSON's paths + rule variables + helper filters, live sandboxed preview.
+- 🎨 **Dark mode from day 1** — auto-follows your OS or manually choose light/dark. Brand palette (warm cream / warm near-black) stays readable either way.
+- 💾 **Autosave** — every edit persists immediately; `Saved ✓` toast confirms commits; 8-second Undo toast on destructive actions.
+- 👀 **Live preview** per template with per-template sample JSON persistence.
+- 🧯 **Safe by default** — two-stage security: LiquidJS auto-escapes every `{{ }}` output (explicit `| raw` required to bypass), then a sanitizer strips `<script>`, `<iframe>`, `<link>`, `<object>`, `<embed>`, inline event handlers (including the `<img/onerror=…>` bypass), and neutralizes `javascript:`/`data:`/`vbscript:` URLs. Preview iframe is sandboxed with no same-origin access.
 - 🔀 **Raw-JSON toggle** + **copy URL** from the injected top strip.
 - 🚫 **Per-host skip** via the popup — disable rendering on one host without deleting the rule.
-- ⚡ **CSP-safe template engine** — [LiquidJS](https://github.com/harttle/liquidjs) interpreter; no runtime codegen, no `unsafe-eval`.
+- ⚡ **CSP-safe everywhere** — [LiquidJS](https://github.com/harttle/liquidjs) interpreter (no runtime codegen, no `unsafe-eval`); CodeMirror 6 is tree-shaken ESM with no eval path either.
+- ♿ **WCAG 2.1 AA** — axe-core passes on the options page; AA-compliant contrast in both light and dark.
 
 ## Install
 
@@ -141,29 +146,37 @@ Load `dist/` unpacked in Chrome as described above. With `pnpm dev` running, @cr
 ```
 src/
 ├── engine/         # pure template engine (zero chrome.* calls)
-│   ├── engine.ts      # top-level render(); outermost-first block walker
-│   ├── escape.ts      # HTML entity encoder
-│   ├── helpers.ts     # {{date}} + {{link}}
-│   ├── lookup.ts      # dotted-path + @variable + this.* lookup
+│   ├── engine.ts      # LiquidJS wrapper with outputEscape + post-render sanitize
+│   ├── helpers.ts     # date / link / num / raw filter registrations
+│   ├── lookup.ts      # dotted-path lookups (used by the link filter)
+│   ├── migrate.ts     # v1 → v2 syntax rewriter (pre-Phase-2 templates)
 │   └── sanitize.ts    # final-pass sanitizer
 ├── matcher/        # pure URL → rule matcher
-│   ├── glob.ts        # glob → RegExp (** = .*, /.../ = raw regex)
-│   └── matcher.ts     # first-match ordered evaluation
+│   ├── glob.ts        # glob → RegExp (** = .*, /.../ = raw regex) + validators
+│   └── matcher.ts     # findMatchingRule + matchesHost + matchesPath
 ├── storage/        # chrome.storage facade + sync→local migration
 ├── shared/types.ts # Rule / Template / StorageShape
 ├── content/        # content script (JSON → HTML replacement)
 ├── background/     # MV3 service worker (migration + starter seed)
-├── options/        # options page (Rules + Templates tabs)
-├── popup/          # toolbar popup (match status + skip toggle)
+├── ui/             # shared Preact component library
+│   ├── components/    # Button, Toggle, Toast, ToastHost, Menu, KVEditor, Cheatsheet, CodeMirrorBox
+│   ├── hooks/         # useTheme, useToast, useStorage, useDebounce, useAutosave
+│   ├── theme.css      # --pj-* design tokens (light + dark)
+│   └── cmHighlight.ts # CodeMirror syntax style keyed to the tokens
+├── options/        # Preact SPA: split-view Rules + CodeMirror Templates
+│   ├── App.tsx / Header.tsx / ShortcutsFooter.tsx / storagePromote.ts
+│   ├── rules/         # RulesTab, RuleStack, RuleCard, UrlTester, PatternField, RuleEditModal
+│   └── templates/     # TemplatesTab, TemplatesToolbar, TemplateEditor, SampleJsonEditor, PreviewIframe, liquidMode, liquidCompletions
+├── popup/          # toolbar popup (match status + skip toggle — Phase 2 Plan 4 incoming)
 └── starter/        # bundled starter templates (imported as ?raw)
 
 test/
 ├── fixtures/       # input.json / template.html / expected.html snapshots
 ├── fixtures-server/# local HTTP JSON server for manual + E2E testing
-└── e2e/            # Playwright spec (loads unpacked extension)
+└── e2e/            # Playwright specs: CSP smoke, CodeMirror CSP smoke, axe-core, CRUD, render
 
 docs/superpowers/
-├── specs/          # design spec
+├── specs/          # design specs (per phase)
 ├── plans/          # per-phase implementation plans
 └── reviews/        # code-review reports
 
@@ -173,8 +186,8 @@ scripts/            # one-off dev scripts (e.g. rasterize-icons.mjs)
 
 ## Testing
 
-- **Unit** (Vitest): 80 tests covering the engine, matcher, storage facade, fixture-snapshot render, and `src/ui/` components (Button, Toggle, Toast, useTheme).
-- **E2E** (Playwright, headed Chrome): one spec that launches Chromium with the unpacked extension, seeds a rule through the service worker, navigates to the fixture server, and asserts the rendered DOM.
+- **Unit** (Vitest): 163 tests covering the engine, matcher, storage facade + migration, fixture-snapshot render, `src/ui/` primitives + hooks, and options-page components (RuleCard, UrlTester, Header, liquidCompletions).
+- **E2E** (Playwright, headed Chrome): 9 specs — render smoke, LiquidJS CSP smoke, CodeMirror 6 CSP smoke, axe-core WCAG 2.1 AA sweep on the options page, and CRUD flows (add rule, delete + undo, URL-tester match/shadowed reasoning, template delete-guard, per-template sample JSON persistence).
 
 The cores (`engine/` + `matcher/`) are deliberately free of `chrome.*` calls — grep to verify. That discipline is what makes the test suite possible in Node.
 
