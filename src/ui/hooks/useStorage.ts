@@ -34,7 +34,6 @@ export function useStorage<K extends string, T = unknown>(
       chrome.storage.onChanged.removeListener(onChange);
     };
     // fallback captured on mount; don't re-subscribe if it changes identity.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
 
   const write = async (next: T): Promise<void> => {

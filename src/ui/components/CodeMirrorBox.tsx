@@ -75,7 +75,6 @@ export function CodeMirrorBox({
     });
     return () => view.current?.destroy();
     // Extensions + mount only once; value sync handled in the other effect.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Sync value prop → editor doc.

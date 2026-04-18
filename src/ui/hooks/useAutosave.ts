@@ -76,6 +76,5 @@ export function useAutosave<T>(
       clearTimeout(id);
     };
     // Intentionally re-run only on `value` identity changes.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 }

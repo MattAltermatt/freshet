@@ -101,7 +101,7 @@ const parser: StreamParser<LiquidState> = {
       }
 
       // Operators / punctuation
-      if (ch !== null && /[=!<>+\-*\/%,.:()]/.test(ch)) {
+      if (ch !== null && /[=!<>+\-*/%,.:()]/.test(ch)) {
         stream.next();
         return 'operator';
       }
@@ -109,7 +109,7 @@ const parser: StreamParser<LiquidState> = {
       // Identifiers
       if (ch !== null && /[A-Za-z_]/.test(ch)) {
         let word = '';
-        while (true) {
+        for (;;) {
           const next = stream.peek();
           if (!next || !/[A-Za-z0-9_]/.test(next)) break;
           stream.next();

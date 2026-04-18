@@ -66,7 +66,6 @@ export function TemplatesTab({
     } else if (current === null && templateNames.length > 0) {
       setCurrent(templateNames[0] ?? null);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [templates]);
 
   const active = current && templates[current] !== undefined ? current : null;
