@@ -6,12 +6,15 @@ import { TemplatesToolbar } from './TemplatesToolbar';
 import { TemplateEditor } from './TemplateEditor';
 import { SampleJsonEditor } from './SampleJsonEditor';
 import { PreviewIframe } from './PreviewIframe';
+import type { OptionsDirective } from '../directives';
 
 export interface TemplatesTabProps {
   templates: Templates;
   onTemplatesChange: (next: Templates) => void;
   rules: Rule[];
   onDisableRules: (ruleIds: string[]) => void;
+  directive?: OptionsDirective | null;
+  onDirectiveHandled?: () => void;
 }
 
 const DEFAULT_SAMPLE = `{
@@ -44,6 +47,8 @@ export function TemplatesTab({
   onTemplatesChange,
   rules,
   onDisableRules,
+  directive,
+  onDirectiveHandled,
 }: TemplatesTabProps): JSX.Element {
   const [samples, writeSamples] = useStorage<'pj_sample_json', Record<string, string>>(
     'pj_sample_json',
@@ -68,6 +73,15 @@ export function TemplatesTab({
       setCurrent(templateNames[0] ?? null);
     }
   }, [templates, current, templateNames]);
+
+  useEffect(() => {
+    if (!directive || directive.kind !== 'edit-template') return;
+    // Defer until the template exists in storage — if the caller just created
+    // it, a write may still be in flight and `templates` won't have it yet.
+    if (templates[directive.name] === undefined) return;
+    setCurrent(directive.name);
+    onDirectiveHandled?.();
+  }, [directive, templates]);
 
   const active = current && templates[current] !== undefined ? current : null;
   const tpl = active ? templates[active] ?? '' : '';

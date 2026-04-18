@@ -394,6 +394,10 @@ input:focus, select:focus, textarea:focus {
 .pj-field-err { color: var(--pj-danger); font-size: var(--pj-font-size-sm); }
 .pj-field-hint { color: var(--pj-fg-subtle); font-size: var(--pj-font-size-sm); }
 
+.pj-template-picker { display: flex; align-items: center; gap: var(--pj-space-2); }
+.pj-template-picker > select { flex: 1; }
+.pj-template-picker-hint { flex: 1; }
+
 .pj-pattern-field {
   display: grid;
   grid-template-columns: 1fr auto;

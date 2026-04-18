@@ -12,6 +12,10 @@ export interface RulesTabProps {
   templates: Templates;
   onChange: (next: Rule[]) => void;
   onDelete: (index: number) => void;
+  /** Create a blank template with the given name; returns the accepted name. */
+  onCreateTemplate: (name: string) => string;
+  /** Open the named template in the Templates tab. */
+  onRequestEditTemplate: (name: string) => void;
   directive?: OptionsDirective | null;
   onDirectiveHandled?: () => void;
 }
@@ -21,6 +25,8 @@ export function RulesTab({
   templates,
   onChange,
   onDelete,
+  onCreateTemplate,
+  onRequestEditTemplate,
   directive,
   onDirectiveHandled,
 }: RulesTabProps): JSX.Element {
@@ -32,6 +38,9 @@ export function RulesTab({
   const [testerUrl, setTesterUrl] = useState<string>('');
   const [newRuleHost, setNewRuleHost] = useState<string>('');
   const [newRulePath, setNewRulePath] = useState<string>('');
+  // Names of templates the user created inline during the current modal
+  // session, so the post-save toast can offer to jump straight into editing.
+  const [createdTemplateNames, setCreatedTemplateNames] = useState<string[]>([]);
   const toast = useToast();
 
   useEffect(() => {
@@ -48,6 +57,7 @@ export function RulesTab({
       onDirectiveHandled?.();
       return;
     }
+    if (directive.kind !== 'edit-rule') return;
     // edit-rule: defer until rules are populated from storage, otherwise the
     // findIndex on the initial empty array silently drops the directive.
     if (rules.length === 0) return;
@@ -71,6 +81,13 @@ export function RulesTab({
     setEditing(undefined);
     setNewRuleHost('');
     setNewRulePath('');
+    setCreatedTemplateNames([]);
+  };
+
+  const handleCreateTemplate = (name: string): string => {
+    const accepted = onCreateTemplate(name);
+    setCreatedTemplateNames((prev) => [...prev, accepted]);
+    return accepted;
   };
 
   const save = (rule: Rule): void => {
@@ -82,7 +99,22 @@ export function RulesTab({
       next[editing] = rule;
       onChange(next);
     }
+    const inlineTemplateName = isNew && createdTemplateNames.includes(rule.templateName)
+      ? rule.templateName
+      : null;
     close();
+    if (inlineTemplateName) {
+      toast.push({
+        variant: 'success',
+        message: `Rule added · template "${inlineTemplateName}" is empty`,
+        ttlMs: 6000,
+        action: {
+          label: 'Open template →',
+          onClick: () => onRequestEditTemplate(inlineTemplateName),
+        },
+      });
+      return;
+    }
     toast.push({
       variant: 'success',
       message: isNew ? 'Rule added · Saved ✓' : 'Rule saved ✓',
@@ -112,6 +144,7 @@ export function RulesTab({
           templates={templates}
           onSave={save}
           onCancel={close}
+          onCreateTemplate={handleCreateTemplate}
         />
       ) : null}
     </div>

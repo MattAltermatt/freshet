@@ -54,6 +54,14 @@ describe('parseDirective', () => {
     });
   });
 
+  it('parses edit-template', () => {
+    const encoded = encodeURIComponent('api-github-com');
+    expect(parseDirective(`#edit-template=${encoded}`)).toEqual({
+      kind: 'edit-template',
+      name: 'api-github-com',
+    });
+  });
+
   it('rejects malformed test-url (non-URI)', () => {
     expect(parseDirective('#test-url=%E0%A4%A')).toBeNull();
   });
@@ -78,5 +86,13 @@ describe('directiveHash', () => {
   it('round-trips edit-rule id', () => {
     const hash = directiveHash.editRule('rule-xyz');
     expect(parseDirective(hash)).toEqual({ kind: 'edit-rule', ruleId: 'rule-xyz' });
+  });
+
+  it('round-trips edit-template name', () => {
+    const hash = directiveHash.editTemplate('api-github-com');
+    expect(parseDirective(hash)).toEqual({
+      kind: 'edit-template',
+      name: 'api-github-com',
+    });
   });
 });

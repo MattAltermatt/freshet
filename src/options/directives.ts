@@ -3,7 +3,8 @@ import { suggestPathPattern } from '../shared/suggestPathPattern';
 export type OptionsDirective =
   | { kind: 'test-url'; url: string }
   | { kind: 'new-rule'; host: string; path: string }
-  | { kind: 'edit-rule'; ruleId: string };
+  | { kind: 'edit-rule'; ruleId: string }
+  | { kind: 'edit-template'; name: string };
 
 function safeDecode(s: string): string | null {
   try {
@@ -48,6 +49,12 @@ export function parseDirective(hash: string): OptionsDirective | null {
     return { kind: 'edit-rule', ruleId };
   }
 
+  if (raw.startsWith('edit-template=')) {
+    const name = safeDecode(raw.slice('edit-template='.length));
+    if (!name) return null;
+    return { kind: 'edit-template', name };
+  }
+
   return null;
 }
 
@@ -55,4 +62,5 @@ export const directiveHash = {
   testUrl: (url: string): string => `#test-url=${encodeURIComponent(url)}`,
   newRule: (url: string): string => `#new-rule=${encodeURIComponent(url)}`,
   editRule: (ruleId: string): string => `#edit-rule=${encodeURIComponent(ruleId)}`,
+  editTemplate: (name: string): string => `#edit-template=${encodeURIComponent(name)}`,
 };

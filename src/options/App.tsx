@@ -60,8 +60,18 @@ export function App(): JSX.Element {
   const [tab, setTab] = useState<Tab>('rules');
 
   useEffect(() => {
-    if (directive) setTab('rules');
+    if (!directive) return;
+    setTab(directive.kind === 'edit-template' ? 'templates' : 'rules');
   }, [directive]);
+
+  const createTemplate = (name: string): string => {
+    void writeTemplates({ ...templates, [name]: '' });
+    return name;
+  };
+
+  const requestEditTemplate = (name: string): void => {
+    setDirective({ kind: 'edit-template', name });
+  };
 
   const handleRuleDelete = (index: number): void => {
     const snapshot = [...rules];
@@ -116,6 +126,8 @@ export function App(): JSX.Element {
             templates={templates}
             onChange={(next) => void writeRules(next)}
             onDelete={(index) => handleRuleDelete(index)}
+            onCreateTemplate={createTemplate}
+            onRequestEditTemplate={requestEditTemplate}
             directive={directive}
             onDirectiveHandled={() => setDirective(null)}
           />
@@ -125,6 +137,8 @@ export function App(): JSX.Element {
             onTemplatesChange={(next) => void writeTemplates(next)}
             rules={rules}
             onDisableRules={handleDisableRules}
+            directive={directive}
+            onDirectiveHandled={() => setDirective(null)}
           />
         )}
       </main>

@@ -3,6 +3,7 @@ import { useRef, useState } from 'preact/hooks';
 import { Button, KVEditor, Toggle, useFocusTrap } from '../../ui';
 import { isValidHostPattern, isValidPathPattern } from '../../matcher/glob';
 import type { Rule, Templates } from '../../shared/types';
+import { suggestTemplateName } from '../../shared/suggestTemplateName';
 import { PatternField } from './PatternField';
 
 export interface RuleEditModalProps {
@@ -12,6 +13,12 @@ export interface RuleEditModalProps {
   templates: Templates;
   onSave: (rule: Rule) => void;
   onCancel: () => void;
+  /**
+   * Called when the user wants to create a blank template inline. Must return
+   * the canonical name the store accepted (may differ from the requested name
+   * on collision); the rule's `templateName` is then set to the returned value.
+   */
+  onCreateTemplate: (name: string) => string;
 }
 
 const HOST_EXAMPLES = ['*.server.com', '127.0.0.1', '/^admin.*/', 'api.example.com'];
@@ -35,6 +42,7 @@ export function RuleEditModal({
   templates,
   onSave,
   onCancel,
+  onCreateTemplate,
 }: RuleEditModalProps): JSX.Element {
   const [rule, setRule] = useState<Rule>(() =>
     initial ? structuredClone(initial) : blankRule(templates, initialHost, initialPath),
@@ -67,6 +75,20 @@ export function RuleEditModal({
     ? templateNames
     : [rule.templateName, ...templateNames];
   const title = initial ? `Edit rule · ${initial.id}` : 'New rule';
+
+  const handleCreateTemplate = (): void => {
+    const defaultName = suggestTemplateName(rule.hostPattern);
+    const raw = window.prompt('New template name', defaultName);
+    if (raw === null) return;
+    const name = raw.trim();
+    if (!name) return;
+    if (templates[name] !== undefined) {
+      window.alert(`"${name}" already exists — pick a different name.`);
+      return;
+    }
+    const accepted = onCreateTemplate(name);
+    setRule({ ...rule, templateName: accepted });
+  };
 
   return (
     <div
@@ -113,29 +135,34 @@ export function RuleEditModal({
           />
           <div class="pj-field">
             <label for="pj-rule-tmpl">Template</label>
-            {templateNames.length > 0 ? (
-              <select
-                id="pj-rule-tmpl"
-                class={templateErr ? 'pj-invalid' : ''}
-                value={rule.templateName}
-                onChange={(e) =>
-                  setRule({
-                    ...rule,
-                    templateName: (e.target as HTMLSelectElement).value,
-                  })
-                }
-              >
-                {selectOptions.map((name) => (
-                  <option key={name} value={name}>
-                    {name}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <div class="pj-field-hint">
-                No templates yet. Add one on the <strong>Templates</strong> tab first.
-              </div>
-            )}
+            <div class="pj-template-picker">
+              {templateNames.length > 0 ? (
+                <select
+                  id="pj-rule-tmpl"
+                  class={templateErr ? 'pj-invalid' : ''}
+                  value={rule.templateName}
+                  onChange={(e) =>
+                    setRule({
+                      ...rule,
+                      templateName: (e.target as HTMLSelectElement).value,
+                    })
+                  }
+                >
+                  {selectOptions.map((name) => (
+                    <option key={name} value={name}>
+                      {name}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <div class="pj-field-hint pj-template-picker-hint">
+                  No templates yet — create one to attach.
+                </div>
+              )}
+              <Button variant="ghost" onClick={handleCreateTemplate}>
+                + Create template
+              </Button>
+            </div>
             {templateErr ? <div class="pj-field-err">{templateErr}</div> : null}
           </div>
           <div class="pj-field">
