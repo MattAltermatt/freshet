@@ -2,7 +2,7 @@ import type { ComponentChildren, JSX } from 'preact';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
 
-interface ButtonProps extends Omit<JSX.HTMLAttributes<HTMLButtonElement>, 'size'> {
+interface ButtonProps extends Omit<JSX.ButtonHTMLAttributes<HTMLButtonElement>, 'size'> {
   variant?: ButtonVariant;
   children?: ComponentChildren;
 }
