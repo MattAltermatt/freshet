@@ -1,0 +1,5 @@
+title: Present-JSON
+description: A Chrome extension that renders JSON responses as user-templated HTML.
+theme: jekyll-theme-minimal
+exclude:
+  - superpowers/

@@ -20,7 +20,7 @@
    *Store assets:*
    - Real icons at 16/48/128 (replace 1×1 transparent placeholders in `public/`); SVG source of truth committed
    - Screenshots (1280×800) for options page, rendered view, popup
-   - Privacy policy page hosted at a stable URL via GitHub Pages
+   - ✅ Privacy policy page hosted at a stable URL via GitHub Pages (done 2026-04-17 — `docs/privacy.md` → mattaltermatt.github.io/present-json/privacy/)
 
    *Listing + submission:*
    - Store listing copy: short description, detailed description, single-purpose statement, permission justifications

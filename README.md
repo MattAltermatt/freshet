@@ -107,7 +107,7 @@ This extension requests these permissions and nothing else:
 | `tabs` | The popup reads the active tab's URL to show match status and host-skip state. |
 | `<all_urls>` host permission | The content script is statically registered against all pages so it can check user-configured rules. |
 
-**Privacy:** no network requests are made by the extension itself. No analytics, no telemetry, no external hosts contacted. All data lives in your `chrome.storage` (synced across your own Chrome signed-in devices, or local-only if you exceed the 90 KB sync budget). No data leaves your browser.
+**Privacy:** no network requests are made by the extension itself. No analytics, no telemetry, no external hosts contacted. All data lives in your `chrome.storage` (synced across your own Chrome signed-in devices, or local-only if you exceed the 90 KB sync budget). No data leaves your browser. Full policy: [mattaltermatt.github.io/present-json/privacy/](https://mattaltermatt.github.io/present-json/privacy/).
 
 ## Development
 
