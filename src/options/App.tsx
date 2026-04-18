@@ -1,35 +1,36 @@
 import type { JSX } from 'preact';
 import { useState } from 'preact/hooks';
-import { ToastHost, useTheme } from '../ui';
+import { ToastHost, useStorage, useTheme, type ThemePreference } from '../ui';
+import { Header } from './Header';
 
 type Tab = 'rules' | 'templates';
 
+interface Settings {
+  themePreference: ThemePreference;
+}
+
+const DEFAULT_SETTINGS: Settings = { themePreference: 'system' };
+
 export function App(): JSX.Element {
-  useTheme({ preference: 'system' });
+  const [settings, writeSettings] = useStorage<'settings', Settings>(
+    'settings',
+    DEFAULT_SETTINGS,
+  );
+  useTheme({
+    preference: settings.themePreference,
+    onPreferenceChange: (next) =>
+      void writeSettings({ ...settings, themePreference: next }),
+  });
   const [tab, setTab] = useState<Tab>('rules');
 
   return (
     <div class="pj-app">
-      <header class="pj-header">
-        <div class="pj-brand">
-          <span class="pj-logo" aria-hidden="true">{'{>'}</span>
-          <h1>Present-JSON</h1>
-        </div>
-        <nav class="pj-tabs">
-          <button
-            class={`pj-tab${tab === 'rules' ? ' pj-tab--active' : ''}`}
-            onClick={() => setTab('rules')}
-          >
-            Rules
-          </button>
-          <button
-            class={`pj-tab${tab === 'templates' ? ' pj-tab--active' : ''}`}
-            onClick={() => setTab('templates')}
-          >
-            Templates
-          </button>
-        </nav>
-      </header>
+      <Header
+        tab={tab}
+        onTab={setTab}
+        themePref={settings.themePreference}
+        onThemePref={(p) => void writeSettings({ ...settings, themePreference: p })}
+      />
       <main class="pj-main">
         {tab === 'rules' ? <RulesPlaceholder /> : <TemplatesPlaceholder />}
       </main>

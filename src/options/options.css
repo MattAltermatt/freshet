@@ -45,6 +45,45 @@ body {
   font-weight: 600;
 }
 
+.pj-quota {
+  margin-left: auto;
+  position: relative;
+  min-width: 140px;
+  height: 18px;
+  border: 1px solid var(--pj-border);
+  border-radius: 9px;
+  overflow: hidden;
+  background: var(--pj-bg-subtle);
+}
+.pj-quota-fill {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  background: var(--pj-success);
+  transition: width 160ms ease;
+}
+.pj-quota[data-tone="warn"] .pj-quota-fill { background: var(--pj-accent); }
+.pj-quota[data-tone="danger"] .pj-quota-fill { background: var(--pj-danger); }
+.pj-quota-label {
+  position: relative;
+  display: block;
+  text-align: center;
+  font: 10px/18px var(--pj-font-mono);
+  color: var(--pj-fg-muted);
+}
+.pj-theme-toggle select {
+  padding: var(--pj-space-1) var(--pj-space-2);
+  background: var(--pj-bg-elevated);
+}
+.pj-visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .pj-main {
   flex: 1;
   padding: var(--pj-space-4);
