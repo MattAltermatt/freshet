@@ -6,6 +6,7 @@ import {
   migrateTemplatesToV2,
 } from '../storage/migration';
 import starterInternalUser from '../starter/internal-user.html?raw';
+import starterGithubRepo from '../starter/github-repo.html?raw';
 import { appearanceFor, type BadgeSignal } from './badge';
 
 async function main(): Promise<void> {
@@ -18,7 +19,10 @@ async function seedStartersIfEmpty(): Promise<void> {
   const storage = await createStorage(chrome.storage);
   const templates = await storage.getTemplates();
   if (Object.keys(templates).length > 0) return;
-  await storage.setTemplates({ 'internal-user': starterInternalUser });
+  await storage.setTemplates({
+    'internal-user': starterInternalUser,
+    'github-repo': starterGithubRepo,
+  });
   await storage.setSchemaVersion(2);
 }
 

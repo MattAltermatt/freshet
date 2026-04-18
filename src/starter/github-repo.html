@@ -1,35 +1,33 @@
 {%- comment -%}
-  Present-JSON starter template — "GitHub repo" summary.
-  Grammar: LiquidJS (https://liquidjs.com). Runs in an MV3 content script
-  under a strict CSP (no eval). These comments are stripped from the output.
-
-  Quick reference:
-    {{ path.to.value }}                 — HTML-escaped interpolation
-    {{ html | raw }}                    — raw (no escape)
-    {{ vars.name }}                     — rule-scoped variables
-    {% if homepage != blank %}…{% endif %} — conditional
-    {% for item in items %}…{% endfor %} — loop
-    {{ ts | date: "yyyy-MM-dd" }}       — date helper
-    {{ "https://h/{{id}}" | link }}     — URL-safe link builder
-    {{ n | num }}                       — number helper
-  Project README: https://github.com/MattAltermatt/present-json
+  Present-JSON starter — "GitHub repo" summary card. Liquid syntax. Comments
+  below teach each construct in context; they're stripped at render time.
+  Point a rule at `api.github.com` / `/repos/*/*` and visit e.g.
+  https://api.github.com/repos/facebook/react to see it render.
 {%- endcomment -%}
 <div class="pj-gh">
   <header class="pj-gh__header">
+    {%- comment -%} Nested field access uses dotted paths. `{{ x }}` is
+    HTML-escaped by default — no need to sanitize user content manually. {%- endcomment -%}
     <img class="pj-gh__avatar" src="{{ owner.avatar_url }}" alt="{{ owner.login }} avatar" />
     <div class="pj-gh__heading">
       <h1 class="pj-gh__title"><a href="{{ html_url }}">{{ full_name }}</a></h1>
       <p class="pj-gh__desc">{{ description }}</p>
+      {%- comment -%} `!= blank` is Liquid's idiom for "present and non-empty".
+      Nothing renders when the value is missing, null, or `""`. {%- endcomment -%}
       {% if homepage != blank %}<p class="pj-gh__home">→ <a href="{{ homepage }}">{{ homepage }}</a></p>{% endif %}
     </div>
   </header>
 
+  {%- comment -%} `{% if %}` / `{% else %}` / `{% endif %}` for branching.
+  Swap the status pill based on a boolean on the payload. {%- endcomment -%}
   {% if archived %}
     <div class="pj-gh__status pj-gh__status--archived" role="status"><span class="pj-gh__dot"></span>Archived — read-only</div>
   {% else %}
     <div class="pj-gh__status pj-gh__status--active" role="status"><span class="pj-gh__dot"></span>Active</div>
   {% endif %}
 
+  {%- comment -%} The `num` filter compacts large integers (234567 → 235k).
+  Useful for follower counts, issue counts, etc. {%- endcomment -%}
   <section class="pj-gh__stats">
     <div class="pj-gh__stat"><span class="pj-gh__icon">⭐</span><span class="pj-gh__num">{{ stargazers_count | num }}</span><span class="pj-gh__label">Stars</span></div>
     <div class="pj-gh__stat"><span class="pj-gh__icon">🍴</span><span class="pj-gh__num">{{ forks_count | num }}</span><span class="pj-gh__label">Forks</span></div>
@@ -42,11 +40,16 @@
       {% if language != blank %}<dt>Language</dt><dd>{{ language }}</dd>{% endif %}
       {% if license.name != blank %}<dt>License</dt><dd>{{ license.name }}</dd>{% endif %}
       <dt>Default branch</dt><dd>{{ default_branch }}</dd>
+      {%- comment -%} The `date` filter accepts a format string. Supported
+      tokens: yyyy / MM / dd / HH / mm / ss. {%- endcomment -%}
       <dt>Created</dt><dd>{{ created_at | date: "yyyy-MM-dd" }}</dd>
       <dt>Last push</dt><dd>{{ pushed_at | date: "yyyy-MM-dd" }}</dd>
     </dl>
   </section>
 
+  {%- comment -%} `{% for item in list %}` iterates arrays. Inside the loop,
+  `item` is each element; use `forloop.first` / `forloop.last` / `forloop.index`
+  for positional logic. {%- endcomment -%}
   <section class="pj-gh__topics">
     {% for topic in topics %}<span class="pj-gh__chip">{{ topic }}</span>{% endfor %}
   </section>
