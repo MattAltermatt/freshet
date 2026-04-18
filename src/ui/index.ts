@@ -6,6 +6,7 @@ export { Menu, type MenuItem, type MenuProps } from './components/Menu';
 export { KVEditor, type KVEditorProps } from './components/KVEditor';
 export { Cheatsheet, type CheatsheetProps } from './components/Cheatsheet';
 export { CodeMirrorBox, type CodeMirrorBoxProps } from './components/CodeMirrorBox';
+export { pjHighlightStyle } from './cmHighlight';
 
 export { useTheme } from './hooks/useTheme';
 export { useToast, clearAllToasts, type Toast as ToastModel, type ToastInput, type ToastVariant } from './hooks/useToast';

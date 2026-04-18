@@ -1,8 +1,8 @@
 import type { JSX } from 'preact';
 import { useMemo } from 'preact/hooks';
 import { autocompletion } from '@codemirror/autocomplete';
-import { syntaxHighlighting, defaultHighlightStyle } from '@codemirror/language';
-import { CodeMirrorBox } from '../../ui';
+import { syntaxHighlighting } from '@codemirror/language';
+import { CodeMirrorBox, pjHighlightStyle } from '../../ui';
 import { liquid } from './liquidMode';
 import { liquidCompletions, walkJsonPaths } from './liquidCompletions';
 
@@ -28,7 +28,7 @@ export function TemplateEditor({
   const extensions = useMemo(
     () => [
       liquid,
-      syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+      syntaxHighlighting(pjHighlightStyle, { fallback: true }),
       autocompletion({ override: [source] }),
     ],
     [source],
