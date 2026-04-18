@@ -40,10 +40,10 @@ body {
   cursor: pointer;
   font: inherit;
 }
-.pj-tab:hover { background: var(--pj-accent-wash); color: var(--pj-accent); }
+.pj-tab:hover { background: var(--pj-accent-wash); color: var(--pj-accent-strong); }
 .pj-tab--active {
   background: var(--pj-accent-wash);
-  color: var(--pj-accent);
+  color: var(--pj-accent-strong);
   font-weight: 600;
 }
 
@@ -126,11 +126,14 @@ body {
 }
 .pj-btn:hover { background: var(--pj-accent-wash); }
 .pj-btn[data-variant="primary"] {
-  background: var(--pj-accent);
+  background: var(--pj-accent-strong);
   color: var(--pj-accent-fg);
+  border-color: var(--pj-accent-strong);
+}
+.pj-btn[data-variant="primary"]:hover {
+  background: var(--pj-accent);
   border-color: var(--pj-accent);
 }
-.pj-btn[data-variant="primary"]:hover { background: var(--pj-accent-hover); }
 .pj-btn[data-variant="ghost"] { background: transparent; border-color: transparent; }
 .pj-btn[data-variant="ghost"]:hover { background: var(--pj-accent-wash); }
 .pj-btn[data-variant="danger"] {

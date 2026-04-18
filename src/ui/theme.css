@@ -21,6 +21,7 @@
   --pj-accent:        #ea580c;
   --pj-accent-fg:     #ffffff;   /* text on accent surfaces */
   --pj-accent-hover:  #c2410c;
+  --pj-accent-strong: #c2410c;   /* darker shade used where WCAG AA contrast is required (text, solid buttons) */
   --pj-accent-wash:   #fff7ed;   /* low-opacity accent background */
 
   /* Status */
@@ -165,6 +166,7 @@
   --pj-accent:        #ea580c;
   --pj-accent-fg:     #ffffff;
   --pj-accent-hover:  #f97316;
+  --pj-accent-strong: #c2410c;   /* stays darker so white text on solid primary buttons hits AA */
   --pj-accent-wash:   rgba(234, 88, 12, 0.12);
 
   --pj-success:       #10b981;
