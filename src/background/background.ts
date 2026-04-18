@@ -61,6 +61,11 @@ chrome.commands.onCommand.addListener((command) => {
   });
 });
 
+// URL each tab's badge was last painted for. Used to ignore a stale
+// `status:'loading'` clear that races a fresh `pj:rendered` for the same URL
+// (content script can finish before the SW processes the loading event).
+const lastSignaledUrl = new Map<number, string>();
+
 chrome.runtime.onMessage.addListener((message, sender) => {
   if (typeof message !== 'object' || message === null) return;
   const kind = (message as { kind?: unknown }).kind;
@@ -78,6 +83,7 @@ chrome.runtime.onMessage.addListener((message, sender) => {
     const appearance = appearanceFor(kind as BadgeSignal);
     void chrome.action.setBadgeText({ tabId, text: appearance.text });
     void chrome.action.setBadgeBackgroundColor({ tabId, color: appearance.color });
+    if (sender.tab?.url) lastSignaledUrl.set(tabId, sender.tab.url);
   }
 });
 
@@ -86,5 +92,14 @@ chrome.runtime.onMessage.addListener((message, sender) => {
 // page also matches a rule, and stays silent otherwise.
 chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
   if (changeInfo.status !== 'loading') return;
+  // If the navigation's target URL matches what the content script already
+  // signaled, a pj:rendered has already overtaken this event — don't clobber
+  // it. Otherwise the tab is genuinely navigating away; clear.
+  if (changeInfo.url && changeInfo.url === lastSignaledUrl.get(tabId)) return;
+  lastSignaledUrl.delete(tabId);
   void chrome.action.setBadgeText({ tabId, text: '' });
+});
+
+chrome.tabs.onRemoved.addListener((tabId) => {
+  lastSignaledUrl.delete(tabId);
 });
