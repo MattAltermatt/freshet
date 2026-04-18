@@ -86,6 +86,7 @@ export function registerFilters(engine: Liquid): void {
   });
   engine.registerFilter('raw', (value: unknown) => {
     const s = value === undefined || value === null ? '' : String(value);
+    // eslint-disable-next-line @typescript-eslint/ban-types
     const w = new String(s) as String & { __pjRaw?: true };
     w.__pjRaw = true;
     return w;
