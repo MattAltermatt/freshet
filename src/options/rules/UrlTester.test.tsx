@@ -30,7 +30,8 @@ describe('<UrlTester>', () => {
   it('treats disabled rules as disabled, not miss', () => {
     render(<UrlTester rules={[r('a', '*.api.com', '/**', false)]} />);
     typeUrl('https://foo.api.com/');
-    expect(screen.getByText(/^disabled$/i)).toBeInTheDocument();
+    const results = screen.getAllByRole('listitem');
+    expect(within(results[0]!).getByText(/^disabled$/i)).toBeInTheDocument();
   });
 
   it('idle with no URL input', () => {
@@ -45,5 +46,15 @@ describe('<UrlTester>', () => {
     fireEvent.click(screen.getByText(/127\.0\.0\.1:4391/));
     const input = screen.getByPlaceholderText(/paste any url/i) as HTMLInputElement;
     expect(input.value).toContain('127.0.0.1:4391');
+  });
+
+  it('clear button empties the input and hides itself', () => {
+    render(<UrlTester rules={[r('a', '*.api.com')]} />);
+    typeUrl('https://foo.api.com/');
+    const clear = screen.getByLabelText(/clear url/i);
+    fireEvent.click(clear);
+    const input = screen.getByPlaceholderText(/paste any url/i) as HTMLInputElement;
+    expect(input.value).toBe('');
+    expect(screen.queryByLabelText(/clear url/i)).toBeNull();
   });
 });

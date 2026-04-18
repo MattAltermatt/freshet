@@ -107,17 +107,37 @@ export function UrlTester({ rules, initialUrl }: UrlTesterProps): JSX.Element {
           })}
         </div>
       ) : null}
-      <input
-        type="text"
-        class="pj-url-input"
-        placeholder="Paste any URL to test"
-        value={url}
-        onInput={(e) => setUrl((e.target as HTMLInputElement).value)}
-      />
+      <div class="pj-url-input-wrap">
+        <input
+          type="text"
+          class="pj-url-input"
+          placeholder="Paste any URL to test"
+          value={url}
+          onInput={(e) => setUrl((e.target as HTMLInputElement).value)}
+        />
+        {url ? (
+          <button
+            type="button"
+            class="pj-url-clear"
+            aria-label="Clear URL"
+            onClick={() => setUrl('')}
+          >
+            ✕
+          </button>
+        ) : null}
+      </div>
+      <p class="pj-url-legend" aria-label="Legend">
+        <span><span class="pj-url-icon" aria-hidden="true">✅</span> match</span>
+        <span><span class="pj-url-icon" aria-hidden="true">—</span> miss</span>
+        <span><span class="pj-url-icon" aria-hidden="true">⚠</span> shadowed</span>
+        <span><span class="pj-url-icon" aria-hidden="true">○</span> disabled</span>
+      </p>
       {rules.length === 0 ? (
         <p class="pj-url-empty">No rules to test against. Add one on the left.</p>
       ) : (
-        <ol class="pj-url-results">
+        <>
+          <h3 class="pj-url-results-heading">Per-rule results</h3>
+          <ol class="pj-url-results">
           {rows.map(({ rule, state }, i) => (
             <li key={rule.id} class="pj-url-result" data-state={state}>
               <span class="pj-url-icon" aria-hidden="true">
@@ -132,7 +152,8 @@ export function UrlTester({ rules, initialUrl }: UrlTesterProps): JSX.Element {
               ) : null}
             </li>
           ))}
-        </ol>
+          </ol>
+        </>
       )}
     </div>
   );
