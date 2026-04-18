@@ -39,7 +39,7 @@ Paste a JSON URL into Chrome, get a table instead of a `<pre>`. Works against an
 
 1. Clone the repo and build:
    ```bash
-   git clone https://github.com/muwamath/present-json.git
+   git clone https://github.com/MattAltermatt/present-json.git
    cd present-json
    pnpm install
    pnpm build
@@ -173,7 +173,7 @@ The cores (`engine/` + `matcher/`) are deliberately free of `chrome.*` calls —
 
 ## Contributing
 
-Issues and PRs welcome at [github.com/muwamath/present-json](https://github.com/muwamath/present-json/issues).
+Issues and PRs welcome at [github.com/MattAltermatt/present-json](https://github.com/MattAltermatt/present-json/issues).
 
 Before opening a PR:
 
@@ -184,4 +184,4 @@ Before opening a PR:
 
 ## License
 
-[MIT](./LICENSE) © 2026 muwamath
+[MIT](./LICENSE) © 2026 Matt Altermatt

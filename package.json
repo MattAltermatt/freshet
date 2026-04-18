@@ -6,17 +6,17 @@
   "type": "module",
   "license": "MIT",
   "author": {
-    "name": "muwamath",
-    "email": "muwamath@proton.me",
-    "url": "https://github.com/muwamath"
+    "name": "Matt Altermatt",
+    "email": "1435066+MattAltermatt@users.noreply.github.com",
+    "url": "https://github.com/MattAltermatt"
   },
-  "homepage": "https://github.com/muwamath/present-json#readme",
+  "homepage": "https://github.com/MattAltermatt/present-json#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/muwamath/present-json.git"
+    "url": "git+https://github.com/MattAltermatt/present-json.git"
   },
   "bugs": {
-    "url": "https://github.com/muwamath/present-json/issues"
+    "url": "https://github.com/MattAltermatt/present-json/issues"
   },
   "keywords": [
     "chrome-extension",

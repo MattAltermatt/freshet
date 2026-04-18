@@ -2,7 +2,7 @@
 
 - **Status:** draft (awaiting user review)
 - **Date:** 2026-04-17
-- **Repo:** `muwamath/present-json`
+- **Repo:** `MattAltermatt/present-json`
 
 ## Summary
 
