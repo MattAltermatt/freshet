@@ -42,6 +42,14 @@ function collectRuleVars(rules: Rule[], templateName: string | null): string[] {
   return [...vars];
 }
 
+interface CollapseState {
+  editor: boolean;
+  sample: boolean;
+  preview: boolean;
+}
+
+const DEFAULT_COLLAPSE: CollapseState = { editor: false, sample: false, preview: false };
+
 export function TemplatesTab({
   templates,
   onTemplatesChange,
@@ -58,6 +66,13 @@ export function TemplatesTab({
     'pj_migrated_v2',
     [],
   );
+  const [collapse, writeCollapse] = useStorage<'pj_ui_collapse', CollapseState>(
+    'pj_ui_collapse',
+    DEFAULT_COLLAPSE,
+  );
+  const toggleCollapse = (key: keyof CollapseState): void => {
+    void writeCollapse({ ...collapse, [key]: !collapse[key] });
+  };
 
   const templateNames = Object.keys(templates);
   const [current, setCurrent] = useState<string | null>(
@@ -154,8 +169,16 @@ export function TemplatesTab({
             <span class="pj-flow-token pj-flow-output">Preview</span>
           </p>
           <div class="pj-templates-body">
-            <section class="pj-templates-editor">
-              <div class="pj-templates-label">
+            <section class="pj-templates-editor" data-collapsed={collapse.editor}>
+              <button
+                type="button"
+                class="pj-templates-label pj-disclosure"
+                aria-expanded={!collapse.editor}
+                onClick={() => toggleCollapse('editor')}
+              >
+                <span class="pj-disclosure-arrow" aria-hidden="true">
+                  {collapse.editor ? '▸' : '▾'}
+                </span>
                 <span class="pj-templates-label-title">
                   <span class="pj-role-pill pj-role-pill--input">INPUT</span>
                   Template
@@ -163,18 +186,28 @@ export function TemplatesTab({
                 <span class="pj-templates-label-hint">
                   Liquid syntax — tap <code>{'{{'}</code> or <code>{'{%'}</code> for autocomplete
                 </span>
-              </div>
-              <TemplateEditor
-                value={tpl}
-                onChange={handleTemplateInput}
-                sampleJson={safeParse(sampleText)}
-                ruleVars={ruleVars}
-              />
+              </button>
+              {!collapse.editor ? (
+                <TemplateEditor
+                  value={tpl}
+                  onChange={handleTemplateInput}
+                  sampleJson={safeParse(sampleText)}
+                  ruleVars={ruleVars}
+                />
+              ) : null}
               <Cheatsheet />
             </section>
             <section class="pj-templates-side">
-              <div class="pj-templates-side-block">
-                <div class="pj-templates-label">
+              <div class="pj-templates-side-block" data-collapsed={collapse.sample}>
+                <button
+                  type="button"
+                  class="pj-templates-label pj-disclosure"
+                  aria-expanded={!collapse.sample}
+                  onClick={() => toggleCollapse('sample')}
+                >
+                  <span class="pj-disclosure-arrow" aria-hidden="true">
+                    {collapse.sample ? '▸' : '▾'}
+                  </span>
                   <span class="pj-templates-label-title">
                     <span class="pj-role-pill pj-role-pill--input">INPUT</span>
                     Sample JSON
@@ -182,11 +215,21 @@ export function TemplatesTab({
                   <span class="pj-templates-label-hint">
                     Saved per template. Powers preview + autocomplete.
                   </span>
-                </div>
-                <SampleJsonEditor value={sampleText} onChange={handleSampleInput} />
+                </button>
+                {!collapse.sample ? (
+                  <SampleJsonEditor value={sampleText} onChange={handleSampleInput} />
+                ) : null}
               </div>
-              <div class="pj-templates-side-block pj-templates-preview-block">
-                <div class="pj-templates-label">
+              <div class="pj-templates-side-block pj-templates-preview-block" data-collapsed={collapse.preview}>
+                <button
+                  type="button"
+                  class="pj-templates-label pj-disclosure"
+                  aria-expanded={!collapse.preview}
+                  onClick={() => toggleCollapse('preview')}
+                >
+                  <span class="pj-disclosure-arrow" aria-hidden="true">
+                    {collapse.preview ? '▸' : '▾'}
+                  </span>
                   <span class="pj-templates-label-title">
                     <span class="pj-role-pill pj-role-pill--output">OUTPUT</span>
                     Preview
@@ -194,12 +237,14 @@ export function TemplatesTab({
                   <span class="pj-templates-label-hint">
                     Sandboxed iframe, re-rendered 250 ms after you stop typing.
                   </span>
-                </div>
-                <PreviewIframe
-                  template={tpl}
-                  sampleJsonText={sampleText}
-                  vars={{}}
-                />
+                </button>
+                {!collapse.preview ? (
+                  <PreviewIframe
+                    template={tpl}
+                    sampleJsonText={sampleText}
+                    vars={{}}
+                  />
+                ) : null}
               </div>
             </section>
           </div>
