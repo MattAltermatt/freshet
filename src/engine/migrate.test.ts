@@ -58,6 +58,17 @@ describe('migrateTemplate — v1 → v2 (Liquid)', () => {
     expect(migrateTemplate('{{link "https://{{@host}}/u/{{id}}"}}'))
       .toBe('{{ "https://{{ vars.host }}/u/{{id}}" | link }}');
   });
+  it('does NOT clobber literal @ in static HTML (email addresses, etc.)', () => {
+    expect(migrateTemplate('<a href="mailto:user@host.com">contact@company.com</a>'))
+      .toBe('<a href="mailto:user@host.com">contact@company.com</a>');
+  });
+
+  it('rewrites nested #each correctly (outermost-first bracket matching)', () => {
+    const input = '{{#each a}}{{#each this.b}}X{{/each}}Y{{/each}}';
+    const expected = '{% for item in a %}{% for item in item.b %}X{% endfor %}Y{% endfor %}';
+    expect(migrateTemplate(input)).toBe(expected);
+  });
+
   it('migrates a realistic mixed template', () => {
     const input = '<p>{{@adminHost}}</p>{{#when status "UP"}}<g>{{/when}}{{#each items}}<li>{{this.name}}</li>{{/each}}{{date ts}}';
     const expected = '<p>{{ vars.adminHost }}</p>{% if status == "UP" %}<g>{% endif %}{% for item in items %}<li>{{ item.name }}</li>{% endfor %}{{ ts | date }}';
