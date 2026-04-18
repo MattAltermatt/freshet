@@ -29,17 +29,27 @@
    - Build + zip `dist/` submission artifact
    - Submit for review
 
-3. **Phase 2: UX polish redesign** — in progress (brainstorming 2026-04-17)
+3. **Phase 2: UX polish redesign** — in progress (spec locked 2026-04-18)
 
-   Scope: options page + popup + rendered top-strip, designed as a cohesive system. Spec in progress at `docs/superpowers/specs/`.
-   - Adopt `{>` palette (`#111827` + `#ea580c`) as a proper design system; dark mode from day 1 via `prefers-color-scheme`
-   - Rule edit modal overhaul: pattern examples, inline validation, KV variable editor, enabled-as-header-status
-   - Rules table tightening: cards or two-line rows; ordering + first-match-wins made visible; drag-to-reorder
-   - Rules playground: side-panel URL tester — paste a URL, see which rule matches and why
-   - Save semantics: autosave with subtle "Saved ✓" toast (not an explicit Save button)
-   - Templates: bigger rendered preview; inline syntax cheatsheet; `<!-- present-json syntax -->` header in starters as a hint for LLMs
-   - CodeMirror-lite template editor with helper autocomplete (rolls in prior backlog item)
-   - Keyboard shortcuts: raw/rendered toggle + others, all visibly documented inline (rolls in prior backlog item)
+   Scope: options page + popup + rendered top-strip, designed as a cohesive system. Spec: [`docs/superpowers/specs/2026-04-18-phase2-ux-polish-design.md`](docs/superpowers/specs/2026-04-18-phase2-ux-polish-design.md).
+
+   Tech swap: Preact 10 (UI) + Handlebars (template runtime) + CodeMirror 6 (template editor).
+
+   Rolled out as 5 sequential plans; each produces working, independently-verifiable software:
+
+   1. **Plan 1 — Foundation**: deps + Vite JSX + `src/ui/` shell (theme tokens, hooks, base components). No user-visible change. — pending
+   2. **Plan 2 — Engine swap**: drop hand-rolled engine for Handlebars; migrator for existing templates; rewrite starters. — pending
+   3. **Plan 3 — Options page**: split-view rules + URL tester, CodeMirror template editor, rule-edit modal overhaul, autosave + toasts, dark mode. — pending
+   4. **Plan 4 — Popup**: restyled popup with match status, skip toggle, test-URL quick-jump. — pending
+   5. **Plan 5 — Top-strip**: shadow-rooted injected banner, warm cream / warm near-black palette, ⋯ menu for secondaries, keyboard shortcuts. Code review + docs roll into the tail of this plan. — pending
+
+   Behaviors delivered across the 5 plans:
+   - Adopt `{>` palette (`#111827` + `#ea580c` + warm cream `#fef7ed`) as a proper design system; dark mode from day 1 via `prefers-color-scheme` + user override
+   - Rule-edit modal overhaul: pattern examples, inline validation, KV variable editor, enabled-as-header-status
+   - Rules split-view: card stack + URL tester; first-match-wins made visible; drag-to-reorder
+   - Autosave with `Saved ✓` toast + 8 s Undo toast for destructive actions
+   - Templates: CodeMirror 6 + Handlebars grammar + autocomplete; bigger rendered preview; pinned syntax cheatsheet; AI-hint comment header in starters
+   - Keyboard shortcuts visibly documented; `⌘⇧J` raw/rendered toggle wired via `chrome.commands`
 
 4. **Phase 3: Real-world example JSONs** — pending (HIGH priority; unblocks Phase 1.5 store screenshots)
    - Host static JSON fixtures at `mattaltermatt.github.io/present-json/examples/...` via Jekyll
