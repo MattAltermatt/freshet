@@ -76,3 +76,4 @@
    - Shared template registry
    - Non-JSON content support
    - **QOL: "Create rule from current page"** — one-click action from the popup (and/or context menu) that pre-populates a new rule with the current tab's URL as the pattern, then jumps into the options page's rule-edit modal. Eliminates the manual copy-paste dance. Candidate to graduate into Phase 2 Plan 4 (popup) if it fits; otherwise standalone.
+   - **QOL: "Page is being rendered" indicator** — when the current tab is actively rendered by a rule, make it obvious in the extension surface itself (not just via the rendered page content). Likely mechanism: Chrome action badge (colored dot or short text like ✓) set from the background/content script when a rule fires, cleared otherwise. Candidate to graduate into Phase 2 Plan 4 (popup) alongside the other popup work.
