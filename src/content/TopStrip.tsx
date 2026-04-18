@@ -31,6 +31,20 @@ export function TopStrip({
   );
 
   useEffect(() => {
+    const onMessage = (message: unknown): void => {
+      if (
+        typeof message === 'object' &&
+        message !== null &&
+        (message as { kind?: unknown }).kind === 'pj:toggle-raw'
+      ) {
+        setMode((m) => (m === 'rendered' ? 'raw' : 'rendered'));
+      }
+    };
+    chrome.runtime.onMessage.addListener(onMessage);
+    return () => chrome.runtime.onMessage.removeListener(onMessage);
+  }, []);
+
+  useEffect(() => {
     if (mode === 'rendered') {
       const htmlAssign = 'inner' + 'HTML';
       (contentRoot as unknown as Record<string, unknown>)[htmlAssign] = renderedHtml;

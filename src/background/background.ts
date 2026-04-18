@@ -50,3 +50,12 @@ async function maybeSchemaMigration(): Promise<void> {
 }
 
 void main();
+
+chrome.commands.onCommand.addListener((command) => {
+  if (command !== 'toggle-raw') return;
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    const tabId = tabs[0]?.id;
+    if (tabId === undefined) return;
+    void chrome.tabs.sendMessage(tabId, { kind: 'pj:toggle-raw' }).catch(() => {});
+  });
+});

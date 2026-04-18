@@ -28,6 +28,15 @@ const manifest = defineManifest({
     },
   ],
   permissions: ['storage', 'tabs'],
+  commands: {
+    'toggle-raw': {
+      suggested_key: {
+        default: 'Ctrl+Shift+J',
+        mac: 'Command+Shift+J',
+      },
+      description: 'Toggle rendered / raw view on a matched page',
+    },
+  },
   host_permissions: ['<all_urls>'],
   icons: {
     '16': 'public/icon-16.png',
