@@ -30,7 +30,7 @@ function globToRegexBody(pattern: string): string {
 
 export function compileGlob(pattern: string, opts: CompileOptions): RegExp {
   const flags = opts.caseInsensitive ? 'i' : '';
-  if (pattern.startsWith('/') && pattern.endsWith('/') && pattern.length >= 2) {
+  if (pattern.startsWith('/') && pattern.endsWith('/') && pattern.length > 2) {
     return new RegExp(pattern.slice(1, -1), flags);
   }
   return new RegExp(`^${globToRegexBody(pattern)}$`, flags);

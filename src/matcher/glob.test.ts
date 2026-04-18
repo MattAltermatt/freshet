@@ -55,4 +55,11 @@ describe('compileGlob — regex escape hatch', () => {
     expect(re.test('/api/v42')).toBe(true);
     expect(re.test('/api/vX')).toBe(false);
   });
+
+  it('does not treat bare // as match-all regex', () => {
+    const re = compileGlob('//', { caseInsensitive: false });
+    expect(re.test('/api/foo')).toBe(false);
+    expect(re.test('https://example.com')).toBe(false);
+    expect(re.test('//')).toBe(true);
+  });
 });
