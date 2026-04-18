@@ -13,5 +13,6 @@ export { useToast, clearAllToasts, type Toast as ToastModel, type ToastInput, ty
 export { useDebounce } from './hooks/useDebounce';
 export { useStorage } from './hooks/useStorage';
 export { useAutosave, type AutosaveOptions } from './hooks/useAutosave';
+export { useFocusTrap } from './hooks/useFocusTrap';
 
 export { resolveTheme, applyTheme, type Theme, type ThemePreference } from './theme';

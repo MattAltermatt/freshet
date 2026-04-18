@@ -1,6 +1,6 @@
 import type { JSX } from 'preact';
-import { useState } from 'preact/hooks';
-import { Button } from '../../ui';
+import { useRef, useState } from 'preact/hooks';
+import { Button, useFocusTrap } from '../../ui';
 import type { Rule, Templates } from '../../shared/types';
 
 export interface TemplatesToolbarProps {
@@ -37,6 +37,12 @@ export function TemplatesToolbar({
   onDisableRules,
 }: TemplatesToolbarProps): JSX.Element {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const confirmDialogRef = useRef<HTMLDivElement>(null);
+  useFocusTrap({
+    containerRef: confirmDialogRef,
+    active: confirmDelete !== null,
+    onEscape: () => setConfirmDelete(null),
+  });
 
   const doNew = (): void => {
     const name = promptUnique('New template name', templates);
@@ -135,6 +141,7 @@ export function TemplatesToolbar({
             role="dialog"
             aria-modal="true"
             aria-label={`Delete template ${confirmDelete}`}
+            ref={confirmDialogRef}
             onClick={(e) => e.stopPropagation()}
           >
             <header class="pj-modal-header">

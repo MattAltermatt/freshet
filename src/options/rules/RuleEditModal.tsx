@@ -1,6 +1,6 @@
 import type { JSX } from 'preact';
-import { useEffect, useRef, useState } from 'preact/hooks';
-import { Button, KVEditor, Toggle } from '../../ui';
+import { useRef, useState } from 'preact/hooks';
+import { Button, KVEditor, Toggle, useFocusTrap } from '../../ui';
 import { isValidHostPattern, isValidPathPattern } from '../../matcher/glob';
 import type { Rule, Templates } from '../../shared/types';
 import { PatternField } from './PatternField';
@@ -39,14 +39,7 @@ export function RuleEditModal({
   );
 
   const dialogRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent): void => {
-      if (e.key === 'Escape') onCancel();
-    };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [onCancel]);
+  useFocusTrap({ containerRef: dialogRef, active: true, onEscape: onCancel });
 
   const hostErr = isValidHostPattern(rule.hostPattern) ? null : 'Invalid glob or regex';
   const pathErr = isValidPathPattern(rule.pathPattern)
