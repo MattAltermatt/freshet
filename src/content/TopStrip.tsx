@@ -176,7 +176,8 @@ export function TopStrip({
         title={`Edit template "${rule.templateName}"`}
         onClick={openEditTemplate}
       >
-        {rule.templateName}
+        <span class="pj-rule-name-label">{rule.templateName}</span>
+        <span class="pj-rule-name-arrow" aria-hidden="true">↗</span>
       </button>
       {degraded ? (
         <span class="pj-degraded" data-testid="pj-degraded">
