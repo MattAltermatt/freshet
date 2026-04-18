@@ -26,17 +26,7 @@ export function PatternField({
   const [showExamples, setShowExamples] = useState(false);
   return (
     <div class="pj-pattern-field">
-      <div class="pj-pattern-label-row">
-        <label for={inputId}>{label}</label>
-        <button
-          type="button"
-          class="pj-link-btn"
-          aria-expanded={showExamples}
-          onClick={() => setShowExamples((v) => !v)}
-        >
-          {showExamples ? '▾ Hide examples' : '▸ Show examples'}
-        </button>
-      </div>
+      <label for={inputId} class="pj-pattern-label">{label}</label>
       <input
         id={inputId}
         type="text"
@@ -46,6 +36,14 @@ export function PatternField({
         onInput={(e) => onChange((e.target as HTMLInputElement).value)}
         {...(inputRef ? { ref: inputRef } : {})}
       />
+      <button
+        type="button"
+        class="pj-link-btn pj-pattern-examples-toggle"
+        aria-expanded={showExamples}
+        onClick={() => setShowExamples((v) => !v)}
+      >
+        {showExamples ? '▾ Hide examples' : '▸ Show examples'}
+      </button>
       {error ? <div class="pj-field-err">{error}</div> : null}
       {hint ? <div class="pj-field-hint">{hint}</div> : null}
       {showExamples ? (
