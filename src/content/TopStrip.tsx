@@ -2,6 +2,8 @@ import type { JSX } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import { Menu, type MenuItem } from '../ui/components/Menu';
 import { useStorage } from '../ui/hooks/useStorage';
+import { useTheme } from '../ui/hooks/useTheme';
+import type { ThemePreference } from '../ui/theme';
 import { directiveHash } from '../options/directives';
 import type { HostSkipList, Rule } from '../shared/types';
 
@@ -21,6 +23,7 @@ export function TopStrip({
   renderedHtml,
   rawJsonText,
   contentRoot,
+  shadowHost,
 }: TopStripProps): JSX.Element {
   const env = rule.variables['env'];
   const [mode, setMode] = useState<ViewMode>('rendered');
@@ -28,6 +31,15 @@ export function TopStrip({
   const [skipList, writeSkipList] = useStorage<'hostSkipList', HostSkipList>(
     'hostSkipList',
     [],
+  );
+  const [settings] = useStorage<'settings', { themePreference: ThemePreference }>(
+    'settings',
+    { themePreference: 'system' },
+  );
+  useTheme(
+    shadowHost
+      ? { preference: settings.themePreference, root: shadowHost }
+      : { preference: settings.themePreference },
   );
 
   useEffect(() => {
