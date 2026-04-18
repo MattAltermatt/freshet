@@ -15,7 +15,6 @@ Editorial + QOL sweep before the Chrome Web Store submission. Aim: "as good as w
 
 ### UX — rule + template flows
 
-- **URL tester polish** — quick-clear `×` inside the input, heading "Per-rule results" above the list, legend line under the input ("✅ match / — miss / ⚠ shadowed / ○ disabled").
 - **Theme switcher in the top-strip ⋯ menu** — mirror the options-page theme control inside the strip's menu; subitems "Theme: system / light / dark" with a ✓ on the active one. Ensure the options-page switcher uses the same copy + grouping so the two surfaces read identically.
 
 ### Brand + polish
