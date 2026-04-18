@@ -589,21 +589,39 @@ input:focus, select:focus, textarea:focus {
 .pj-templates-body {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: minmax(360px, 2fr) minmax(200px, 1fr);
   grid-template-areas:
     "template preview"
     "sample   preview";
   gap: var(--pj-space-3);
-  align-items: start;
+  height: min(calc(100vh - 260px), 900px);
+  min-height: 600px;
+}
+/* When any panel is collapsed, relax to auto rows so the collapsed panel's
+   section doesn't leave a tall empty gap. */
+.pj-templates-body:has([data-collapsed="true"]) {
+  grid-template-rows: auto auto;
+  height: auto;
+  min-height: 0;
 }
 .pj-templates-col {
   display: flex;
   flex-direction: column;
   gap: 4px;
   min-width: 0;
+  min-height: 0;
 }
 .pj-templates-col[data-area="template"] { grid-area: template; }
 .pj-templates-col[data-area="sample"]   { grid-area: sample; }
 .pj-templates-col[data-area="preview"]  { grid-area: preview; }
+.pj-templates-col > button.pj-templates-label { flex: 0 0 auto; }
+.pj-templates-col > .pj-cm-box,
+.pj-templates-col > .pj-preview-iframe {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.pj-templates-col > .pj-cm-box { height: auto; }
+.pj-templates-col > .pj-playground-links { flex: 0 0 auto; }
 .pj-templates-col[data-collapsed="true"] > button.pj-templates-label { opacity: 0.7; }
 
 .pj-playground-links {
@@ -677,7 +695,8 @@ button.pj-templates-label:hover .pj-disclosure-arrow { color: var(--pj-fg); }
 }
 .pj-preview-iframe {
   width: 100%;
-  height: 320px;
+  height: 100%;
+  min-height: 320px;
   background: var(--pj-bg-elevated);
   border: 1px solid var(--pj-border);
   border-radius: var(--pj-radius);
