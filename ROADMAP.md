@@ -13,9 +13,9 @@ Pre-publication hardening (regex escape guard, scripting-permission drop, 16/48/
 
 Editorial + QOL sweep before the Chrome Web Store submission. Aim: "as good as we can make it look." Ordered by impact within each group.
 
-### UX — rule + template flows
+### At-a-glance
 
-- **Theme switcher in the top-strip ⋯ menu** — mirror the options-page theme control inside the strip's menu; subitems "Theme: system / light / dark" with a ✓ on the active one. Ensure the options-page switcher uses the same copy + grouping so the two surfaces read identically.
+- **Action-badge render state** — `chrome.action.setBadgeText` from background when a rule fires (dot/✓); red `!` when a rule matched but the template failed to compile/render. Pulled forward from post-launch because "is Present-JSON doing anything here" is load-bearing for user trust.
 
 ### Brand + polish
 
@@ -73,10 +73,6 @@ Preserves the Phase 2 UX investment post-install.
 - Detect when another JSON viewer (JSONView, JSON Formatter, etc.) already mutated `document.body` before our content script ran. Heuristic hook + degraded UI branch already reserved in `src/content/conflictDetect.ts` and `TopStrip` — this phase fills in the detection logic.
 - Show a clear in-popup warning with actionable guidance — "disable JSONView on this host" / "uninstall to avoid conflicts".
 - Do NOT try to programmatically take over the page — arms-race we lose.
-
-### Action-badge render state
-
-- `chrome.action.setBadgeText` from background when a rule fires (success dot or `✓`); error badge (`!` red) when a rule matched but the template failed to compile / render. Signals render state without opening the popup. Error path overlaps with conflict detection — ship together.
 
 ### Expanded test coverage (ongoing)
 
