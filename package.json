@@ -35,7 +35,7 @@
     "test:e2e": "playwright test",
     "fixtures": "node test/fixtures-server/run.mjs",
     "icons": "node scripts/rasterize-icons.mjs",
-    "lint": "eslint --no-error-on-unmatched-pattern 'src/**/*.ts'",
+    "lint": "eslint --no-error-on-unmatched-pattern 'src/**/*.{ts,tsx}'",
     "format": "prettier --write 'src/**/*.{ts,html,json}'",
     "typecheck": "tsc --noEmit"
   },
