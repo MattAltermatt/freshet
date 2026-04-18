@@ -52,6 +52,13 @@ describe('storage', () => {
     await storage.setHostSkipList(['x.com']);
     expect(await storage.getHostSkipList()).toEqual(['x.com']);
   });
+  it('returns undefined schemaVersion when unset', async () => {
+    expect(await storage.getSchemaVersion()).toBeUndefined();
+  });
+  it('round-trips schemaVersion', async () => {
+    await storage.setSchemaVersion(2);
+    expect(await storage.getSchemaVersion()).toBe(2);
+  });
   it('reads from local area when sentinel is set', async () => {
     await api.local.set({ pj_storage_area: 'local' });
     await api.local.set({ rules: [{ id: 'r1', hostPattern: '*', pathPattern: '*', templateName: 't', variables: {}, enabled: true }] });

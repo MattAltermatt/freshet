@@ -4,6 +4,7 @@ const K_RULES = 'rules';
 const K_TEMPLATES = 'templates';
 const K_SKIP = 'hostSkipList';
 const K_AREA = 'pj_storage_area';
+const K_SCHEMA = 'schemaVersion';
 
 export interface Storage {
   getRules(): Promise<Rule[]>;
@@ -12,6 +13,8 @@ export interface Storage {
   setTemplates(templates: Templates): Promise<void>;
   getHostSkipList(): Promise<HostSkipList>;
   setHostSkipList(list: HostSkipList): Promise<void>;
+  getSchemaVersion(): Promise<number | undefined>;
+  setSchemaVersion(version: number): Promise<void>;
 }
 
 export async function createStorage(api: typeof chrome.storage): Promise<Storage> {
@@ -28,5 +31,11 @@ export async function createStorage(api: typeof chrome.storage): Promise<Storage
     setTemplates: (templates) => area.set({ [K_TEMPLATES]: templates }),
     getHostSkipList: () => getOne<HostSkipList>(K_SKIP, []),
     setHostSkipList: (list) => area.set({ [K_SKIP]: list }),
+    getSchemaVersion: async () => {
+      const result = await area.get([K_SCHEMA]);
+      const v = result[K_SCHEMA];
+      return typeof v === 'number' ? v : undefined;
+    },
+    setSchemaVersion: (version) => area.set({ [K_SCHEMA]: version }),
   };
 }
