@@ -14,6 +14,8 @@ export interface TopStripProps {
   contentRoot: HTMLElement;
   /** Set automatically by mountTopStrip; overridable in tests. */
   shadowHost?: HTMLElement;
+  /** Phase 4 hook — reserved slot for the "another viewer handled this page" degraded state. */
+  degraded?: { reason: string };
 }
 
 type ViewMode = 'rendered' | 'raw';
@@ -24,6 +26,7 @@ export function TopStrip({
   rawJsonText,
   contentRoot,
   shadowHost,
+  degraded,
 }: TopStripProps): JSX.Element {
   const env = rule.variables['env'];
   const [mode, setMode] = useState<ViewMode>('rendered');
@@ -134,6 +137,12 @@ export function TopStrip({
       <span class="pj-rule-name" data-testid="pj-rule-name" title={rule.templateName}>
         {rule.templateName}
       </span>
+      {degraded ? (
+        <span class="pj-degraded" data-testid="pj-degraded">
+          ⚠ {degraded.reason}
+        </span>
+      ) : (
+        <>
       <div class="pj-toggle-group" role="group" aria-label="View mode">
         <button
           type="button"
@@ -165,6 +174,8 @@ export function TopStrip({
           </button>
         }
       />
+        </>
+      )}
     </div>
   );
 }
