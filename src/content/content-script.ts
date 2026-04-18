@@ -47,6 +47,14 @@ async function main(): Promise<void> {
   renderSuccess(rendered, rawText, rule);
 }
 
+function signal(kind: 'pj:rendered' | 'pj:render-error'): void {
+  try {
+    void chrome.runtime.sendMessage({ kind }).catch(() => {});
+  } catch {
+    /* extension context invalidated — badge update best-effort */
+  }
+}
+
 function renderSuccess(html: string, raw: string, rule: Rule): void {
   const titleEsc = escHtml(window.location.href);
   document.documentElement.innerHTML =
@@ -67,6 +75,7 @@ function renderSuccess(html: string, raw: string, rule: Rule): void {
     rawJsonText: raw,
     contentRoot: root,
   });
+  signal('pj:rendered');
 }
 
 function renderError(message: string): void {
@@ -77,6 +86,7 @@ function renderError(message: string): void {
   banner.onclick = () => banner.remove();
   setTimeout(() => banner.remove(), 10000);
   document.body.prepend(banner);
+  signal('pj:render-error');
 }
 
 function escHtml(s: string): string {

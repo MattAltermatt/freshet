@@ -6,6 +6,7 @@ import {
   migrateTemplatesToV2,
 } from '../storage/migration';
 import starterInternalUser from '../starter/internal-user.html?raw';
+import { appearanceFor, type BadgeSignal } from './badge';
 
 async function main(): Promise<void> {
   await maybeStorageAreaMigration();
@@ -60,7 +61,7 @@ chrome.commands.onCommand.addListener((command) => {
   });
 });
 
-chrome.runtime.onMessage.addListener((message) => {
+chrome.runtime.onMessage.addListener((message, sender) => {
   if (typeof message !== 'object' || message === null) return;
   const kind = (message as { kind?: unknown }).kind;
   if (kind === 'pj:open-options') {
@@ -69,5 +70,21 @@ chrome.runtime.onMessage.addListener((message) => {
       chrome.runtime.getURL('src/options/options.html') +
       (typeof hash === 'string' ? hash : '');
     void chrome.tabs.create({ url });
+    return;
   }
+  if (kind === 'pj:rendered' || kind === 'pj:render-error') {
+    const tabId = sender.tab?.id;
+    if (tabId === undefined) return;
+    const appearance = appearanceFor(kind as BadgeSignal);
+    void chrome.action.setBadgeText({ tabId, text: appearance.text });
+    void chrome.action.setBadgeBackgroundColor({ tabId, color: appearance.color });
+  }
+});
+
+// Clear the badge on navigation start so stale state from the previous URL
+// doesn't leak forward — the content script re-fires pj:rendered if the new
+// page also matches a rule, and stays silent otherwise.
+chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
+  if (changeInfo.status !== 'loading') return;
+  void chrome.action.setBadgeText({ tabId, text: '' });
 });
