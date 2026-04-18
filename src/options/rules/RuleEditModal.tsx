@@ -7,6 +7,7 @@ import { PatternField } from './PatternField';
 
 export interface RuleEditModalProps {
   initial: Rule | null;
+  initialHost?: string;
   templates: Templates;
   onSave: (rule: Rule) => void;
   onCancel: () => void;
@@ -15,10 +16,10 @@ export interface RuleEditModalProps {
 const HOST_EXAMPLES = ['*.server.com', '127.0.0.1', '/^admin.*/', 'api.example.com'];
 const PATH_EXAMPLES = ['/', '/api/**', '/users/*', '/^\\/v2\\/.*$/'];
 
-function blankRule(templates: Templates): Rule {
+function blankRule(templates: Templates, host?: string): Rule {
   return {
     id: `rule-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-    hostPattern: '',
+    hostPattern: host ?? '',
     pathPattern: '/',
     templateName: Object.keys(templates)[0] ?? '',
     variables: {},
@@ -28,12 +29,13 @@ function blankRule(templates: Templates): Rule {
 
 export function RuleEditModal({
   initial,
+  initialHost,
   templates,
   onSave,
   onCancel,
 }: RuleEditModalProps): JSX.Element {
   const [rule, setRule] = useState<Rule>(() =>
-    initial ? structuredClone(initial) : blankRule(templates),
+    initial ? structuredClone(initial) : blankRule(templates, initialHost),
   );
 
   const dialogRef = useRef<HTMLDivElement>(null);

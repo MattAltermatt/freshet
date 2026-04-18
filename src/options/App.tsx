@@ -13,6 +13,7 @@ import { RulesTab } from './rules/RulesTab';
 import { TemplatesTab } from './templates/TemplatesTab';
 import { ShortcutsFooter } from './ShortcutsFooter';
 import { promoteStorageToLocal } from '../storage/promoteStorageToLocal';
+import { parseDirective, type OptionsDirective } from './directives';
 
 type Tab = 'rules' | 'templates';
 
@@ -28,6 +29,15 @@ export function App(): JSX.Element {
   const [promoted, setPromoted] = useState(false);
   useEffect(() => {
     void promoteStorageToLocal().finally(() => setPromoted(true));
+  }, []);
+
+  const [directive, setDirective] = useState<OptionsDirective | null>(null);
+  useEffect(() => {
+    const d = parseDirective(window.location.hash);
+    if (d) {
+      setDirective(d);
+      window.history.replaceState(null, '', window.location.pathname);
+    }
   }, []);
 
   const [settings, writeSettings] = useStorage<'settings', Settings>(
@@ -48,6 +58,10 @@ export function App(): JSX.Element {
   const toast = useToast();
 
   const [tab, setTab] = useState<Tab>('rules');
+
+  useEffect(() => {
+    if (directive) setTab('rules');
+  }, [directive]);
 
   const handleRuleDelete = (index: number): void => {
     const snapshot = [...rules];
@@ -102,6 +116,8 @@ export function App(): JSX.Element {
             templates={templates}
             onChange={(next) => void writeRules(next)}
             onDelete={(index) => handleRuleDelete(index)}
+            directive={directive}
+            onDirectiveHandled={() => setDirective(null)}
           />
         ) : (
           <TemplatesTab

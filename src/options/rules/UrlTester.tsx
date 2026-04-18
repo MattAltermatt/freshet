@@ -1,10 +1,11 @@
 import type { JSX } from 'preact';
-import { useMemo, useState } from 'preact/hooks';
+import { useEffect, useMemo, useState } from 'preact/hooks';
 import type { Rule } from '../../shared/types';
 import { findMatchingRule, matchesHost, matchesPath } from '../../matcher/matcher';
 
 export interface UrlTesterProps {
   rules: Rule[];
+  initialUrl?: string;
 }
 
 type RowState =
@@ -41,8 +42,11 @@ const CHIPS: string[] = [
   'http://127.0.0.1:4391/internal/user/1234',
 ];
 
-export function UrlTester({ rules }: UrlTesterProps): JSX.Element {
-  const [url, setUrl] = useState('');
+export function UrlTester({ rules, initialUrl }: UrlTesterProps): JSX.Element {
+  const [url, setUrl] = useState(initialUrl ?? '');
+  useEffect(() => {
+    if (initialUrl) setUrl(initialUrl);
+  }, [initialUrl]);
 
   const parsed = useMemo<URL | null>(() => {
     if (!url.trim()) return null;
