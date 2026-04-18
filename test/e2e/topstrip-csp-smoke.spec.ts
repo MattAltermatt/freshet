@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const extensionPath = path.join(__dirname, '../../dist');
 
-test('top-strip mounts in closed shadow root on a rendered JSON page (no CSP violations)', async () => {
+test('top-strip mounts in a shadow root on a rendered JSON page (no CSP violations)', async () => {
   const ctx = await chromium.launchPersistentContext('', {
     headless: false,
     args: [`--disable-extensions-except=${extensionPath}`, `--load-extension=${extensionPath}`],

@@ -18,7 +18,11 @@ export function mountTopStrip(options: MountTopStripOptions): HTMLElement {
   host.id = 'pj-topstrip-host';
   parent.prepend(host);
 
-  const shadow = host.attachShadow({ mode: 'closed' });
+  // `mode: 'open'` — content scripts run in an isolated world so the host page
+  // can't reach the shadow via JS anyway, and `open` keeps the strip inspectable
+  // from devtools + Playwright. Closed mode blocks test-reach for no real
+  // security benefit in this context.
+  const shadow = host.attachShadow({ mode: 'open' });
   const style = document.createElement('style');
   style.textContent = stripStyles;
   shadow.appendChild(style);
