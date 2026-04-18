@@ -169,6 +169,13 @@ const parser: StreamParser<LiquidState> = {
       stream.eatWhile(/[^{<]/);
       return 'tagName';
     }
+    // A lone `{` that didn't match any Liquid opener (e.g. CSS inside
+    // <style>, raw `{` in JSON examples) must still advance the stream —
+    // CodeMirror throws "Stream parser failed to advance stream" otherwise.
+    if (stream.peek() === '{') {
+      stream.next();
+      return null;
+    }
     stream.eatWhile(/[^{<]/);
     return null;
   },
