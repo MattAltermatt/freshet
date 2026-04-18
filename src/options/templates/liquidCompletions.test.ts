@@ -1,5 +1,21 @@
 import { describe, it, expect } from 'vitest';
-import { walkJsonPaths } from './liquidCompletions';
+import type { CompletionContext } from '@codemirror/autocomplete';
+import { liquidCompletions, walkJsonPaths } from './liquidCompletions';
+
+function makeContext(text: string, explicit = false): CompletionContext {
+  const pos = text.length;
+  return {
+    pos,
+    explicit,
+    state: { doc: { sliceString: (from: number, to: number) => text.slice(from, to) } },
+    matchBefore(regex: RegExp) {
+      const anchored = new RegExp(regex.source + '$');
+      const m = text.slice(0, pos).match(anchored);
+      if (!m) return null;
+      return { from: pos - m[0].length, to: pos, text: m[0] };
+    },
+  } as unknown as CompletionContext;
+}
 
 describe('walkJsonPaths', () => {
   it('walks nested objects', () => {
@@ -21,5 +37,38 @@ describe('walkJsonPaths', () => {
     expect(walkJsonPaths(null)).toEqual([]);
     expect(walkJsonPaths('str')).toEqual([]);
     expect(walkJsonPaths(42)).toEqual([]);
+  });
+});
+
+describe('liquidCompletions inside filter string arg', () => {
+  const source = liquidCompletions({ sampleJsonPaths: ['id', 'name'], ruleVars: [] });
+
+  it('offers date format tokens inside a date filter string arg', () => {
+    const text = '{{ ts | date: "y';
+    const result = source(makeContext(text));
+    expect(result).not.toBeNull();
+    const labels = result!.options.map((o) => o.label);
+    expect(labels).toEqual(['yyyy', 'MM', 'dd', 'HH', 'mm', 'ss']);
+    expect(result!.from).toBe(text.length - 1);
+  });
+
+  it('offers all tokens at the start of a date format string on explicit trigger', () => {
+    const text = '{{ ts | date: "';
+    const result = source(makeContext(text, true));
+    expect(result).not.toBeNull();
+    expect(result!.from).toBe(text.length);
+    expect(result!.options).toHaveLength(6);
+  });
+
+  it('returns null inside an unknown-filter string arg', () => {
+    const text = '{{ items | unknown: "s';
+    expect(source(makeContext(text))).toBeNull();
+  });
+
+  it('still offers JSON paths after the filter colon when no string literal has opened', () => {
+    const text = '{{ id';
+    const result = source(makeContext(text));
+    expect(result).not.toBeNull();
+    expect(result!.options.some((o) => o.label === 'id')).toBe(true);
   });
 });

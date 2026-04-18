@@ -1,6 +1,8 @@
 import type { CompletionContext, CompletionResult } from '@codemirror/autocomplete';
 
 const HELPERS = ['date', 'link', 'num', 'raw'];
+// Format tokens understood by the `date` filter (see src/engine/helpers.ts formatDate).
+const DATE_FORMAT_TOKENS = ['yyyy', 'MM', 'dd', 'HH', 'mm', 'ss'];
 const TAGS = [
   'if', 'else', 'elsif', 'endif',
   'for', 'endfor',
@@ -42,10 +44,31 @@ export interface LiquidCompletionContext {
 
 export function liquidCompletions(ctx: LiquidCompletionContext) {
   return (cc: CompletionContext): CompletionResult | null => {
+    const before = cc.state.doc.sliceString(Math.max(0, cc.pos - 80), cc.pos);
+
+    // Inside an open double-quoted filter argument: `| <filter>: "<partial>`.
+    // The top-level cascade can't reach here because its anchors all require
+    // word/pipe chars at $ — a `"` breaks the chain.
+    const inFilterStringArg = before.match(/\|\s*(\w+)\s*:\s*"([^"]*)$/);
+    if (inFilterStringArg) {
+      const filter = inFilterStringArg[1]!;
+      if (filter === 'date') {
+        const partialLen = (before.match(/[A-Za-z]*$/)?.[0] ?? '').length;
+        return {
+          from: cc.pos - partialLen,
+          options: DATE_FORMAT_TOKENS.map((t) => ({
+            label: t,
+            type: 'constant',
+            detail: 'date token',
+          })),
+        };
+      }
+      return null;
+    }
+
     const word = cc.matchBefore(/[\w.[\]]*/);
     if (!word || (word.from === word.to && !cc.explicit)) return null;
 
-    const before = cc.state.doc.sliceString(Math.max(0, cc.pos - 40), cc.pos);
     const inOutput = /\{\{\s*(?:[\w.[\]|]*\s*)*[\w.[\]]*$/.test(before);
     const inTag = /\{%-?\s*\w*$/.test(before);
     const afterPipe = /\|\s*\w*$/.test(before);
