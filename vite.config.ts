@@ -26,7 +26,7 @@ const manifest = defineManifest({
       run_at: 'document_idle',
     },
   ],
-  permissions: ['storage', 'scripting', 'tabs'],
+  permissions: ['storage', 'tabs'],
   host_permissions: ['<all_urls>'],
   icons: {
     '16': 'public/icon-16.png',
