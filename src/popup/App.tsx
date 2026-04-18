@@ -5,10 +5,17 @@ import { truncateUrlMiddle } from '../shared/truncateUrl';
 import { Toggle, useStorage } from '../ui';
 import type { HostSkipList, Rule } from '../shared/types';
 import { findMatchingRule } from '../matcher/matcher';
+import { directiveHash } from '../options/directives';
 
 interface ActiveTab {
   url: string;
   host: string;
+}
+
+function openOptionsAt(hash: string): void {
+  const url = chrome.runtime.getURL('src/options/options.html') + hash;
+  void chrome.tabs.create({ url });
+  window.close();
 }
 
 function readActiveTab(): Promise<ActiveTab> {
@@ -92,7 +99,11 @@ export function App(): JSX.Element {
         {matched ? (
           <div class="pj-popup-match-row">
             <span class="pj-rule-chip">{matched.templateName || matched.id}</span>
-            <button type="button" class="pj-linkish" onClick={() => {/* Task 16 */}}>
+            <button
+              type="button"
+              class="pj-linkish"
+              onClick={() => matched && openOptionsAt(directiveHash.editRule(matched.id))}
+            >
               Edit rule
             </button>
           </div>
@@ -103,7 +114,7 @@ export function App(): JSX.Element {
               type="button"
               class="pj-btn pj-btn--accent"
               disabled={!tab.host}
-              onClick={() => {/* Task 16 */}}
+              onClick={() => openOptionsAt(directiveHash.newRule(tab.host))}
             >
               + Add rule for this host
             </button>
@@ -125,7 +136,7 @@ export function App(): JSX.Element {
             type="button"
             class="pj-btn"
             disabled={!testUrl.trim()}
-            onClick={() => {/* Task 16 */}}
+            onClick={() => openOptionsAt(directiveHash.testUrl(testUrl.trim()))}
           >
             Test in options
           </button>
