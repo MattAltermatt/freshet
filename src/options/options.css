@@ -22,10 +22,12 @@ body {
 
 .pj-brand { display: flex; align-items: center; gap: var(--pj-space-2); }
 .pj-logo {
+  display: inline-flex;
   font: 600 18px/1 var(--pj-font-mono);
-  color: var(--pj-accent);
   letter-spacing: -1px;
 }
+.pj-logo-brace   { color: var(--pj-fg); }
+.pj-logo-bracket { color: var(--pj-accent); }
 .pj-header h1 { margin: 0; font-size: var(--pj-font-size-lg); }
 
 .pj-tabs { display: flex; gap: var(--pj-space-1); }
