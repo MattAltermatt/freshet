@@ -139,6 +139,7 @@ export function TemplatesTab({
                 sampleJson={safeParse(sampleText)}
                 ruleVars={ruleVars}
               />
+              <Cheatsheet />
             </section>
             <section class="pj-templates-side">
               <div class="pj-templates-side-block">
@@ -163,7 +164,6 @@ export function TemplatesTab({
                   vars={{}}
                 />
               </div>
-              <Cheatsheet />
             </section>
           </div>
         </>

@@ -450,7 +450,12 @@ input:focus, select:focus, textarea:focus {
   gap: var(--pj-space-3);
   align-items: start;
 }
-.pj-templates-editor,
+.pj-templates-editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pj-space-3);
+}
+.pj-templates-editor > .pj-templates-label { margin-bottom: -8px; }
 .pj-templates-side-block {
   display: flex;
   flex-direction: column;
