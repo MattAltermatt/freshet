@@ -45,3 +45,26 @@ describe('render — #when', () => {
     expect(render(t, { on: 'y', id: 7 }, {})).toBe('id=7');
   });
 });
+
+describe('render — #each', () => {
+  it('iterates array elements', () => {
+    const t = '{{#each items}}<li>{{this.name}}</li>{{/each}}';
+    const json = { items: [{ name: 'a' }, { name: 'b' }] };
+    expect(render(t, json, {})).toBe('<li>a</li><li>b</li>');
+  });
+  it('renders nothing for empty arrays', () => {
+    expect(render('{{#each xs}}x{{/each}}', { xs: [] }, {})).toBe('');
+  });
+  it('renders nothing for missing arrays', () => {
+    expect(render('{{#each xs}}x{{/each}}', {}, {})).toBe('');
+  });
+  it('supports {{this}} for primitive elements', () => {
+    const t = '{{#each xs}}[{{this}}]{{/each}}';
+    expect(render(t, { xs: ['a', 'b'] }, {})).toBe('[a][b]');
+  });
+  it('nests with #when inside each element', () => {
+    const t = '{{#each xs}}{{#when this.on "y"}}{{this.id}}{{/when}}{{/each}}';
+    const json = { xs: [{ id: 1, on: 'y' }, { id: 2, on: 'n' }, { id: 3, on: 'y' }] };
+    expect(render(t, json, {})).toBe('13');
+  });
+});
