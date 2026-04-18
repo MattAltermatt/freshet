@@ -15,8 +15,6 @@ Editorial + QOL sweep before the Chrome Web Store submission. Aim: "as good as w
 
 ### UX — rule + template flows
 
-- **"+ Add rule for this host" captures the full URL** — popup + top-strip seed only `hostPattern` today; leave `pathPattern = /`. Extend the directive to `#new-rule=<encodeURIComponent(url)>` and pre-fill both patterns from `hostname` + `pathname` (reasonable default: first 1–2 path segments + `/**`).
-- **Quick-attach-template when the rule's template doesn't exist** — inline "+ Create template '<name>'" row inside the dropdown, or adjacent button that seeds a blank template and returns focus to the rule modal. Kills the modal-close → Templates → New → rename → back-to-Rules dance.
 - **URL tester polish** — quick-clear `×` inside the input, heading "Per-rule results" above the list, legend line under the input ("✅ match / — miss / ⚠ shadowed / ○ disabled").
 - **Surface expected `vars.*` from a template into the rule editor** — static scan for `{{ vars.x }}` references, pre-populate rule's Variables panel with expected keys, flag missing/extra keys inline. Eliminates the "why isn't this rendering" mystery when a rule forgot a var.
 - **Theme switcher in the top-strip ⋯ menu** — mirror the options-page theme control inside the strip's menu; subitems "Theme: system / light / dark" with a ✓ on the active one. Ensure the options-page switcher uses the same copy + grouping so the two surfaces read identically.
