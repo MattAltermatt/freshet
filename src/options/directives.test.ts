@@ -19,11 +19,30 @@ describe('parseDirective', () => {
     });
   });
 
-  it('parses new-rule with host', () => {
-    const encoded = encodeURIComponent('api.example.com');
-    expect(parseDirective(`#new-rule:host=${encoded}`)).toEqual({
+  it('parses new-rule with a full URL, splitting host and path-glob', () => {
+    const encoded = encodeURIComponent('https://api.example.com/v1/users/42');
+    expect(parseDirective(`#new-rule=${encoded}`)).toEqual({
       kind: 'new-rule',
       host: 'api.example.com',
+      path: '/v1/users/**',
+    });
+  });
+
+  it('parses new-rule with a root-path URL as host + /', () => {
+    const encoded = encodeURIComponent('https://example.com/');
+    expect(parseDirective(`#new-rule=${encoded}`)).toEqual({
+      kind: 'new-rule',
+      host: 'example.com',
+      path: '/',
+    });
+  });
+
+  it('falls back to host-only parsing when the directive value is not a URL', () => {
+    const encoded = encodeURIComponent('api.example.com');
+    expect(parseDirective(`#new-rule=${encoded}`)).toEqual({
+      kind: 'new-rule',
+      host: 'api.example.com',
+      path: '/',
     });
   });
 
@@ -47,9 +66,13 @@ describe('directiveHash', () => {
     expect(parseDirective(hash)).toEqual({ kind: 'test-url', url });
   });
 
-  it('round-trips new-rule host', () => {
-    const hash = directiveHash.newRule('api.example.com');
-    expect(parseDirective(hash)).toEqual({ kind: 'new-rule', host: 'api.example.com' });
+  it('round-trips new-rule url into host + path-glob', () => {
+    const hash = directiveHash.newRule('https://api.example.com/v1/repos/claude/issues');
+    expect(parseDirective(hash)).toEqual({
+      kind: 'new-rule',
+      host: 'api.example.com',
+      path: '/v1/repos/**',
+    });
   });
 
   it('round-trips edit-rule id', () => {

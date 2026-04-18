@@ -31,6 +31,7 @@ export function RulesTab({
   const [editing, setEditing] = useState<number | null | undefined>(undefined);
   const [testerUrl, setTesterUrl] = useState<string>('');
   const [newRuleHost, setNewRuleHost] = useState<string>('');
+  const [newRulePath, setNewRulePath] = useState<string>('');
   const toast = useToast();
 
   useEffect(() => {
@@ -42,6 +43,7 @@ export function RulesTab({
     }
     if (directive.kind === 'new-rule') {
       setNewRuleHost(directive.host);
+      setNewRulePath(directive.path);
       setEditing(null);
       onDirectiveHandled?.();
       return;
@@ -68,6 +70,7 @@ export function RulesTab({
   const close = (): void => {
     setEditing(undefined);
     setNewRuleHost('');
+    setNewRulePath('');
   };
 
   const save = (rule: Rule): void => {
@@ -105,6 +108,7 @@ export function RulesTab({
         <RuleEditModal
           initial={editing === null ? null : rules[editing] ?? null}
           {...(editing === null && newRuleHost ? { initialHost: newRuleHost } : {})}
+          {...(editing === null && newRulePath ? { initialPath: newRulePath } : {})}
           templates={templates}
           onSave={save}
           onCancel={close}

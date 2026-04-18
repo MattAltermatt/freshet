@@ -117,7 +117,7 @@ export function App(): JSX.Element {
               type="button"
               class="pj-btn pj-btn--accent"
               disabled={!tab.host}
-              onClick={() => openOptionsAt(directiveHash.newRule(tab.host))}
+              onClick={() => openOptionsAt(directiveHash.newRule(tab.url))}
             >
               + Add rule for this host
             </button>

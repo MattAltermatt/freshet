@@ -1,6 +1,8 @@
+import { suggestPathPattern } from '../shared/suggestPathPattern';
+
 export type OptionsDirective =
   | { kind: 'test-url'; url: string }
-  | { kind: 'new-rule'; host: string }
+  | { kind: 'new-rule'; host: string; path: string }
   | { kind: 'edit-rule'; ruleId: string };
 
 function safeDecode(s: string): string | null {
@@ -8,6 +10,19 @@ function safeDecode(s: string): string | null {
     return decodeURIComponent(s);
   } catch {
     return null;
+  }
+}
+
+function parseNewRuleUrl(raw: string): { host: string; path: string } | null {
+  const decoded = safeDecode(raw);
+  if (!decoded) return null;
+  try {
+    const u = new URL(decoded);
+    return { host: u.hostname, path: suggestPathPattern(u.pathname) };
+  } catch {
+    // Not a full URL — treat as a bare host for robustness against callers
+    // that still pass just a hostname. Path defaults to the root pattern.
+    return { host: decoded, path: '/' };
   }
 }
 
@@ -21,10 +36,10 @@ export function parseDirective(hash: string): OptionsDirective | null {
     return { kind: 'test-url', url };
   }
 
-  if (raw.startsWith('new-rule:host=')) {
-    const host = safeDecode(raw.slice('new-rule:host='.length));
-    if (!host) return null;
-    return { kind: 'new-rule', host };
+  if (raw.startsWith('new-rule=')) {
+    const parsed = parseNewRuleUrl(raw.slice('new-rule='.length));
+    if (!parsed) return null;
+    return { kind: 'new-rule', ...parsed };
   }
 
   if (raw.startsWith('edit-rule=')) {
@@ -38,6 +53,6 @@ export function parseDirective(hash: string): OptionsDirective | null {
 
 export const directiveHash = {
   testUrl: (url: string): string => `#test-url=${encodeURIComponent(url)}`,
-  newRule: (host: string): string => `#new-rule:host=${encodeURIComponent(host)}`,
+  newRule: (url: string): string => `#new-rule=${encodeURIComponent(url)}`,
   editRule: (ruleId: string): string => `#edit-rule=${encodeURIComponent(ruleId)}`,
 };
