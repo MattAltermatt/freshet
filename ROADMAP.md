@@ -20,8 +20,6 @@ Editorial + QOL sweep before the Chrome Web Store submission. Aim: "as good as w
   - **README.md**: logo at the top, one-liner aligned with the manifest description.
   - **Options, popup, Templates-tab headers**: `{>` becomes a link to the GH Pages site (new tab via `chrome.tabs.create`). Top-strip `{>` stays decorative (no outbound link on arbitrary host pages).
   - **Alignment sweep**: manifest `description`, options + popup `<title>`, every visible instance of the `{>` motif — brace + bracket in the same order, orange always on the bracket.
-- **Friendlier starter templates** — inline HTML comments in bundled starters teaching the Liquid grammar we expose (`{% if %}` / `{% for %}`, filters, `vars.*`, sanitizer behavior). Doubles as docs for template authors and LLMs.
-- **Bundled starter with variables** — a real-world example template that exercises `{{ vars.* }}` end-to-end so users discover the variable pipeline.
 - **Collapsible template boxes in the Templates tab** — disclosure-arrow on editor, sample JSON, preview, cheatsheet. Persisted per-user in `settings` or a dedicated `pj_ui_collapse` storage key.
 - **Code/editorial pass** — variable naming (`--pj-*`, `pj-*`, camelCase, storage keys), class-name consistency, dead code, duplicate tokens, stale comments, unused imports, one pass over every user-facing string for voice/tone.
 
