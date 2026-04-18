@@ -41,4 +41,29 @@ describe('<Menu>', () => {
     fireEvent.click(screen.getByText('outside'));
     expect(screen.queryByText('Copy')).toBeNull();
   });
+
+  it('closes on outside click when mounted inside a shadow root', () => {
+    const host = document.createElement('div');
+    document.body.appendChild(host);
+    const shadow = host.attachShadow({ mode: 'open' });
+    const mount = document.createElement('div');
+    shadow.appendChild(mount);
+    const outside = document.createElement('div');
+    outside.textContent = 'outside-shadow';
+    shadow.appendChild(outside);
+
+    render(
+      <Menu trigger={<button>open</button>} items={[{ label: 'Copy', onSelect: () => {} }]} />,
+      { container: mount },
+    );
+    const triggerButton = mount.querySelector('button') as HTMLButtonElement;
+    fireEvent.click(triggerButton);
+    expect(mount.querySelector('.pj-menu-list')).not.toBeNull();
+
+    // Click a sibling inside the shadow — should bubble to the shadow root listener and close.
+    fireEvent.click(outside);
+    expect(mount.querySelector('.pj-menu-list')).toBeNull();
+
+    // Plain-document Menu path is unaffected — verified by the existing "closes on outside click" test.
+  });
 });

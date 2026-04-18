@@ -26,11 +26,15 @@ export function Menu({ trigger, items, align = 'right' }: MenuProps): JSX.Elemen
     const onClick = (e: MouseEvent) => {
       if (!root.current?.contains(e.target as Node)) setOpen(false);
     };
+    const rootNode = root.current?.getRootNode();
+    const clickTarget: Document | ShadowRoot =
+      rootNode instanceof ShadowRoot ? rootNode : document;
+
     document.addEventListener('keydown', onKey);
-    document.addEventListener('click', onClick);
+    clickTarget.addEventListener('click', onClick as EventListener);
     return () => {
       document.removeEventListener('keydown', onKey);
-      document.removeEventListener('click', onClick);
+      clickTarget.removeEventListener('click', onClick as EventListener);
     };
   }, [open]);
 
