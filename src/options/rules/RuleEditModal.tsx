@@ -1,9 +1,10 @@
 import type { JSX } from 'preact';
-import { useRef, useState } from 'preact/hooks';
+import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { Button, KVEditor, Toggle, useFocusTrap } from '../../ui';
 import { isValidHostPattern, isValidPathPattern } from '../../matcher/glob';
 import type { Rule, Templates } from '../../shared/types';
 import { suggestTemplateName, uniqueTemplateName } from '../../shared/suggestTemplateName';
+import { extractTemplateVars } from '../../shared/extractTemplateVars';
 import { PatternField } from './PatternField';
 
 export interface RuleEditModalProps {
@@ -102,6 +103,31 @@ export function RuleEditModal({
     ? rule.templateName
     : null;
 
+  const expectedVars = useMemo(
+    () => extractTemplateVars(templates[rule.templateName] ?? ''),
+    [templates, rule.templateName],
+  );
+
+  // Additive: when the active template references vars the rule hasn't
+  // declared yet, seed them as empty-value rows so the user can't miss that
+  // they need to be filled in. Never removes — existing values are preserved,
+  // and extras stay (they may be intentional).
+  useEffect(() => {
+    const currentKeys = new Set(Object.keys(rule.variables));
+    const missing = expectedVars.filter((v) => !currentKeys.has(v));
+    if (missing.length === 0) return;
+    setRule((r) => ({
+      ...r,
+      variables: {
+        ...r.variables,
+        ...Object.fromEntries(missing.map((v) => [v, ''])),
+      },
+    }));
+  }, [expectedVars]);
+
+  const declaredVarKeys = Object.keys(rule.variables);
+  const unusedVars = declaredVarKeys.filter((k) => !expectedVars.includes(k));
+
   return (
     <div
       class="pj-modal-backdrop"
@@ -194,6 +220,28 @@ export function RuleEditModal({
               Accessible in templates as{' '}
               <code>{'{{ vars.name }}'}</code>.
             </p>
+            {expectedVars.length > 0 ? (
+              <p class="pj-field-hint pj-vars-referenced">
+                Referenced by this template:{' '}
+                {expectedVars.map((v, i) => (
+                  <span key={v}>
+                    {i > 0 ? ', ' : ''}
+                    <code>{v}</code>
+                  </span>
+                ))}
+              </p>
+            ) : null}
+            {unusedVars.length > 0 ? (
+              <p class="pj-field-hint pj-vars-unused">
+                Not used by this template (safe to remove):{' '}
+                {unusedVars.map((v, i) => (
+                  <span key={v}>
+                    {i > 0 ? ', ' : ''}
+                    <code>{v}</code>
+                  </span>
+                ))}
+              </p>
+            ) : null}
             <KVEditor
               value={rule.variables}
               onChange={(vars) => setRule({ ...rule, variables: vars })}

@@ -399,6 +399,15 @@ input:focus, select:focus, textarea:focus {
 .pj-template-picker-hint { flex: 1; }
 .pj-template-pending-banner { align-items: flex-start; line-height: 1.4; }
 
+.pj-vars-referenced code,
+.pj-vars-unused code {
+  background: var(--pj-bg-subtle);
+  border: 1px solid var(--pj-border-subtle);
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+.pj-vars-unused { color: var(--pj-fg-subtle); font-style: italic; }
+
 .pj-pattern-field {
   display: grid;
   grid-template-columns: 1fr auto;
