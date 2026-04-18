@@ -45,6 +45,40 @@
   --pj-font-size-lg:  15px;
 }
 
+/* ───── Menu ───── */
+.pj-menu { position: relative; display: inline-block; }
+.pj-menu-trigger { display: inline-block; }
+.pj-menu-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  min-width: 180px;
+  background: var(--pj-bg-elevated);
+  color: var(--pj-fg);
+  border: 1px solid var(--pj-border);
+  border-radius: var(--pj-radius-lg);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  padding: 4px 0;
+  z-index: 100;
+}
+.pj-menu-list[data-align="right"] { right: 0; }
+.pj-menu-list[data-align="left"]  { left: 0; }
+.pj-menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--pj-space-2);
+  width: 100%;
+  text-align: left;
+  padding: var(--pj-space-2) var(--pj-space-3);
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+.pj-menu-item:hover { background: var(--pj-accent-wash); }
+.pj-menu-item--danger { color: var(--pj-danger); }
+.pj-menu-item-icon { display: inline-flex; width: 16px; justify-content: center; }
+
 :root[data-theme="dark"] {
   --pj-bg:            #1c1917;   /* warm near-black (stone-950) */
   --pj-bg-elevated:   #292524;

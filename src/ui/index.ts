@@ -2,6 +2,7 @@ export { Button, type ButtonVariant } from './components/Button';
 export { Toggle } from './components/Toggle';
 export { Toast } from './components/Toast';
 export { ToastHost } from './components/ToastHost';
+export { Menu, type MenuItem, type MenuProps } from './components/Menu';
 
 export { useTheme } from './hooks/useTheme';
 export { useToast, clearAllToasts, type Toast as ToastModel, type ToastInput, type ToastVariant } from './hooks/useToast';
