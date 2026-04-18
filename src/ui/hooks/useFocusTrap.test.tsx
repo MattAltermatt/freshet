@@ -8,11 +8,23 @@ interface HarnessProps {
   active: boolean;
   onEscape?: () => void;
   includeInputs?: boolean;
+  focusMiddle?: boolean;
 }
 
-function Harness({ active, onEscape, includeInputs = true }: HarnessProps): JSX.Element {
+function Harness({
+  active,
+  onEscape,
+  includeInputs = true,
+  focusMiddle = false,
+}: HarnessProps): JSX.Element {
   const ref = useRef<HTMLDivElement>(null);
-  useFocusTrap({ containerRef: ref, active, onEscape });
+  const middleRef = useRef<HTMLInputElement>(null);
+  useFocusTrap({
+    containerRef: ref,
+    active,
+    onEscape,
+    initialFocusRef: focusMiddle ? middleRef : undefined,
+  });
   return (
     <div>
       <button type="button">outside-before</button>
@@ -20,7 +32,7 @@ function Harness({ active, onEscape, includeInputs = true }: HarnessProps): JSX.
         {includeInputs ? (
           <>
             <button type="button">first</button>
-            <input type="text" aria-label="middle" />
+            <input type="text" aria-label="middle" ref={middleRef} />
             <button type="button">last</button>
           </>
         ) : null}
@@ -72,6 +84,11 @@ describe('useFocusTrap', () => {
     rerender(<Harness active={false} />);
     expect(document.activeElement).toBe(outside);
     outside.remove();
+  });
+
+  it('focuses initialFocusRef when provided instead of the first focusable', () => {
+    const { getByLabelText } = render(<Harness active focusMiddle />);
+    expect(document.activeElement).toBe(getByLabelText('middle'));
   });
 
   it('falls back to focusing the container when it has no focusables', () => {

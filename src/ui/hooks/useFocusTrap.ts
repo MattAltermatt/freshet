@@ -8,6 +8,8 @@ interface UseFocusTrapOptions {
   active: boolean;
   /** Called when Escape is pressed inside the container. */
   onEscape?: (() => void) | undefined;
+  /** Element to focus on activate. Defaults to the first focusable descendant. */
+  initialFocusRef?: RefObject<HTMLElement | null> | undefined;
 }
 
 const FOCUSABLE_SELECTOR = [
@@ -29,7 +31,12 @@ function focusableWithin(root: HTMLElement): HTMLElement[] {
  * cycles Tab / Shift+Tab at the boundaries, forwards Escape, and restores
  * focus to the previously focused element on deactivate.
  */
-export function useFocusTrap({ containerRef, active, onEscape }: UseFocusTrapOptions): void {
+export function useFocusTrap({
+  containerRef,
+  active,
+  onEscape,
+  initialFocusRef,
+}: UseFocusTrapOptions): void {
   // Hold onEscape in a ref so callers don't have to memoize it — keeping it in
   // the effect deps would tear down and re-run the trap (and snap focus back to
   // the first element) on every parent re-render that produces a fresh arrow.
@@ -43,12 +50,17 @@ export function useFocusTrap({ containerRef, active, onEscape }: UseFocusTrapOpt
 
     const previouslyFocused = document.activeElement as HTMLElement | null;
 
-    const initialFocusables = focusableWithin(container);
-    if (initialFocusables.length > 0) {
-      initialFocusables[0]!.focus();
+    const explicit = initialFocusRef?.current;
+    if (explicit && container.contains(explicit)) {
+      explicit.focus();
     } else {
-      container.setAttribute('tabindex', '-1');
-      container.focus();
+      const initialFocusables = focusableWithin(container);
+      if (initialFocusables.length > 0) {
+        initialFocusables[0]!.focus();
+      } else {
+        container.setAttribute('tabindex', '-1');
+        container.focus();
+      }
     }
 
     const onKeyDown = (event: KeyboardEvent): void => {
@@ -94,5 +106,5 @@ export function useFocusTrap({ containerRef, active, onEscape }: UseFocusTrapOpt
         previouslyFocused.focus();
       }
     };
-  }, [active, containerRef]);
+  }, [active, containerRef, initialFocusRef]);
 }

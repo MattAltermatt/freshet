@@ -39,7 +39,13 @@ export function RuleEditModal({
   );
 
   const dialogRef = useRef<HTMLDivElement>(null);
-  useFocusTrap({ containerRef: dialogRef, active: true, onEscape: onCancel });
+  const hostInputRef = useRef<HTMLInputElement>(null);
+  useFocusTrap({
+    containerRef: dialogRef,
+    active: true,
+    onEscape: onCancel,
+    initialFocusRef: hostInputRef,
+  });
 
   const hostErr = isValidHostPattern(rule.hostPattern) ? null : 'Invalid glob or regex';
   const pathErr = isValidPathPattern(rule.pathPattern)
@@ -92,6 +98,7 @@ export function RuleEditModal({
             placeholder="api.example.com · *.server.com · /regex/"
             hint="Leave empty to match any host. Glob (*, **) or /regex/ between slashes."
             error={hostErr}
+            inputRef={hostInputRef}
           />
           <PatternField
             label="Path pattern"

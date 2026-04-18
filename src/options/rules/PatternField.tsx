@@ -1,4 +1,4 @@
-import type { JSX } from 'preact';
+import type { JSX, Ref } from 'preact';
 import { useId, useState } from 'preact/hooks';
 
 export interface PatternFieldProps {
@@ -9,6 +9,7 @@ export interface PatternFieldProps {
   placeholder?: string;
   hint?: string;
   error?: string | null;
+  inputRef?: Ref<HTMLInputElement>;
 }
 
 export function PatternField({
@@ -19,6 +20,7 @@ export function PatternField({
   placeholder,
   hint,
   error,
+  inputRef,
 }: PatternFieldProps): JSX.Element {
   const inputId = useId();
   const [showExamples, setShowExamples] = useState(false);
@@ -42,6 +44,7 @@ export function PatternField({
         placeholder={placeholder}
         value={value}
         onInput={(e) => onChange((e.target as HTMLInputElement).value)}
+        {...(inputRef ? { ref: inputRef } : {})}
       />
       {error ? <div class="pj-field-err">{error}</div> : null}
       {hint ? <div class="pj-field-hint">{hint}</div> : null}
