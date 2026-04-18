@@ -2,6 +2,9 @@ import type { JSX } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import { promoteStorageToLocal } from '../storage/promoteStorageToLocal';
 import { truncateUrlMiddle } from '../shared/truncateUrl';
+import { useStorage } from '../ui';
+import type { Rule } from '../shared/types';
+import { findMatchingRule } from '../matcher/matcher';
 
 interface ActiveTab {
   url: string;
@@ -26,6 +29,7 @@ function readActiveTab(): Promise<ActiveTab> {
 export function App(): JSX.Element {
   const [ready, setReady] = useState(false);
   const [tab, setTab] = useState<ActiveTab>({ url: '', host: '' });
+  const [rules] = useStorage<'rules', Rule[]>('rules', []);
 
   useEffect(() => {
     void Promise.all([promoteStorageToLocal(), readActiveTab()]).then(([, t]) => {
@@ -33,6 +37,16 @@ export function App(): JSX.Element {
       setReady(true);
     });
   }, []);
+
+  const matched = (() => {
+    if (!tab.url) return null;
+    try {
+      const u = new URL(tab.url);
+      return findMatchingRule(u.hostname, u.pathname, rules);
+    } catch {
+      return null;
+    }
+  })();
 
   if (!ready) {
     return (
@@ -56,6 +70,29 @@ export function App(): JSX.Element {
         <code class="pj-popup-url-text" title={tab.url}>
           {tab.url ? truncateUrlMiddle(tab.url, 44) : '(no URL)'}
         </code>
+      </section>
+      <section class="pj-popup-match" aria-label="Match status">
+        <span class="pj-popup-label">Matched rule</span>
+        {matched ? (
+          <div class="pj-popup-match-row">
+            <span class="pj-rule-chip">{matched.templateName || matched.id}</span>
+            <button type="button" class="pj-linkish" onClick={() => {/* Task 16 */}}>
+              Edit rule
+            </button>
+          </div>
+        ) : (
+          <div class="pj-popup-match-row">
+            <span class="pj-popup-miss">No rule matches this URL</span>
+            <button
+              type="button"
+              class="pj-btn pj-btn--accent"
+              disabled={!tab.host}
+              onClick={() => {/* Task 16 */}}
+            >
+              + Add rule for this host
+            </button>
+          </div>
+        )}
       </section>
     </div>
   );

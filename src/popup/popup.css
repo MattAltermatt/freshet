@@ -1,13 +1,13 @@
 html, body { margin: 0; padding: 0; }
 body {
   width: 320px;
-  font: 13px/1.4 -apple-system, system-ui, sans-serif;
+  font: 13px/1.4 var(--pj-font);
   background: var(--pj-bg);
   color: var(--pj-fg);
 }
 
 .pj-popup { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
-.pj-popup-placeholder { margin: 0; color: var(--pj-muted); }
+.pj-popup-placeholder { margin: 0; color: var(--pj-fg-muted); }
 
 .pj-popup-header {
   display: flex;
@@ -21,23 +21,79 @@ body {
   color: var(--pj-fg);
 }
 .pj-logo {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--pj-font-mono);
   font-size: 16px;
   line-height: 1;
 }
 .pj-logo-brace { color: var(--pj-fg); }
 .pj-logo-bracket { color: var(--pj-accent); margin-left: 1px; }
 
-.pj-popup-url { display: flex; flex-direction: column; gap: 2px; }
+.pj-popup-url,
+.pj-popup-match,
+.pj-popup-test { display: flex; flex-direction: column; gap: 4px; }
+
 .pj-popup-label {
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--pj-muted);
+  color: var(--pj-fg-muted);
 }
 .pj-popup-url-text {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--pj-font-mono);
   font-size: 11px;
   color: var(--pj-fg);
   word-break: break-all;
+}
+
+.pj-popup-match-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pj-rule-chip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--pj-accent-strong);
+  color: var(--pj-accent-fg);
+  font-family: var(--pj-font-mono);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.pj-popup-miss { color: var(--pj-fg-muted); font-style: italic; }
+
+.pj-linkish {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--pj-accent-strong);
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
+}
+.pj-linkish:hover { color: var(--pj-accent); }
+
+.pj-btn {
+  padding: 4px 10px;
+  border: 1px solid var(--pj-border);
+  border-radius: var(--pj-radius-lg);
+  background: var(--pj-bg-elevated);
+  color: var(--pj-fg);
+  font: inherit;
+  cursor: pointer;
+}
+.pj-btn:hover:not(:disabled) { background: var(--pj-bg-subtle); }
+.pj-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.pj-btn--accent {
+  background: var(--pj-accent-strong);
+  border-color: var(--pj-accent-strong);
+  color: var(--pj-accent-fg);
+}
+.pj-btn--accent:hover:not(:disabled) {
+  background: var(--pj-accent);
+  border-color: var(--pj-accent);
 }
