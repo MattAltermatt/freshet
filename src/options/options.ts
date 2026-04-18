@@ -43,6 +43,10 @@ function setupRulesToolbar(): void {
 async function renderRulesTab(): Promise<void> {
   rulesCache = await storage.getRules();
   templatesCache = await storage.getTemplates();
+  renderRulesTable();
+}
+
+function renderRulesTable(): void {
   const tbody = byId<HTMLTableSectionElement>('rules-body');
   tbody.replaceChildren();
   rulesCache.forEach((r, i) => tbody.appendChild(renderRuleRow(r, i)));
@@ -64,13 +68,13 @@ function renderRuleRow(rule: Rule, index: number): HTMLTableRowElement {
     const act = target.dataset['act'];
     if (act === 'up' && index > 0) {
       [rulesCache[index - 1], rulesCache[index]] = [rulesCache[index]!, rulesCache[index - 1]!];
-      void renderRulesTab();
+      renderRulesTable();
     } else if (act === 'down' && index < rulesCache.length - 1) {
       [rulesCache[index + 1], rulesCache[index]] = [rulesCache[index]!, rulesCache[index + 1]!];
-      void renderRulesTab();
+      renderRulesTable();
     } else if (act === 'delete') {
       rulesCache.splice(index, 1);
-      void renderRulesTab();
+      renderRulesTable();
     } else if (act === 'edit') {
       openRuleDialog(index);
     } else if (act === 'toggle') {
@@ -134,7 +138,7 @@ function openRuleDialog(index: number | null): void {
     current.enabled = (form.elements.namedItem('enabled') as HTMLInputElement).checked;
     if (index !== null) rulesCache[index] = current;
     else rulesCache.push(current);
-    void renderRulesTab();
+    renderRulesTable();
   }, { once: true });
 
   dlg.showModal();
