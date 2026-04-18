@@ -51,11 +51,13 @@ function renderSuccess(html: string, raw: string, rule: Rule): void {
   const titleEsc = escHtml(window.location.href);
   document.documentElement.innerHTML =
     '<head><meta charset="utf-8"><title>' + titleEsc + '</title></head><body></body>';
-  // Strip is position:fixed at viewport top. Pad the body so rendered content
-  // doesn't hide beneath it; inline style wins over most template stylesheets.
-  document.body.style.cssText = 'margin:0;padding-top:36px;';
+  // Strip is position:fixed at viewport top. Put the padding on #pj-root (our
+  // own injected wrapper) rather than body — user templates can't target an ID
+  // they don't know, so the shim survives hostile template CSS.
+  document.body.style.cssText = 'margin:0;';
   const root = document.createElement('div');
   root.id = 'pj-root';
+  root.style.paddingTop = '36px';
   const htmlAssign = 'inner' + 'HTML';
   (root as unknown as Record<string, unknown>)[htmlAssign] = html;
   document.body.appendChild(root);
