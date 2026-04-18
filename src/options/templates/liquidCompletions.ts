@@ -15,9 +15,9 @@ const TAGS = [
 ];
 
 /**
- * Walks an arbitrary JS object and returns all dotted paths. Arrays are
- * described as `key[]` so the UI hints "items[]" without suggesting an
- * index-specific path.
+ * Walks an arbitrary JS object and returns all dotted paths. Array elements
+ * are probed via the first item and keyed as `items[0]` — a valid Liquid
+ * accessor that users can copy verbatim or edit to another index.
  */
 export function walkJsonPaths(obj: unknown, prefix = ''): string[] {
   if (!obj || typeof obj !== 'object') return [];

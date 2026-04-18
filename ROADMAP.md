@@ -13,10 +13,6 @@ Pre-publication hardening (regex escape guard, scripting-permission drop, 16/48/
 
 Editorial + QOL sweep before the Chrome Web Store submission. Aim: "as good as we can make it look." Ordered by impact within each group.
 
-### Functional gaps
-
-- **`walkJsonPaths` hint comment mismatch** — source comment says arrays appear as `items[]` but the implementation emits `items[0]`. Pick `[0]` (valid Liquid accessor), align docs.
-
 ### UX — rule + template flows
 
 - **"+ Add rule for this host" captures the full URL** — popup + top-strip seed only `hostPattern` today; leave `pathPattern = /`. Extend the directive to `#new-rule=<encodeURIComponent(url)>` and pre-fill both patterns from `hostname` + `pathname` (reasonable default: first 1–2 path segments + `/**`).
