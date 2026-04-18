@@ -1,9 +1,18 @@
 import { test, expect, chromium } from '@playwright/test';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { startServer } from '../fixtures-server/server';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const extensionPath = path.join(__dirname, '../../dist');
+
+let stopServer: () => Promise<void>;
+test.beforeAll(async () => {
+  stopServer = await startServer(4391);
+});
+test.afterAll(async () => {
+  await stopServer();
+});
 
 test('top-strip mounts in a shadow root on a rendered JSON page (no CSP violations)', async () => {
   const ctx = await chromium.launchPersistentContext('', {

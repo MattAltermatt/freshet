@@ -2,9 +2,18 @@ import { test, expect, chromium } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { startServer } from '../fixtures-server/server';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const extensionPath = path.join(__dirname, '../../dist');
+
+let stopServer: () => Promise<void>;
+test.beforeAll(async () => {
+  stopServer = await startServer(4391);
+});
+test.afterAll(async () => {
+  await stopServer();
+});
 
 for (const theme of ['light', 'dark'] as const) {
   test(`topstrip has no a11y violations (${theme})`, async () => {

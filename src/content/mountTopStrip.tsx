@@ -31,7 +31,25 @@ export function mountTopStrip(options: MountTopStripOptions): HTMLElement {
   mount.className = 'pj-topstrip-mount';
   shadow.appendChild(mount);
 
-  const { parent: _parent, ...props } = options;
-  render(<TopStrip {...(props as TopStripProps)} shadowHost={host} />, mount);
+  const { rule, renderedHtml, rawJsonText, contentRoot, degraded } = options;
+  const tree = degraded ? (
+    <TopStrip
+      rule={rule}
+      renderedHtml={renderedHtml}
+      rawJsonText={rawJsonText}
+      contentRoot={contentRoot}
+      shadowHost={host}
+      degraded={degraded}
+    />
+  ) : (
+    <TopStrip
+      rule={rule}
+      renderedHtml={renderedHtml}
+      rawJsonText={rawJsonText}
+      contentRoot={contentRoot}
+      shadowHost={host}
+    />
+  );
+  render(tree, mount);
   return host;
 }

@@ -2,29 +2,33 @@ import { beforeEach, test, expect, vi } from 'vitest';
 import { mountTopStrip } from './mountTopStrip';
 
 function mockChrome(): void {
-  (globalThis as any).chrome = {
+  const chromeStub = {
     storage: {
       local: {
-        get: (_k: any, cb: any) => cb({}),
-        set: (_p: any, cb?: any) => cb?.(),
+        get: (_k: string | string[] | null, cb: (rec: Record<string, unknown>) => void): void =>
+          cb({}),
+        set: (_p: Record<string, unknown>, cb?: () => void): void => cb?.(),
       },
       onChanged: { addListener: vi.fn(), removeListener: vi.fn() },
     },
     runtime: {
-      getURL: (p: string) => `chrome-extension://fake/${p}`,
+      getURL: (p: string): string => `chrome-extension://fake/${p}`,
       onMessage: { addListener: vi.fn(), removeListener: vi.fn() },
     },
     tabs: { create: vi.fn() },
   };
+  (globalThis as unknown as { chrome: unknown }).chrome = chromeStub;
 }
 
 beforeEach(() => {
   document.body.replaceChildren();
   mockChrome();
-  (window as any).matchMedia = (_q: string) => ({
+  (window as unknown as { matchMedia: (q: string) => unknown }).matchMedia = (
+    _q: string,
+  ) => ({
     matches: false,
-    addEventListener: () => {},
-    removeEventListener: () => {},
+    addEventListener: (): void => {},
+    removeEventListener: (): void => {},
   });
 });
 

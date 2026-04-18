@@ -54,6 +54,12 @@ test('renders JSON via the bundled starter template', async () => {
   await expect(page.locator('#pj-root')).toContainText('1234');
   await expect(page.locator('#pj-root .pj-down')).toHaveText('DOWN');
 
-  await page.click('#pj-topbar >> text=Show raw JSON');
+  // Click the Raw button inside the shadow-DOM top-strip (Plan 5).
+  await page.evaluate(() => {
+    const root = document.getElementById('pj-topstrip-host')?.shadowRoot;
+    const buttons = root?.querySelectorAll('[role="group"] button') ?? [];
+    const raw = Array.from(buttons).find((b) => b.textContent?.includes('Raw'));
+    (raw as HTMLButtonElement | undefined)?.click();
+  });
   await expect(page.locator('#pj-root pre')).toContainText('"id": 1234');
 });
