@@ -1,6 +1,7 @@
 import { htmlEscape } from './escape';
 import { lookup } from './lookup';
 import { formatDate, buildLink } from './helpers';
+import { sanitize } from './sanitize';
 import type { Variables } from '../shared/types';
 
 const INLINE_RE = /\{\{\{([^}]+)\}\}\}|\{\{([^}]+)\}\}/g;
@@ -15,7 +16,7 @@ const ELSE_TAG = '{{#else}}';
 export function render(templateText: string, json: unknown, vars: Variables): string {
   const afterBlocks = renderBlocks(templateText, json, vars);
   const afterHelpers = renderHelpers(afterBlocks, json, vars);
-  return renderInline(afterHelpers, json, vars);
+  return sanitize(renderInline(afterHelpers, json, vars));
 }
 
 function renderHelpers(text: string, json: unknown, vars: Variables): string {
