@@ -29,6 +29,7 @@ function readActiveTab(): Promise<ActiveTab> {
 export function App(): JSX.Element {
   const [ready, setReady] = useState(false);
   const [tab, setTab] = useState<ActiveTab>({ url: '', host: '' });
+  const [testUrl, setTestUrl] = useState<string>('');
   const [rules] = useStorage<'rules', Rule[]>('rules', []);
   const [skipList, writeSkipList] = useStorage<'hostSkipList', HostSkipList>(
     'hostSkipList',
@@ -38,6 +39,7 @@ export function App(): JSX.Element {
   useEffect(() => {
     void Promise.all([promoteStorageToLocal(), readActiveTab()]).then(([, t]) => {
       setTab(t);
+      setTestUrl(t.url);
       setReady(true);
     });
   }, []);
@@ -108,6 +110,27 @@ export function App(): JSX.Element {
           </div>
         )}
       </section>
+      <section class="pj-popup-test" aria-label="Test URL in options">
+        <label class="pj-popup-label" for="pj-popup-test-url">Test URL</label>
+        <div class="pj-popup-test-row">
+          <input
+            id="pj-popup-test-url"
+            type="text"
+            class="pj-popup-test-input"
+            value={testUrl}
+            onInput={(e) => setTestUrl((e.target as HTMLInputElement).value)}
+            placeholder="https://…"
+          />
+          <button
+            type="button"
+            class="pj-btn"
+            disabled={!testUrl.trim()}
+            onClick={() => {/* Task 16 */}}
+          >
+            Test in options
+          </button>
+        </div>
+      </section>
       <section class="pj-popup-skip" aria-label="Skip toggle">
         <Toggle
           checked={skipped}
@@ -120,6 +143,15 @@ export function App(): JSX.Element {
           }
         />
       </section>
+      <footer class="pj-popup-footer">
+        <button
+          type="button"
+          class="pj-linkish"
+          onClick={() => chrome.runtime.openOptionsPage()}
+        >
+          Open options
+        </button>
+      </footer>
     </div>
   );
 }

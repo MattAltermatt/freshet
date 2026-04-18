@@ -34,6 +34,30 @@ body {
 
 .pj-popup-skip { padding-top: 2px; }
 
+.pj-popup-test-row { display: flex; gap: 6px; }
+.pj-popup-test-input {
+  flex: 1;
+  min-width: 0;
+  padding: 4px 6px;
+  border: 1px solid var(--pj-border);
+  border-radius: var(--pj-radius-lg);
+  background: var(--pj-bg-elevated);
+  color: var(--pj-fg);
+  font-family: var(--pj-font-mono);
+  font-size: 11px;
+}
+.pj-popup-test-input:focus {
+  outline: 2px solid var(--pj-accent);
+  outline-offset: 1px;
+}
+
+.pj-popup-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 4px;
+  border-top: 1px solid var(--pj-border);
+}
+
 .pj-popup-label {
   font-size: 10px;
   text-transform: uppercase;
