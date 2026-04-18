@@ -1,0 +1,17 @@
+# Node / build
+node_modules/
+dist/
+build/
+.vite/
+*.log
+
+# OS
+.DS_Store
+
+# Superpowers / ephemeral session state
+.superpowers/
+.remember/
+
+# IDE
+.vscode/
+.idea/
