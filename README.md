@@ -5,7 +5,7 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Manifest V3](https://img.shields.io/badge/Chrome-MV3-brightgreen.svg)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6.svg)
-![Tests](https://img.shields.io/badge/tests-80%20unit%20%2B%201%20E2E-success.svg)
+![Tests](https://img.shields.io/badge/tests-122%20unit%20%2B%202%20E2E-success.svg)
 
 Paste a JSON URL into Chrome, get a table instead of a `<pre>`. Works against any host you configure — internal tooling, public APIs, webhooks you're debugging. Templates are small HTML snippets with `{{placeholders}}`; rules map URL patterns to templates.
 
@@ -31,7 +31,7 @@ Paste a JSON URL into Chrome, get a table instead of a `<pre>`. Works against an
 - 🧯 **Safe by default** — every render pass strips `<script>`, inline event handlers, `<iframe>`, `<link>`, `<object>`, `<embed>`, and neutralizes `javascript:`/`data:`/`vbscript:` URLs.
 - 🔀 **Raw-JSON toggle** + **copy URL** from the injected top strip.
 - 🚫 **Per-host skip** via the popup — disable rendering on one host without deleting the rule.
-- 📦 **No framework runtime** — hand-rolled engine + matcher (both Chrome-API-free and unit-tested in Node). Production bundle < 15 KB gzipped.
+- ⚡ **CSP-safe template engine** — [LiquidJS](https://github.com/harttle/liquidjs) interpreter; no runtime codegen, no `unsafe-eval`.
 
 ## Install
 
@@ -81,21 +81,26 @@ Point a rule at `127.0.0.1` + `/internal/user/*` and visit the URLs above.
 
 ## Template syntax
 
-Templates are HTML. Placeholders resolve against the parsed JSON body (`this` is the JSON root inside an `#each`).
+Templates are [Liquid](https://shopify.github.io/liquid/). Placeholders resolve against the parsed JSON body.
 
 | Syntax | Meaning |
 |---|---|
-| `{{path.to.value}}` | Interpolate (HTML-escaped). |
-| `{{{path.to.value}}}` | Interpolate raw (no escape). |
-| `{{@varName}}` | Interpolate a rule-defined variable. |
-| `{{#when x "literal"}}...{{/when}}` | Render block if `x` equals the literal. |
-| `{{#when x "y"}}...{{#else}}...{{/when}}` | Two-way conditional. |
-| `{{#each items}}...{{this.field}}...{{/each}}` | Iterate an array; `this` scopes to each element. |
-| `{{date timestamp}}` | Default format: `Apr 17, 2026 4:09 PM`. |
-| `{{date timestamp "yyyy-MM-dd HH:mm"}}` | Custom format. |
-| `{{link "https://host/{{id}}"}}` | URL-safe interpolation (query values percent-encoded). |
+| `{{ path.to.value }}` | Interpolate (HTML-escaped). |
+| `{{ value \| raw }}` | Interpolate without HTML escape. |
+| `{{ vars.varName }}` | Interpolate a rule-defined variable. |
+| `{% if x == "literal" %}...{% endif %}` | Conditional (equality check). |
+| `{% if x == "y" %}...{% else %}...{% endif %}` | Two-way conditional. |
+| `{% if truthyField %}...{% endif %}` | Truthy check (booleans, non-empty strings, non-zero numbers, non-empty arrays). |
+| `{% if field != blank %}...{% endif %}` | Present and non-empty check. |
+| `{% for item in items %}...{{ item.field }}...{% endfor %}` | Iterate an array. |
+| `{{ timestamp \| date }}` | Default format: `Apr 17, 2026 4:09 PM`. |
+| `{{ timestamp \| date: "yyyy-MM-dd HH:mm" }}` | Custom date format. |
+| `{{ "https://host/{{id}}" \| link }}` | URL-safe interpolation (query values percent-encoded). |
+| `{{ value \| num }}` | Compact number format (234567 → 235k, 1.2M, 1.2B). |
 
-Missing values render as the empty string. See `docs/superpowers/specs/2026-04-17-present-json-design.md` for the full spec.
+All standard Liquid builtins also work: `{% unless %}`, `{% capture %}`, `{% comment %}`, etc. Missing values render as the empty string.
+
+Existing templates written in the pre-Phase-2 hand-rolled syntax (`{{#when}}`, `{{@var}}`, `{{{raw}}}`, etc.) are **auto-migrated** to Liquid on first load after update.
 
 ## Permissions & privacy
 

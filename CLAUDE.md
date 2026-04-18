@@ -19,7 +19,7 @@ pnpm icons          # rasterize design/icon-{16,48,128}.svg → public/icon-{16,
 ## Architecture
 
 Two pure cores (Node-tested, zero `chrome.*` calls — verify with grep):
-- `src/engine/` — template → HTML: `engine.ts` (blocks via bracket-matched closes, not innermost), `lookup.ts`, `escape.ts`, `helpers.ts` (date, link), `sanitize.ts`
+- `src/engine/` — template → HTML: `engine.ts` (thin LiquidJS wrapper; `outputEscape` auto-escapes non-raw output; sanitizer runs post-render), `helpers.ts` (`registerFilters` for `date`/`link`/`num`/`raw`), `lookup.ts` (dotted paths + `@var`, used by the `link` filter's inner-token substitution), `migrate.ts` (v1 → v2 syntax rewriter), `sanitize.ts` (final security pass)
 - `src/matcher/` — URL → rule: `glob.ts` (`**` = `.*`, `/.../` escape hatch), `matcher.ts`
 
 Chrome glue (imports the cores):
@@ -34,8 +34,9 @@ Content script is declared **statically** in the manifest (`content_scripts: [{ 
 
 - **Security hook blocks DOM-injection patterns** in Write/Edit tool params. When creating or modifying a file that contains `el.inner` + `HTML = ...`, use a Bash heredoc (`cat > path << 'EOF'`) instead — the hook inspects tool params, not file state.
 - **TZ=UTC** is prefixed on the `test` and `test:watch` scripts so `formatDate` custom formats match fixture expectations on any machine.
-- **Engine block resolution is outermost-first** with bracket-matched closes, not the innermost-first algorithm in `docs/superpowers/plans/2026-04-17-present-json-phase1.md`. The plan has a known bug for `{{#each}}{{#when this.*}}...{{/when}}{{/each}}` — the test `engine.test.ts` "nests with #when inside each element" guards against regressions.
-- **Template rendering is untrusted** — `render()` runs the sanitizer as the last stage. Never bypass it. Sanitizer covers: `<script>`, `<iframe>`, `<link>`, `<object>`, `<embed>`, `on*` handlers (quoted and unquoted), `javascript:`/`data:`/`vbscript:` URLs.
+- **Template engine is LiquidJS** (Phase 2 Plan 2, 2026-04-18). Runtime interpreter — no codegen, no runtime JS-eval. This matters for MV3: the extension CSP disallows `'unsafe-eval'`, which blocks Handlebars-style compile-to-function engines (a Handlebars attempt hit this blocker). The `test/e2e/csp-smoke.spec.ts` test guards against CSP regressions on the render path.
+- **Two-stage security**: LiquidJS `outputEscape` auto-escapes every `{{ }}` output unless the `raw` filter marks it safe (via `__pjRaw` marker on a `String` wrapper). Then `sanitize()` runs as the final pass on the full output. Covers: `<script>`, `<iframe>`, `<link>`, `<object>`, `<embed>`, `on*` handlers (quoted and unquoted), `javascript:`/`data:`/`vbscript:` URLs. Never bypass the sanitizer.
+- **Schema v2** (set via `storage.setSchemaVersion(2)`) marks templates as Liquid-syntax. Absence triggers an auto-migrator (`engine/migrate.ts`) on first run after update. Migration is batch-atomic — any single parse-failure rolls back the entire batch and keeps v1 sources for manual fix.
 
 ## Docs
 

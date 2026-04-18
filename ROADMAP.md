@@ -38,7 +38,7 @@
    Rolled out as 5 sequential plans; each produces working, independently-verifiable software:
 
    1. **Plan 1 — Foundation**: deps + Vite JSX + `src/ui/` shell (theme tokens, hooks, base components). No user-visible change. — done 2026-04-18
-   2. **Plan 2 — Engine swap**: drop hand-rolled engine for Handlebars; migrator for existing templates; rewrite starters. — pending
+   2. **Plan 2 — Engine swap**: drop hand-rolled engine for Liquid (LiquidJS — interpreter, CSP-safe in MV3); migrator for existing templates; rewrite starters. — done 2026-04-18
    3. **Plan 3 — Options page**: split-view rules + URL tester, CodeMirror template editor, rule-edit modal overhaul, autosave + toasts, dark mode. — pending
    4. **Plan 4 — Popup**: restyled popup with match status, skip toggle, test-URL quick-jump. — pending
    5. **Plan 5 — Top-strip**: shadow-rooted injected banner, warm cream / warm near-black palette, ⋯ menu for secondaries, keyboard shortcuts. Code review + docs roll into the tail of this plan. — pending
