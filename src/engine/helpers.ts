@@ -79,8 +79,8 @@ export function registerFilters(engine: Liquid): void {
   );
   engine.registerFilter('num', (value: unknown) => formatNumber(value));
   engine.registerFilter('link', function (this: unknown, tmpl: unknown) {
-    const ctx = (this as { context?: { environments?: unknown[] } })?.context;
-    const root = (ctx?.environments?.[0] ?? {}) as Record<string, unknown>;
+    const ctx = (this as { context?: { environments?: unknown } })?.context;
+    const root = ((ctx?.environments as Record<string, unknown> | undefined) ?? {});
     const vars = (root['vars'] as Record<string, string>) ?? {};
     return buildLink(typeof tmpl === 'string' ? tmpl : '', root, vars);
   });

@@ -6,97 +6,91 @@ describe('render — values and variables', () => {
     expect(render('<p>hello</p>', {}, {})).toBe('<p>hello</p>');
   });
   it('interpolates a dotted-path value', () => {
-    expect(render('<p>{{id}}</p>', { id: 42 }, {})).toBe('<p>42</p>');
+    expect(render('<p>{{ id }}</p>', { id: 42 }, {})).toBe('<p>42</p>');
   });
-  it('interpolates a variable', () => {
-    expect(render('<p>{{@env}}</p>', {}, { env: 'qa' })).toBe('<p>qa</p>');
+  it('interpolates a variable from vars namespace', () => {
+    expect(render('<p>{{ vars.env }}</p>', {}, { env: 'qa' })).toBe('<p>qa</p>');
   });
-  it('escapes HTML in values', () => {
-    expect(render('<p>{{x}}</p>', { x: '<b>&' }, {})).toBe('<p>&lt;b&gt;&amp;</p>');
+  it('escapes HTML in values by default', () => {
+    expect(render('<p>{{ x }}</p>', { x: '<b>&' }, {})).toBe('<p>&lt;b&gt;&amp;</p>');
   });
   it('renders missing values as empty string', () => {
-    expect(render('<p>[{{missing}}]</p>', {}, {})).toBe('<p>[]</p>');
+    expect(render('<p>[{{ missing }}]</p>', {}, {})).toBe('<p>[]</p>');
   });
-  it('triple-brace skips HTML escaping', () => {
-    expect(render('<p>{{{x}}}</p>', { x: '<b>' }, {})).toBe('<p><b></p>');
+  it('raw filter skips HTML escaping', () => {
+    expect(render('<p>{{ x | raw }}</p>', { x: '<b>' }, {})).toBe('<p><b></p>');
   });
 });
 
-describe('render — #when', () => {
-  it('renders the true branch when equal', () => {
-    const t = '{{#when status "UP"}}<green>{{/when}}';
+describe('render — {% if %}', () => {
+  it('renders the body when condition is true (string equality)', () => {
+    const t = '{% if status == "UP" %}<green>{% endif %}';
     expect(render(t, { status: 'UP' }, {})).toBe('<green>');
   });
-  it('renders nothing when unequal and no else', () => {
-    const t = '{{#when status "UP"}}<green>{{/when}}';
+  it('renders nothing when condition is false', () => {
+    const t = '{% if status == "UP" %}<green>{% endif %}';
     expect(render(t, { status: 'DOWN' }, {})).toBe('');
   });
-  it('renders #else branch when unequal', () => {
-    const t = '{{#when status "UP"}}<green>{{#else}}<red>{{/when}}';
+  it('renders else branch when unequal', () => {
+    const t = '{% if status == "UP" %}<green>{% else %}<red>{% endif %}';
     expect(render(t, { status: 'DOWN' }, {})).toBe('<red>');
   });
-  it('supports @variable as the left-hand side', () => {
-    const t = '{{#when @env "qa"}}[QA]{{/when}}';
+  it('supports vars.X as the left-hand side', () => {
+    const t = '{% if vars.env == "qa" %}[QA]{% endif %}';
     expect(render(t, {}, { env: 'qa' })).toBe('[QA]');
     expect(render(t, {}, { env: 'prod' })).toBe('');
   });
-  it('interpolates inside the chosen branch', () => {
-    const t = '{{#when on "y"}}id={{id}}{{/when}}';
-    expect(render(t, { on: 'y', id: 7 }, {})).toBe('id=7');
+  it('truthy check for booleans (archived: true)', () => {
+    expect(render('{% if archived %}A{% endif %}', { archived: true }, {})).toBe('A');
+    expect(render('{% if archived %}A{% endif %}', { archived: false }, {})).toBe('');
+  });
+  it('blank check for empty strings (license.name != blank)', () => {
+    expect(render('{% if x != blank %}Y{% endif %}', { x: 'here' }, {})).toBe('Y');
+    expect(render('{% if x != blank %}Y{% endif %}', { x: '' }, {})).toBe('');
   });
 });
 
-describe('render — #each', () => {
-  it('iterates array elements', () => {
-    const t = '{{#each items}}<li>{{this.name}}</li>{{/each}}';
-    const json = { items: [{ name: 'a' }, { name: 'b' }] };
-    expect(render(t, json, {})).toBe('<li>a</li><li>b</li>');
+describe('render — {% for %}', () => {
+  it('iterates primitive array elements using the loop variable', () => {
+    const t = '{% for x in items %}<li>{{ x }}</li>{% endfor %}';
+    expect(render(t, { items: ['a', 'b', 'c'] }, {})).toBe('<li>a</li><li>b</li><li>c</li>');
   });
-  it('renders nothing for empty arrays', () => {
-    expect(render('{{#each xs}}x{{/each}}', { xs: [] }, {})).toBe('');
+  it('scopes dotted paths to the current element', () => {
+    const t = '{% for u in users %}{{ u.name }};{% endfor %}';
+    expect(render(t, { users: [{ name: 'Alice' }, { name: 'Bob' }] }, {})).toBe('Alice;Bob;');
   });
-  it('renders nothing for missing arrays', () => {
-    expect(render('{{#each xs}}x{{/each}}', {}, {})).toBe('');
+  it('renders empty for empty array', () => {
+    expect(render('{% for x in items %}x{% endfor %}', { items: [] }, {})).toBe('');
   });
-  it('supports {{this}} for primitive elements', () => {
-    const t = '{{#each xs}}[{{this}}]{{/each}}';
-    expect(render(t, { xs: ['a', 'b'] }, {})).toBe('[a][b]');
-  });
-  it('nests with #when inside each element', () => {
-    const t = '{{#each xs}}{{#when this.on "y"}}{{this.id}}{{/when}}{{/each}}';
-    const json = { xs: [{ id: 1, on: 'y' }, { id: 2, on: 'n' }, { id: 3, on: 'y' }] };
-    expect(render(t, json, {})).toBe('13');
+  it('renders empty when missing', () => {
+    expect(render('{% for x in items %}x{% endfor %}', {}, {})).toBe('');
   });
 });
 
-describe('render — date helper', () => {
+describe('render — filters', () => {
   it('formats an ISO timestamp with custom format', () => {
     process.env.TZ = 'UTC';
-    const t = '{{date insertDate "yyyy-MM-dd"}}';
+    const t = '{{ insertDate | date: "yyyy-MM-dd" }}';
     expect(render(t, { insertDate: '2026-04-17T23:09:30Z' }, {})).toBe('2026-04-17');
   });
-});
-
-describe('render — num helper', () => {
-  it('compacts a large number from JSON', () => {
-    expect(render('{{num stars}}', { stars: 234567 }, {})).toBe('235k');
-  });
-  it('renders empty for missing value', () => {
-    expect(render('[{{num missing}}]', {}, {})).toBe('[]');
-  });
-  it('supports dotted-path + @variable lookup', () => {
-    expect(render('{{num stats.forks}}', { stats: { forks: 12345 } }, {})).toBe('12k');
-    expect(render('{{num @count}}', {}, { count: '1500' })).toBe('1.5k');
-  });
-});
-
-describe('render — link helper', () => {
-  it('interpolates variables and json into the URL', () => {
-    const t = '{{link "https://{{@adminHost}}/user/{{id}}"}}';
+  it('interpolates vars and json into a link URL', () => {
+    const t = '{{ "https://{{vars.adminHost}}/user/{{id}}" | link }}';
     expect(render(t, { id: 9 }, { adminHost: 'a.com' })).toBe('https://a.com/user/9');
   });
-  it('escapes the URL in the HTML output', () => {
-    const t = '{{link "https://x/?q={{q}}"}}';
+  it('percent-encodes query components in a link', () => {
+    const t = '{{ "https://x/?q={{q}}" | link }}';
     expect(render(t, { q: 'a&b' }, {})).toBe('https://x/?q=a%26b');
+  });
+  it('compacts large numbers via num filter', () => {
+    expect(render('{{ stars | num }}', { stars: 234567 }, {})).toBe('235k');
+  });
+  it('compacts numeric strings via num filter', () => {
+    expect(render('{{ count | num }}', { count: '1500' }, {})).toBe('1.5k');
+  });
+});
+
+describe('render — sanitizer pass', () => {
+  it('strips a <script> tag from the final output', () => {
+    expect(render('<p>hi</p><script>alert(1)</script>', {}, {})).toBe('<p>hi</p>');
   });
 });
