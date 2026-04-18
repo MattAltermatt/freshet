@@ -1,5 +1,6 @@
 import type { JSX } from 'preact';
 import { useState } from 'preact/hooks';
+import { useToast } from '../../ui';
 import type { Rule, Templates } from '../../shared/types';
 import { RuleStack } from './RuleStack';
 import { UrlTester } from './UrlTester';
@@ -23,11 +24,13 @@ export function RulesTab({
   //   null      = modal open for a NEW rule
   //   number    = modal open to edit rule at that index
   const [editing, setEditing] = useState<number | null | undefined>(undefined);
+  const toast = useToast();
 
   const close = (): void => setEditing(undefined);
 
   const save = (rule: Rule): void => {
-    if (editing === null) {
+    const isNew = editing === null;
+    if (isNew) {
       onChange([...rules, rule]);
     } else if (typeof editing === 'number') {
       const next = [...rules];
@@ -35,6 +38,11 @@ export function RulesTab({
       onChange(next);
     }
     close();
+    toast.push({
+      variant: 'success',
+      message: isNew ? 'Rule added · Saved ✓' : 'Rule saved ✓',
+      ttlMs: 2000,
+    });
   };
 
   return (

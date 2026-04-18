@@ -1,6 +1,6 @@
 import type { JSX } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
-import { Cheatsheet, useStorage } from '../../ui';
+import { Cheatsheet, useAutosave, useStorage } from '../../ui';
 import type { Rule, Templates } from '../../shared/types';
 import { TemplatesToolbar } from './TemplatesToolbar';
 import { TemplateEditor } from './TemplateEditor';
@@ -74,6 +74,11 @@ export function TemplatesTab({
   const sampleText = active ? samples[active] ?? DEFAULT_SAMPLE : DEFAULT_SAMPLE;
   const ruleVars = collectRuleVars(rules, active);
   const isMigrated = active !== null && migrated.includes(active);
+
+  // Debounced Saved ✓ toast for template edits. Writes to storage are
+  // immediate (above); this hook just confirms the commit visually after the
+  // user stops typing for 600 ms. First render is skipped by useAutosave.
+  useAutosave(active ? `${active}::${tpl}` : '__empty', async () => {}, { delayMs: 600 });
 
   const handleTemplateInput = (next: string): void => {
     if (!active) return;
