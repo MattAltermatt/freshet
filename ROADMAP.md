@@ -13,10 +13,6 @@ Pre-publication hardening (regex escape guard, scripting-permission drop, 16/48/
 
 Editorial + QOL sweep before the Chrome Web Store submission. Aim: "as good as we can make it look." Ordered by impact within each group.
 
-### At-a-glance
-
-- **Action-badge render state** — `chrome.action.setBadgeText` from background when a rule fires (dot/✓); red `!` when a rule matched but the template failed to compile/render. Pulled forward from post-launch because "is Present-JSON doing anything here" is load-bearing for user trust.
-
 ### Brand + polish
 
 - **Brand audit across external surfaces** — one coherent pass:
