@@ -49,11 +49,18 @@ body {
 
 .pj-quota {
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--pj-space-2);
+  color: var(--pj-fg-subtle);
+}
+.pj-quota-icon { color: var(--pj-fg-subtle); flex: none; }
+.pj-quota-bar {
   position: relative;
-  min-width: 140px;
-  height: 18px;
+  width: 120px;
+  height: 8px;
   border: 1px solid var(--pj-border);
-  border-radius: 9px;
+  border-radius: 4px;
   overflow: hidden;
   background: var(--pj-bg-subtle);
 }
@@ -66,10 +73,19 @@ body {
 .pj-quota[data-tone="warn"] .pj-quota-fill { background: var(--pj-accent); }
 .pj-quota[data-tone="danger"] .pj-quota-fill { background: var(--pj-danger); }
 .pj-quota-label {
-  position: relative;
-  display: block;
-  text-align: center;
-  font: 10px/18px var(--pj-font-mono);
+  font: 11px/1 var(--pj-font-mono);
+  color: var(--pj-fg-subtle);
+  white-space: nowrap;
+}
+
+.pj-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pj-space-1);
+}
+.pj-theme-icon {
+  font-size: 15px;
+  line-height: 1;
   color: var(--pj-fg-muted);
 }
 .pj-theme-toggle select {

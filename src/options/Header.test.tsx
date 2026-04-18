@@ -32,7 +32,7 @@ describe('<Header>', () => {
     render(
       <Header tab="rules" onTab={() => {}} themePref="system" onThemePref={() => {}} />,
     );
-    await waitFor(() => expect(screen.getByText(/11\.7 KB/)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText(/11\.7 \/ 100 KB/)).toBeInTheDocument());
   });
 
   it('fires onTab when a tab is clicked', () => {
