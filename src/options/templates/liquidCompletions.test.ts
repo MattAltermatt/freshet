@@ -71,4 +71,9 @@ describe('liquidCompletions inside filter string arg', () => {
     expect(result).not.toBeNull();
     expect(result!.options.some((o) => o.label === 'id')).toBe(true);
   });
+
+  it('does not fire when the cursor sits just after a closed filter string arg', () => {
+    const text = '{{ ts | date: "yyyy"';
+    expect(source(makeContext(text))).toBeNull();
+  });
 });
