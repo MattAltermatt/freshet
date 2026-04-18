@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { suggestTemplateName } from './suggestTemplateName';
+import { suggestTemplateName, uniqueTemplateName } from './suggestTemplateName';
 
 describe('suggestTemplateName', () => {
   it('slugs dotted hosts', () => {
@@ -26,5 +26,29 @@ describe('suggestTemplateName', () => {
 
   it('handles IPv4 literals', () => {
     expect(suggestTemplateName('127.0.0.1')).toBe('127-0-0-1');
+  });
+});
+
+describe('uniqueTemplateName', () => {
+  it('returns the base when the name is available', () => {
+    expect(uniqueTemplateName('api-github-com', {})).toBe('api-github-com');
+  });
+
+  it('appends -2 on first collision', () => {
+    expect(uniqueTemplateName('api-github-com', { 'api-github-com': '' }))
+      .toBe('api-github-com-2');
+  });
+
+  it('increments past an existing -2', () => {
+    expect(
+      uniqueTemplateName('api-github-com', {
+        'api-github-com': '',
+        'api-github-com-2': '',
+      }),
+    ).toBe('api-github-com-3');
+  });
+
+  it('returns the base when a suffixed name exists but the base does not', () => {
+    expect(uniqueTemplateName('foo', { 'foo-2': '' })).toBe('foo');
   });
 });

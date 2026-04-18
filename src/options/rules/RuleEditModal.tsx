@@ -3,7 +3,7 @@ import { useRef, useState } from 'preact/hooks';
 import { Button, KVEditor, Toggle, useFocusTrap } from '../../ui';
 import { isValidHostPattern, isValidPathPattern } from '../../matcher/glob';
 import type { Rule, Templates } from '../../shared/types';
-import { suggestTemplateName } from '../../shared/suggestTemplateName';
+import { suggestTemplateName, uniqueTemplateName } from '../../shared/suggestTemplateName';
 import { PatternField } from './PatternField';
 
 export interface RuleEditModalProps {
@@ -47,6 +47,10 @@ export function RuleEditModal({
   const [rule, setRule] = useState<Rule>(() =>
     initial ? structuredClone(initial) : blankRule(templates, initialHost, initialPath),
   );
+  // Names of templates created via "+ Create template" this session. Drives
+  // the in-modal guidance banner so the user isn't surprised when the empty
+  // template renders nothing.
+  const [createdHere, setCreatedHere] = useState<string[]>([]);
 
   const dialogRef = useRef<HTMLDivElement>(null);
   const hostInputRef = useRef<HTMLInputElement>(null);
@@ -77,7 +81,10 @@ export function RuleEditModal({
   const title = initial ? `Edit rule · ${initial.id}` : 'New rule';
 
   const handleCreateTemplate = (): void => {
-    const defaultName = suggestTemplateName(rule.hostPattern);
+    const defaultName = uniqueTemplateName(
+      suggestTemplateName(rule.hostPattern),
+      templates,
+    );
     const raw = window.prompt('New template name', defaultName);
     if (raw === null) return;
     const name = raw.trim();
@@ -88,7 +95,12 @@ export function RuleEditModal({
     }
     const accepted = onCreateTemplate(name);
     setRule({ ...rule, templateName: accepted });
+    setCreatedHere((prev) => (prev.includes(accepted) ? prev : [...prev, accepted]));
   };
+
+  const pendingTemplateName = createdHere.includes(rule.templateName)
+    ? rule.templateName
+    : null;
 
   return (
     <div
@@ -164,6 +176,17 @@ export function RuleEditModal({
               </Button>
             </div>
             {templateErr ? <div class="pj-field-err">{templateErr}</div> : null}
+            {pendingTemplateName ? (
+              <div class="pj-banner pj-template-pending-banner" role="status">
+                <span class="pj-banner-icon" aria-hidden="true">ℹ️</span>
+                <span>
+                  <strong>"{pendingTemplateName}"</strong> was created as an
+                  empty template. Add any variables it needs below, save the
+                  rule, then open the <strong>Templates</strong> tab to define
+                  its HTML output.
+                </span>
+              </div>
+            ) : null}
           </div>
           <div class="pj-field">
             <label>Variables</label>

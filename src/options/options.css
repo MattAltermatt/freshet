@@ -397,6 +397,7 @@ input:focus, select:focus, textarea:focus {
 .pj-template-picker { display: flex; align-items: center; gap: var(--pj-space-2); }
 .pj-template-picker > select { flex: 1; }
 .pj-template-picker-hint { flex: 1; }
+.pj-template-pending-banner { align-items: flex-start; line-height: 1.4; }
 
 .pj-pattern-field {
   display: grid;
