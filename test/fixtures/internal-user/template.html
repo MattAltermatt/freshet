@@ -1,0 +1,4 @@
+<div class="row"><span class="label">ID</span><a href="https://{{@adminHost}}/user/{{id}}">{{id}}</a></div>
+<div class="row"><span class="label">Insert Date</span><span>{{date insertDate "yyyy-MM-dd HH:mm"}}</span></div>
+<div class="row"><span class="label">Status</span>{{#when status "UP"}}<span class="badge-up">UP</span>{{/when}}{{#when status "DOWN"}}<span class="badge-down">DOWN</span>{{/when}}</div>
+<div class="row"><span class="label">Config</span><a href="https://{{@adminHost}}/product/api/v1/{{theValueICareAbout}}">{{theValueICareAbout}}</a></div>
