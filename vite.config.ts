@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite';
+import preact from '@preact/preset-vite';
 import { crx, defineManifest } from '@crxjs/vite-plugin';
 
 const manifest = defineManifest({
@@ -36,6 +37,6 @@ const manifest = defineManifest({
 });
 
 export default defineConfig({
-  plugins: [crx({ manifest })],
+  plugins: [preact(), crx({ manifest })],
   build: { outDir: 'dist', emptyOutDir: true },
 });
