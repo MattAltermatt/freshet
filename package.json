@@ -11,6 +11,7 @@
     "test": "TZ=UTC vitest run",
     "test:watch": "TZ=UTC vitest",
     "test:e2e": "playwright test",
+    "fixtures": "node test/fixtures-server/run.mjs",
     "lint": "eslint --no-error-on-unmatched-pattern 'src/**/*.ts'",
     "format": "prettier --write 'src/**/*.{ts,html,json}'",
     "typecheck": "tsc --noEmit"
