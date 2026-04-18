@@ -4,6 +4,28 @@
   "description": "Chrome extension that renders JSON responses as user-templated HTML.",
   "private": true,
   "type": "module",
+  "license": "MIT",
+  "author": {
+    "name": "muwamath",
+    "email": "muwamath@proton.me",
+    "url": "https://github.com/muwamath"
+  },
+  "homepage": "https://github.com/muwamath/present-json#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/muwamath/present-json.git"
+  },
+  "bugs": {
+    "url": "https://github.com/muwamath/present-json/issues"
+  },
+  "keywords": [
+    "chrome-extension",
+    "mv3",
+    "json",
+    "json-viewer",
+    "template",
+    "devtool"
+  ],
   "packageManager": "pnpm@10.33.0",
   "scripts": {
     "dev": "vite",
