@@ -76,3 +76,14 @@ describe('render — date helper', () => {
     expect(render(t, { insertDate: '2026-04-17T23:09:30Z' }, {})).toBe('2026-04-17');
   });
 });
+
+describe('render — link helper', () => {
+  it('interpolates variables and json into the URL', () => {
+    const t = '{{link "https://{{@adminHost}}/user/{{id}}"}}';
+    expect(render(t, { id: 9 }, { adminHost: 'a.com' })).toBe('https://a.com/user/9');
+  });
+  it('escapes the URL in the HTML output', () => {
+    const t = '{{link "https://x/?q={{q}}"}}';
+    expect(render(t, { q: 'a&b' }, {})).toBe('https://x/?q=a%26b');
+  });
+});

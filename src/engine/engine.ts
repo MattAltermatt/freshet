@@ -1,10 +1,11 @@
 import { htmlEscape } from './escape';
 import { lookup } from './lookup';
-import { formatDate } from './helpers';
+import { formatDate, buildLink } from './helpers';
 import type { Variables } from '../shared/types';
 
 const INLINE_RE = /\{\{\{([^}]+)\}\}\}|\{\{([^}]+)\}\}/g;
-const HELPER_RE = /^(date)\s+(@?[\w.]+)(?:\s+"([^"]*)")?$/;
+const LINK_RE = /\{\{link\s+"([^"]*)"\s*\}\}/g;
+const DATE_RE = /\{\{date\s+(@?[\w.]+)(?:\s+"([^"]*)")?\s*\}\}/g;
 const OPEN_WHEN_G = /\{\{#when\s+(@?[\w.]+)\s+"([^"]*)"\s*\}\}/g;
 const OPEN_EACH_G = /\{\{#each\s+(@?[\w.]+)\s*\}\}/g;
 const CLOSE_WHEN = '{{/when}}';
@@ -13,7 +14,16 @@ const ELSE_TAG = '{{#else}}';
 
 export function render(templateText: string, json: unknown, vars: Variables): string {
   const afterBlocks = renderBlocks(templateText, json, vars);
-  return renderInline(afterBlocks, json, vars);
+  const afterHelpers = renderHelpers(afterBlocks, json, vars);
+  return renderInline(afterHelpers, json, vars);
+}
+
+function renderHelpers(text: string, json: unknown, vars: Variables): string {
+  return text
+    .replace(LINK_RE, (_m, tmpl: string) => htmlEscape(buildLink(tmpl, json, vars)))
+    .replace(DATE_RE, (_m, path: string, fmt?: string) =>
+      htmlEscape(formatDate(lookup(path, json, vars), fmt)),
+    );
 }
 
 function renderInline(text: string, json: unknown, vars: Variables): string {
@@ -22,15 +32,7 @@ function renderInline(text: string, json: unknown, vars: Variables): string {
       const v = lookup(rawPath.trim(), json, vars);
       return v === undefined || v === null ? '' : String(v);
     }
-    const expr = escExpr!.trim();
-    const helper = expr.match(HELPER_RE);
-    if (helper) {
-      const [, name, path, arg] = helper;
-      if (name === 'date') {
-        return htmlEscape(formatDate(lookup(path!, json, vars), arg));
-      }
-    }
-    return htmlEscape(lookup(expr, json, vars));
+    return htmlEscape(lookup(escExpr!.trim(), json, vars));
   });
 }
 

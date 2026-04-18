@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { formatDate } from './helpers';
+import { formatDate, buildLink } from './helpers';
 
 describe('formatDate', () => {
   it('default format renders localized month/day/time', () => {
@@ -14,5 +14,23 @@ describe('formatDate', () => {
   it('returns empty for invalid input', () => {
     expect(formatDate('not a date', undefined)).toBe('');
     expect(formatDate(undefined, undefined)).toBe('');
+  });
+});
+
+describe('buildLink', () => {
+  it('interpolates a simple template', () => {
+    const out = buildLink(
+      'https://{{@adminHost}}/user/{{id}}',
+      { id: 1234 },
+      { adminHost: 'admin.x.com' },
+    );
+    expect(out).toBe('https://admin.x.com/user/1234');
+  });
+  it('encodes query components', () => {
+    const out = buildLink('https://x/?q={{q}}', { q: 'a b&c' }, {});
+    expect(out).toBe('https://x/?q=a%20b%26c');
+  });
+  it('returns empty string for empty template', () => {
+    expect(buildLink('', {}, {})).toBe('');
   });
 });

@@ -1,7 +1,28 @@
+import { lookup } from './lookup';
+import type { Variables } from '../shared/types';
+
 const MONTHS_SHORT = [
   'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
 ];
+
+const TOKEN_RE = /\{\{([^}]+)\}\}/g;
+
+export function buildLink(template: string, json: unknown, vars: Variables): string {
+  if (!template) return '';
+  const qIdx = template.indexOf('?');
+  const pathPart = qIdx === -1 ? template : template.slice(0, qIdx);
+  const queryPart = qIdx === -1 ? '' : template.slice(qIdx);
+
+  const interpolate = (part: string, encode: boolean): string =>
+    part.replace(TOKEN_RE, (_m, p) => {
+      const v = lookup(String(p).trim(), json, vars);
+      const s = v === undefined || v === null ? '' : String(v);
+      return encode ? encodeURIComponent(s) : s;
+    });
+
+  return interpolate(pathPart, false) + interpolate(queryPart, true);
+}
 
 export function formatDate(input: unknown, fmt: string | undefined): string {
   if (input === undefined || input === null) return '';
