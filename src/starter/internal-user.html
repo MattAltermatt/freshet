@@ -1,0 +1,19 @@
+<div class="pj-row">
+  <span class="pj-label">ID</span>
+  <a href="https://{{@adminHost}}/user/{{id}}">{{id}}</a>
+</div>
+<div class="pj-row">
+  <span class="pj-label">Insert Date</span>
+  <span>{{date insertDate}}</span>
+</div>
+<div class="pj-row">
+  <span class="pj-label">Status</span>
+  {{#when status "UP"}}<span class="pj-up">UP</span>{{/when}}
+  {{#when status "DOWN"}}<span class="pj-down">DOWN</span>{{/when}}
+</div>
+<style>
+  .pj-row { display:flex; gap:12px; padding:6px 12px; border-bottom:1px solid #f3f4f6; }
+  .pj-label { color:#6b7280; font-size:11px; text-transform:uppercase; letter-spacing:.5px; min-width:120px; }
+  .pj-up   { background:#10b981; color:#fff; padding:2px 8px; border-radius:3px; }
+  .pj-down { background:#ef4444; color:#fff; padding:2px 8px; border-radius:3px; }
+</style>
