@@ -113,6 +113,11 @@ body {
 }
 .pj-btn:hover:not(:disabled) { background: var(--pj-bg-subtle); }
 .pj-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.pj-btn:focus-visible,
+.pj-linkish:focus-visible {
+  outline: 2px solid var(--pj-accent);
+  outline-offset: 2px;
+}
 
 .pj-btn--accent {
   background: var(--pj-accent-strong);
