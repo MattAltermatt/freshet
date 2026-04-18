@@ -19,6 +19,13 @@ const manifest = defineManifest({
     service_worker: 'src/background/background.ts',
     type: 'module',
   },
+  content_scripts: [
+    {
+      matches: ['<all_urls>'],
+      js: ['src/content/content-script.ts'],
+      run_at: 'document_idle',
+    },
+  ],
   permissions: ['storage', 'scripting', 'tabs'],
   host_permissions: ['<all_urls>'],
   icons: {
