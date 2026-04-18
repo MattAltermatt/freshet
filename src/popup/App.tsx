@@ -2,7 +2,10 @@ import type { JSX } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import { promoteStorageToLocal } from '../storage/promoteStorageToLocal';
 import { truncateUrlMiddle } from '../shared/truncateUrl';
-import { Toggle, useStorage } from '../ui';
+// Deep imports (not the `../ui` barrel) so the popup bundle doesn't pull in
+// CodeMirror via `CodeMirrorBox` / `pjHighlightStyle`. Keeps popup under budget.
+import { Toggle } from '../ui/components/Toggle';
+import { useStorage } from '../ui/hooks/useStorage';
 import type { HostSkipList, Rule } from '../shared/types';
 import { findMatchingRule } from '../matcher/matcher';
 import { directiveHash } from '../options/directives';
