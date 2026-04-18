@@ -1,6 +1,11 @@
 import { createStorage } from '../storage/storage';
 import type { Rule, Templates } from '../shared/types';
 import { render } from '../engine/engine';
+import { EditorState } from '@codemirror/state';
+import { EditorView, lineNumbers, keymap } from '@codemirror/view';
+import { defaultKeymap } from '@codemirror/commands';
+import { autocompletion } from '@codemirror/autocomplete';
+import { json } from '@codemirror/lang-json';
 
 let storage!: Awaited<ReturnType<typeof createStorage>>;
 
@@ -8,7 +13,24 @@ let rulesCache: Rule[] = [];
 let templatesCache: Templates = {};
 let currentTemplateName: string | null = null;
 
+function mountCmSmoke(): void {
+  const smokeHost = document.createElement('div');
+  smokeHost.id = 'cm-smoke';
+  smokeHost.style.cssText =
+    'position:fixed;bottom:8px;right:8px;width:300px;height:120px;border:1px solid #888;background:#fff;z-index:99999';
+  document.body.appendChild(smokeHost);
+  new EditorView({
+    state: EditorState.create({
+      doc: '{ "hello": "world" }',
+      extensions: [lineNumbers(), keymap.of(defaultKeymap), autocompletion(), json()],
+    }),
+    parent: smokeHost,
+  });
+  console.log('[pj] cm6 smoke: mounted');
+}
+
 async function boot(): Promise<void> {
+  mountCmSmoke();
   storage = await createStorage(chrome.storage);
   setupTabs();
   setupRulesToolbar();
