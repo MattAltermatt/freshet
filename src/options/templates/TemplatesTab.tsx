@@ -125,10 +125,20 @@ export function TemplatesTab({
               </button>
             </div>
           ) : null}
+          <p class="pj-flow-caption" aria-label="Data flow">
+            <span class="pj-flow-token pj-flow-input">Template</span>
+            <span class="pj-flow-op" aria-hidden="true">＋</span>
+            <span class="pj-flow-token pj-flow-input">Sample JSON</span>
+            <span class="pj-flow-op" aria-hidden="true">→</span>
+            <span class="pj-flow-token pj-flow-output">Preview</span>
+          </p>
           <div class="pj-templates-body">
             <section class="pj-templates-editor">
               <div class="pj-templates-label">
-                <span>Template</span>
+                <span class="pj-templates-label-title">
+                  <span class="pj-role-pill pj-role-pill--input">INPUT</span>
+                  Template
+                </span>
                 <span class="pj-templates-label-hint">
                   Liquid syntax — tap <code>{'{{'}</code> or <code>{'{%'}</code> for autocomplete
                 </span>
@@ -144,7 +154,10 @@ export function TemplatesTab({
             <section class="pj-templates-side">
               <div class="pj-templates-side-block">
                 <div class="pj-templates-label">
-                  <span>Sample JSON</span>
+                  <span class="pj-templates-label-title">
+                    <span class="pj-role-pill pj-role-pill--input">INPUT</span>
+                    Sample JSON
+                  </span>
                   <span class="pj-templates-label-hint">
                     Saved per template. Powers preview + autocomplete.
                   </span>
@@ -153,7 +166,10 @@ export function TemplatesTab({
               </div>
               <div class="pj-templates-side-block pj-templates-preview-block">
                 <div class="pj-templates-label">
-                  <span>Preview</span>
+                  <span class="pj-templates-label-title">
+                    <span class="pj-role-pill pj-role-pill--output">OUTPUT</span>
+                    Preview
+                  </span>
                   <span class="pj-templates-label-hint">
                     Sandboxed iframe, re-rendered 250 ms after you stop typing.
                   </span>
