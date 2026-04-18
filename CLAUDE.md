@@ -18,7 +18,14 @@ pnpm icons          # rasterize design/icon-{16,48,128}.svg → public/icon-{16,
 
 ## Architecture
 
-Two pure cores (Node-tested, zero `chrome.*` calls — verify with grep):
+Two pure cores (Node-tested, zero `chrome.*` calls):
+
+```bash
+# Purity invariant — must return nothing.
+rg 'chrome\.' src/engine src/matcher
+```
+
+
 - `src/engine/` — template → HTML: `engine.ts` (thin LiquidJS wrapper; `outputEscape` auto-escapes non-raw output; sanitizer runs post-render), `helpers.ts` (`registerFilters` for `date`/`link`/`num`/`raw`), `lookup.ts` (dotted paths + `@var`, used by the `link` filter's inner-token substitution), `migrate.ts` (v1 → v2 syntax rewriter), `sanitize.ts` (final security pass)
 - `src/matcher/` — URL → rule: `glob.ts` (`**` = `.*`, `/.../` escape hatch), `matcher.ts`
 
@@ -34,6 +41,7 @@ Content script is declared **statically** in the manifest (`content_scripts: [{ 
 
 ## Gotchas
 
+- **Reload the extension after every build.** `pnpm build` writes to `dist/` but Chrome caches the loaded extension. Go to `chrome://extensions/`, find Present-JSON, click the circular reload arrow. Service worker + content script + options / popup all refresh. Any "my change isn't showing up" is almost always this.
 - **Security hook blocks DOM-injection patterns** in Write/Edit tool params. When creating or modifying a file that contains `el.inner` + `HTML = ...`, use a Bash heredoc (`cat > path << 'EOF'`) instead — the hook inspects tool params, not file state.
 - **TZ=UTC** is prefixed on the `test` and `test:watch` scripts so `formatDate` custom formats match fixture expectations on any machine.
 - **Template engine is LiquidJS** (Phase 2 Plan 2, 2026-04-18). Runtime interpreter — no codegen, no runtime JS-eval. This matters for MV3: the extension CSP disallows `'unsafe-eval'`, which blocks Handlebars-style compile-to-function engines (a Handlebars attempt hit this blocker). The `test/e2e/csp-smoke.spec.ts` test guards against CSP regressions on the render path.
@@ -44,7 +52,24 @@ Content script is declared **statically** in the manifest (`content_scripts: [{ 
 - **Popup must deep-import from `src/ui/`**, not the `../ui` barrel. The barrel re-exports `CodeMirrorBox` + `pjHighlightStyle` which drag CodeMirror into any bundle importing the barrel; deep-importing `Toggle` / `useStorage` individually keeps popup at ~6 KB gzipped instead of ~95 KB.
 - **Liquid `StreamParser` must advance on every token pass** — a lone `{` that isn't `{{`, `{%`, or `{#` (e.g. inside a `<style>{ }</style>` block) must be consumed as plain text, otherwise CodeMirror throws "Stream parser failed to advance stream". Guarded in `liquidMode.ts` and regression-tested in `liquidMode.test.ts`.
 - **`--pj-accent-strong` vs `--pj-accent`** — the brand orange `#ea580c` is not WCAG AA-contrast-compliant on our light-wash background, so anywhere small text sits on a wash or a solid-orange button uses `--pj-accent-strong` (`#c2410c` in both themes). Reserve `--pj-accent` for large-area surfaces (icons, borders, hover-flash backgrounds).
-- **Options-page storage keys** — `rules`, `templates`, `hostSkipList`, `schemaVersion`, `settings` (`themePreference`), `pj_sample_json` (per-template sample JSON), `pj_migrated_v2` (list of template names showing a migration banner), `pj_storage_area` (sentinel flipping sync↔local).
+## Storage keys (`chrome.storage.local`)
+
+| Key | Type | Purpose |
+|---|---|---|
+| `rules` | `Rule[]` | Ordered rule list; first-match-wins. |
+| `templates` | `Record<string, string>` | Template name → HTML source. |
+| `hostSkipList` | `string[]` | Per-host skip — rendering disabled. |
+| `settings` | `{ themePreference }` | `'system' \| 'light' \| 'dark'`. |
+| `schemaVersion` | `number` | `2` once v1→Liquid migration has run. |
+| `pj_sample_json` | `Record<string, string>` | Per-template sample JSON for the editor preview. |
+| `pj_migrated_v2` | `string[]` | Template names that need the migration banner. |
+| `pj_storage_area` | `'local'` | Sentinel: once set, `useStorage` and facade both read `.local`. |
+
+## Testing philosophy
+
+- **Unit tests (Vitest, Node)** cover `src/engine/`, `src/matcher/`, `src/storage/` (pure facade), `src/ui/`, and every Preact component. No `chrome.*` mocks — if a test needs `chrome.*`, it belongs in E2E.
+- **E2E (Playwright, headed Chrome)** covers any path that touches `chrome.tabs`, `chrome.storage`, `chrome.action`, service worker, or content-script injection. Seed storage via the service worker's `worker.evaluate(...)` rather than UI clicks when possible — faster and less flaky.
+- **axe-core** runs inside Playwright for WCAG 2.1 AA (options + popup, light + dark). New surfaces get an a11y spec.
 
 ## Docs
 
