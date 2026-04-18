@@ -50,7 +50,18 @@ export function RulesTab({
     // findIndex on the initial empty array silently drops the directive.
     if (rules.length === 0) return;
     const idx = rules.findIndex((r) => r.id === directive.ruleId);
-    if (idx >= 0) setEditing(idx);
+    if (idx >= 0) {
+      setEditing(idx);
+    } else {
+      // Rule id came from the popup but the rule has since been deleted.
+      // Surface it — otherwise the user sees an inexplicable no-op on the
+      // options page after clicking "Edit rule".
+      toast.push({
+        variant: 'info',
+        message: 'Rule not found — it may have been deleted.',
+        ttlMs: 4000,
+      });
+    }
     onDirectiveHandled?.();
   }, [directive, rules]);
 
