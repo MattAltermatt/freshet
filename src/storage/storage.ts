@@ -5,6 +5,7 @@ const K_TEMPLATES = 'templates';
 const K_SKIP = 'hostSkipList';
 const K_AREA = 'pj_storage_area';
 const K_SCHEMA = 'schemaVersion';
+const K_MIGRATED = 'pj_migrated_v2';
 
 export interface Storage {
   getRules(): Promise<Rule[]>;
@@ -15,6 +16,7 @@ export interface Storage {
   setHostSkipList(list: HostSkipList): Promise<void>;
   getSchemaVersion(): Promise<number | undefined>;
   setSchemaVersion(version: number): Promise<void>;
+  setMigratedList(names: string[]): Promise<void>;
 }
 
 export async function createStorage(api: typeof chrome.storage): Promise<Storage> {
@@ -37,5 +39,6 @@ export async function createStorage(api: typeof chrome.storage): Promise<Storage
       return typeof v === 'number' ? v : undefined;
     },
     setSchemaVersion: (version) => area.set({ [K_SCHEMA]: version }),
+    setMigratedList: (names) => area.set({ [K_MIGRATED]: names }),
   };
 }

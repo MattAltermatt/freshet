@@ -22,6 +22,8 @@ export interface MigrateTemplatesStorage {
   getTemplates(): Promise<Record<string, string>>;
   setTemplates(next: Record<string, string>): Promise<void>;
   setSchemaVersion(version: number): Promise<void>;
+  /** Records names of templates that were rewritten, for the options-tab banner. */
+  setMigratedList?(names: string[]): Promise<void>;
 }
 
 export interface MigrateResult {
@@ -49,5 +51,8 @@ export async function migrateTemplatesToV2(storage: MigrateTemplatesStorage): Pr
   if (failed.length > 0) return { ok: false, migrated: [], failed };
   await storage.setTemplates(rewritten);
   await storage.setSchemaVersion(2);
+  if (storage.setMigratedList && migrated.length > 0) {
+    await storage.setMigratedList(migrated);
+  }
   return { ok: true, migrated, failed: [] };
 }

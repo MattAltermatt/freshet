@@ -9,7 +9,7 @@ export interface RulesTabProps {
   rules: Rule[];
   templates: Templates;
   onChange: (next: Rule[]) => void;
-  onDelete: (index: number, rule: Rule) => void;
+  onDelete: (index: number) => void;
 }
 
 export function RulesTab({
@@ -45,7 +45,7 @@ export function RulesTab({
           templates={templates}
           onChange={onChange}
           onEdit={(idx) => setEditing(idx)}
-          onDelete={(idx) => onDelete(idx, rules[idx]!)}
+          onDelete={(idx) => onDelete(idx)}
         />
       </section>
       <section class="pj-rules-right">

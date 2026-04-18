@@ -1,3 +1,19 @@
+{%- comment -%}
+  Present-JSON starter template — "internal user" card.
+  Grammar: LiquidJS (https://liquidjs.com). Runs in an MV3 content script
+  under a strict CSP (no eval). These comments are stripped from the output.
+
+  Quick reference:
+    {{ path.to.value }}                 — HTML-escaped interpolation
+    {{ html | raw }}                    — raw (no escape)
+    {{ vars.name }}                     — rule-scoped variables
+    {% if status == "UP" %}…{% endif %} — conditional
+    {% for item in items %}…{% endfor %} — loop
+    {{ ts | date: "yyyy-MM-dd" }}       — date helper
+    {{ "https://h/{{id}}" | link }}     — URL-safe link builder
+    {{ n | num }}                       — number helper
+  Project README: https://github.com/MattAltermatt/present-json
+{%- endcomment -%}
 <div class="pj-row">
   <span class="pj-label">ID</span>
   <a href="https://{{ vars.adminHost }}/user/{{ id }}">{{ id }}</a>

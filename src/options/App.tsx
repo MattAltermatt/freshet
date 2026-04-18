@@ -10,6 +10,8 @@ import {
 import type { Rule, Templates } from '../shared/types';
 import { Header } from './Header';
 import { RulesTab } from './rules/RulesTab';
+import { TemplatesTab } from './templates/TemplatesTab';
+import { ShortcutsFooter } from './ShortcutsFooter';
 
 type Tab = 'rules' | 'templates';
 
@@ -31,12 +33,15 @@ export function App(): JSX.Element {
   });
 
   const [rules, writeRules] = useStorage<'rules', Rule[]>('rules', []);
-  const [templates] = useStorage<'templates', Templates>('templates', {});
+  const [templates, writeTemplates] = useStorage<'templates', Templates>(
+    'templates',
+    {},
+  );
   const toast = useToast();
 
   const [tab, setTab] = useState<Tab>('rules');
 
-  const handleDelete = (index: number, rule: Rule): void => {
+  const handleRuleDelete = (index: number): void => {
     const snapshot = [...rules];
     void writeRules(rules.filter((_, i) => i !== index));
     toast.push({
@@ -48,7 +53,22 @@ export function App(): JSX.Element {
         onClick: () => void writeRules(snapshot),
       },
     });
-    void rule; // included in the API surface in case a caller wants richer toast copy later
+  };
+
+  const handleDisableRules = (ruleIds: string[]): void => {
+    const idSet = new Set(ruleIds);
+    const snapshot = [...rules];
+    const next = rules.map((r) => (idSet.has(r.id) ? { ...r, enabled: false } : r));
+    void writeRules(next);
+    toast.push({
+      variant: 'info',
+      message: `Disabled ${ruleIds.length} rule${ruleIds.length === 1 ? '' : 's'} · Undo`,
+      ttlMs: 8000,
+      action: {
+        label: 'Undo',
+        onClick: () => void writeRules(snapshot),
+      },
+    });
   };
 
   return (
@@ -65,17 +85,19 @@ export function App(): JSX.Element {
             rules={rules}
             templates={templates}
             onChange={(next) => void writeRules(next)}
-            onDelete={handleDelete}
+            onDelete={(index) => handleRuleDelete(index)}
           />
         ) : (
-          <TemplatesPlaceholder />
+          <TemplatesTab
+            templates={templates}
+            onTemplatesChange={(next) => void writeTemplates(next)}
+            rules={rules}
+            onDisableRules={handleDisableRules}
+          />
         )}
       </main>
+      <ShortcutsFooter />
       <ToastHost />
     </div>
   );
-}
-
-function TemplatesPlaceholder(): JSX.Element {
-  return <p class="pj-placeholder">Templates tab — implementation lands in Task 21.</p>;
 }
