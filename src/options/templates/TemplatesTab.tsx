@@ -50,6 +50,21 @@ interface CollapseState {
 
 const DEFAULT_COLLAPSE: CollapseState = { editor: false, sample: false, preview: false };
 
+const PLAYGROUND_URL = 'https://liquidjs.com/playground.html';
+
+// Matches the LiquidJS playground's hash format — base64-of-UTF-8 for
+// template, then a comma, then base64-of-UTF-8 for context. Reverse-engineered
+// from https://liquidjs.com/js/main.js (utoa + parseArgs).
+function utf8ToBase64(input: string): string {
+  const bytes = new TextEncoder().encode(input);
+  let bin = '';
+  for (const byte of bytes) bin += String.fromCharCode(byte);
+  return btoa(bin);
+}
+function playgroundUrl(template: string, context: string): string {
+  return `${PLAYGROUND_URL}#${utf8ToBase64(template)},${utf8ToBase64(context)}`;
+}
+
 export function TemplatesTab({
   templates,
   onTemplatesChange,
@@ -169,7 +184,7 @@ export function TemplatesTab({
             <span class="pj-flow-token pj-flow-output">Preview</span>
           </p>
           <div class="pj-templates-body">
-            <section class="pj-templates-col" data-collapsed={collapse.editor}>
+            <section class="pj-templates-col" data-area="template" data-collapsed={collapse.editor}>
               <button
                 type="button"
                 class="pj-templates-label pj-disclosure"
@@ -188,15 +203,36 @@ export function TemplatesTab({
                 </span>
               </button>
               {!collapse.editor ? (
-                <TemplateEditor
-                  value={tpl}
-                  onChange={handleTemplateInput}
-                  sampleJson={safeParse(sampleText)}
-                  ruleVars={ruleVars}
-                />
+                <>
+                  <TemplateEditor
+                    value={tpl}
+                    onChange={handleTemplateInput}
+                    sampleJson={safeParse(sampleText)}
+                    ruleVars={ruleVars}
+                  />
+                  <p class="pj-playground-links" aria-label="LiquidJS playground links">
+                    <a
+                      href={PLAYGROUND_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Open LiquidJS playground
+                      <span class="pj-ext-arrow" aria-hidden="true">↗</span>
+                    </a>
+                    <a
+                      href={playgroundUrl(tpl, sampleText)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Pre-fills the playground with the current Template + Sample JSON"
+                    >
+                      Open with current values
+                      <span class="pj-ext-arrow" aria-hidden="true">↗</span>
+                    </a>
+                  </p>
+                </>
               ) : null}
             </section>
-            <section class="pj-templates-col" data-collapsed={collapse.sample}>
+            <section class="pj-templates-col" data-area="sample" data-collapsed={collapse.sample}>
               <button
                 type="button"
                 class="pj-templates-label pj-disclosure"
@@ -218,7 +254,7 @@ export function TemplatesTab({
                 <SampleJsonEditor value={sampleText} onChange={handleSampleInput} />
               ) : null}
             </section>
-            <section class="pj-templates-col pj-templates-col--preview" data-collapsed={collapse.preview}>
+            <section class="pj-templates-col" data-area="preview" data-collapsed={collapse.preview}>
               <button
                 type="button"
                 class="pj-templates-label pj-disclosure"
