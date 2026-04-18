@@ -4,6 +4,7 @@ export { Toast } from './components/Toast';
 export { ToastHost } from './components/ToastHost';
 export { Menu, type MenuItem, type MenuProps } from './components/Menu';
 export { KVEditor, type KVEditorProps } from './components/KVEditor';
+export { Cheatsheet, type CheatsheetProps } from './components/Cheatsheet';
 
 export { useTheme } from './hooks/useTheme';
 export { useToast, clearAllToasts, type Toast as ToastModel, type ToastInput, type ToastVariant } from './hooks/useToast';

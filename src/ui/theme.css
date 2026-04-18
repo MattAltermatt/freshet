@@ -123,6 +123,33 @@
 }
 .pj-kv-add:hover { background: var(--pj-accent-wash); color: var(--pj-accent); }
 
+/* ───── Cheatsheet ───── */
+.pj-cheatsheet {
+  background: var(--pj-bg-elevated);
+  border: 1px solid var(--pj-border);
+  border-radius: var(--pj-radius-lg);
+  padding: var(--pj-space-3);
+  font-size: var(--pj-font-size-sm);
+}
+.pj-cheatsheet-toggle {
+  background: transparent;
+  border: 0;
+  font: inherit;
+  color: var(--pj-fg-muted);
+  cursor: pointer;
+  padding: 0;
+}
+.pj-cheatsheet-body {
+  display: grid;
+  gap: var(--pj-space-2);
+  margin: var(--pj-space-2) 0 0 0;
+  padding: 0;
+}
+.pj-cheatsheet-row { display: grid; grid-template-columns: 1fr; gap: 2px; }
+.pj-cheatsheet-row dt { color: var(--pj-fg-subtle); font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; }
+.pj-cheatsheet-row dd { margin: 0; }
+.pj-cheatsheet-row code { font-family: var(--pj-font-mono); color: var(--pj-fg); background: var(--pj-bg-subtle); padding: 2px 6px; border-radius: 3px; display: inline-block; }
+
 :root[data-theme="dark"] {
   --pj-bg:            #1c1917;   /* warm near-black (stone-950) */
   --pj-bg-elevated:   #292524;
