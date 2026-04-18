@@ -1,5 +1,5 @@
 import type { JSX } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import {
   ToastHost,
   useStorage,
@@ -64,8 +64,17 @@ export function App(): JSX.Element {
     setTab(directive.kind === 'edit-template' ? 'templates' : 'rules');
   }, [directive]);
 
+  // Read the latest templates through a ref so two back-to-back inline-creates
+  // within one storage round-trip don't spread a stale snapshot and silently
+  // clobber the first-created template.
+  const templatesRef = useRef(templates);
+  useEffect(() => {
+    templatesRef.current = templates;
+  }, [templates]);
+
   const createTemplate = (name: string): string => {
-    void writeTemplates({ ...templates, [name]: '' });
+    void writeTemplates({ ...templatesRef.current, [name]: '' });
+    templatesRef.current = { ...templatesRef.current, [name]: '' };
     return name;
   };
 
