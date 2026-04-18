@@ -1,0 +1,31 @@
+{
+  "name": "present-json",
+  "version": "0.1.0",
+  "description": "Chrome extension that renders JSON responses as user-templated HTML.",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.33.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "lint": "eslint --no-error-on-unmatched-pattern 'src/**/*.ts'",
+    "format": "prettier --write 'src/**/*.{ts,html,json}'",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@crxjs/vite-plugin": "^2.0.0",
+    "@playwright/test": "^1.48.0",
+    "@types/chrome": "^0.0.270",
+    "@types/node": "^20.11.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.0",
+    "typescript": "^5.4.0",
+    "vite": "^5.2.0",
+    "vitest": "^1.5.0"
+  }
+}
