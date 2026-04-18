@@ -75,3 +75,4 @@
    - Form-based template editor
    - Shared template registry
    - Non-JSON content support
+   - **QOL: "Create rule from current page"** — one-click action from the popup (and/or context menu) that pre-populates a new rule with the current tab's URL as the pattern, then jumps into the options page's rule-edit modal. Eliminates the manual copy-paste dance. Candidate to graduate into Phase 2 Plan 4 (popup) if it fits; otherwise standalone.
