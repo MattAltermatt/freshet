@@ -1,8 +1,10 @@
 import { htmlEscape } from './escape';
 import { lookup } from './lookup';
+import { formatDate } from './helpers';
 import type { Variables } from '../shared/types';
 
 const INLINE_RE = /\{\{\{([^}]+)\}\}\}|\{\{([^}]+)\}\}/g;
+const HELPER_RE = /^(date)\s+(@?[\w.]+)(?:\s+"([^"]*)")?$/;
 const OPEN_WHEN_G = /\{\{#when\s+(@?[\w.]+)\s+"([^"]*)"\s*\}\}/g;
 const OPEN_EACH_G = /\{\{#each\s+(@?[\w.]+)\s*\}\}/g;
 const CLOSE_WHEN = '{{/when}}';
@@ -15,12 +17,20 @@ export function render(templateText: string, json: unknown, vars: Variables): st
 }
 
 function renderInline(text: string, json: unknown, vars: Variables): string {
-  return text.replace(INLINE_RE, (_full, rawPath?: string, escPath?: string) => {
+  return text.replace(INLINE_RE, (_full, rawPath?: string, escExpr?: string) => {
     if (rawPath !== undefined) {
       const v = lookup(rawPath.trim(), json, vars);
       return v === undefined || v === null ? '' : String(v);
     }
-    return htmlEscape(lookup(escPath!.trim(), json, vars));
+    const expr = escExpr!.trim();
+    const helper = expr.match(HELPER_RE);
+    if (helper) {
+      const [, name, path, arg] = helper;
+      if (name === 'date') {
+        return htmlEscape(formatDate(lookup(path!, json, vars), arg));
+      }
+    }
+    return htmlEscape(lookup(expr, json, vars));
   });
 }
 

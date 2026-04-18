@@ -68,3 +68,11 @@ describe('render — #each', () => {
     expect(render(t, json, {})).toBe('13');
   });
 });
+
+describe('render — date helper', () => {
+  it('formats an ISO timestamp with custom format', () => {
+    process.env.TZ = 'UTC';
+    const t = '{{date insertDate "yyyy-MM-dd"}}';
+    expect(render(t, { insertDate: '2026-04-17T23:09:30Z' }, {})).toBe('2026-04-17');
+  });
+});
