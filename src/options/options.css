@@ -588,29 +588,17 @@ input:focus, select:focus, textarea:focus {
 
 .pj-templates-body {
   display: grid;
-  grid-template-columns: minmax(0, 1.6fr) minmax(320px, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--pj-space-3);
   align-items: start;
 }
-.pj-templates-editor {
-  display: flex;
-  flex-direction: column;
-  gap: var(--pj-space-3);
-}
-.pj-templates-editor > .pj-templates-label { margin-bottom: -8px; }
-.pj-templates-side-block {
+.pj-templates-col {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
 }
-.pj-templates-side {
-  display: flex;
-  flex-direction: column;
-  gap: var(--pj-space-3);
-  position: sticky;
-  top: var(--pj-space-3);
-  align-self: start;
-}
+.pj-templates-col[data-collapsed="true"] > button.pj-templates-label { opacity: 0.7; }
 .pj-templates-label {
   display: flex;
   align-items: baseline;
@@ -638,12 +626,14 @@ button.pj-templates-label:focus-visible {
   border-radius: var(--pj-radius);
 }
 .pj-disclosure-arrow {
-  font-size: 10px;
-  color: var(--pj-fg-subtle);
-  margin-right: 4px;
+  font-size: 14px;
+  color: var(--pj-fg-muted);
+  margin-right: 6px;
   display: inline-block;
-  min-width: 8px;
+  min-width: 12px;
+  line-height: 1;
 }
+button.pj-templates-label:hover .pj-disclosure-arrow { color: var(--pj-fg); }
 .pj-templates-label-hint {
   font-weight: normal;
   color: var(--pj-fg-subtle);

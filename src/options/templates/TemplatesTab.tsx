@@ -169,7 +169,7 @@ export function TemplatesTab({
             <span class="pj-flow-token pj-flow-output">Preview</span>
           </p>
           <div class="pj-templates-body">
-            <section class="pj-templates-editor" data-collapsed={collapse.editor}>
+            <section class="pj-templates-col" data-collapsed={collapse.editor}>
               <button
                 type="button"
                 class="pj-templates-label pj-disclosure"
@@ -184,7 +184,7 @@ export function TemplatesTab({
                   Template
                 </span>
                 <span class="pj-templates-label-hint">
-                  Liquid syntax — tap <code>{'{{'}</code> or <code>{'{%'}</code> for autocomplete
+                  Liquid — tap <code>{'{{'}</code> or <code>{'{%'}</code> for autocomplete
                 </span>
               </button>
               {!collapse.editor ? (
@@ -195,59 +195,57 @@ export function TemplatesTab({
                   ruleVars={ruleVars}
                 />
               ) : null}
-              <Cheatsheet />
             </section>
-            <section class="pj-templates-side">
-              <div class="pj-templates-side-block" data-collapsed={collapse.sample}>
-                <button
-                  type="button"
-                  class="pj-templates-label pj-disclosure"
-                  aria-expanded={!collapse.sample}
-                  onClick={() => toggleCollapse('sample')}
-                >
-                  <span class="pj-disclosure-arrow" aria-hidden="true">
-                    {collapse.sample ? '▸' : '▾'}
-                  </span>
-                  <span class="pj-templates-label-title">
-                    <span class="pj-role-pill pj-role-pill--input">INPUT</span>
-                    Sample JSON
-                  </span>
-                  <span class="pj-templates-label-hint">
-                    Saved per template. Powers preview + autocomplete.
-                  </span>
-                </button>
-                {!collapse.sample ? (
-                  <SampleJsonEditor value={sampleText} onChange={handleSampleInput} />
-                ) : null}
-              </div>
-              <div class="pj-templates-side-block pj-templates-preview-block" data-collapsed={collapse.preview}>
-                <button
-                  type="button"
-                  class="pj-templates-label pj-disclosure"
-                  aria-expanded={!collapse.preview}
-                  onClick={() => toggleCollapse('preview')}
-                >
-                  <span class="pj-disclosure-arrow" aria-hidden="true">
-                    {collapse.preview ? '▸' : '▾'}
-                  </span>
-                  <span class="pj-templates-label-title">
-                    <span class="pj-role-pill pj-role-pill--output">OUTPUT</span>
-                    Preview
-                  </span>
-                  <span class="pj-templates-label-hint">
-                    Sandboxed iframe, re-rendered 250 ms after you stop typing.
-                  </span>
-                </button>
-                {!collapse.preview ? (
-                  <PreviewIframe
-                    template={tpl}
-                    sampleJsonText={sampleText}
-                    vars={{}}
-                  />
-                ) : null}
-              </div>
+            <section class="pj-templates-col" data-collapsed={collapse.sample}>
+              <button
+                type="button"
+                class="pj-templates-label pj-disclosure"
+                aria-expanded={!collapse.sample}
+                onClick={() => toggleCollapse('sample')}
+              >
+                <span class="pj-disclosure-arrow" aria-hidden="true">
+                  {collapse.sample ? '▸' : '▾'}
+                </span>
+                <span class="pj-templates-label-title">
+                  <span class="pj-role-pill pj-role-pill--input">INPUT</span>
+                  Sample JSON
+                </span>
+                <span class="pj-templates-label-hint">
+                  Saved per template. Powers preview + autocomplete.
+                </span>
+              </button>
+              {!collapse.sample ? (
+                <SampleJsonEditor value={sampleText} onChange={handleSampleInput} />
+              ) : null}
+            </section>
+            <section class="pj-templates-col pj-templates-col--preview" data-collapsed={collapse.preview}>
+              <button
+                type="button"
+                class="pj-templates-label pj-disclosure"
+                aria-expanded={!collapse.preview}
+                onClick={() => toggleCollapse('preview')}
+              >
+                <span class="pj-disclosure-arrow" aria-hidden="true">
+                  {collapse.preview ? '▸' : '▾'}
+                </span>
+                <span class="pj-templates-label-title">
+                  <span class="pj-role-pill pj-role-pill--output">OUTPUT</span>
+                  Preview
+                </span>
+                <span class="pj-templates-label-hint">
+                  Sandboxed iframe, re-rendered 250 ms after you stop typing.
+                </span>
+              </button>
+              {!collapse.preview ? (
+                <PreviewIframe
+                  template={tpl}
+                  sampleJsonText={sampleText}
+                  vars={{}}
+                />
+              ) : null}
             </section>
           </div>
+          <Cheatsheet />
         </>
       )}
     </div>
