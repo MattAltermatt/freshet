@@ -77,6 +77,19 @@ describe('render — date helper', () => {
   });
 });
 
+describe('render — num helper', () => {
+  it('compacts a large number from JSON', () => {
+    expect(render('{{num stars}}', { stars: 234567 }, {})).toBe('235k');
+  });
+  it('renders empty for missing value', () => {
+    expect(render('[{{num missing}}]', {}, {})).toBe('[]');
+  });
+  it('supports dotted-path + @variable lookup', () => {
+    expect(render('{{num stats.forks}}', { stats: { forks: 12345 } }, {})).toBe('12k');
+    expect(render('{{num @count}}', {}, { count: '1500' })).toBe('1.5k');
+  });
+});
+
 describe('render — link helper', () => {
   it('interpolates variables and json into the URL', () => {
     const t = '{{link "https://{{@adminHost}}/user/{{id}}"}}';

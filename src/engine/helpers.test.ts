@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { formatDate, buildLink } from './helpers';
+import { formatDate, buildLink, formatNumber } from './helpers';
 
 describe('formatDate', () => {
   it('default format renders localized month/day/time', () => {
@@ -14,6 +14,44 @@ describe('formatDate', () => {
   it('returns empty for invalid input', () => {
     expect(formatDate('not a date', undefined)).toBe('');
     expect(formatDate(undefined, undefined)).toBe('');
+  });
+});
+
+describe('formatNumber', () => {
+  it('renders sub-thousand values without a suffix', () => {
+    expect(formatNumber(0)).toBe('0');
+    expect(formatNumber(7)).toBe('7');
+    expect(formatNumber(500)).toBe('500');
+    expect(formatNumber(999)).toBe('999');
+  });
+  it('compacts thousands with a k suffix', () => {
+    expect(formatNumber(1000)).toBe('1k');
+    expect(formatNumber(1234)).toBe('1.2k');
+    expect(formatNumber(10000)).toBe('10k');
+    expect(formatNumber(234567)).toBe('235k');
+  });
+  it('compacts millions with an M suffix', () => {
+    expect(formatNumber(1_000_000)).toBe('1M');
+    expect(formatNumber(1_234_567)).toBe('1.2M');
+    expect(formatNumber(10_000_000)).toBe('10M');
+  });
+  it('compacts billions with a B suffix', () => {
+    expect(formatNumber(1_000_000_000)).toBe('1B');
+    expect(formatNumber(2_345_000_000)).toBe('2.3B');
+  });
+  it('preserves sign for negative numbers', () => {
+    expect(formatNumber(-1234)).toBe('-1.2k');
+    expect(formatNumber(-500)).toBe('-500');
+  });
+  it('accepts numeric strings', () => {
+    expect(formatNumber('234567')).toBe('235k');
+  });
+  it('returns empty for null/undefined/NaN/non-numeric', () => {
+    expect(formatNumber(null)).toBe('');
+    expect(formatNumber(undefined)).toBe('');
+    expect(formatNumber(NaN)).toBe('');
+    expect(formatNumber('abc')).toBe('');
+    expect(formatNumber({})).toBe('');
   });
 });
 

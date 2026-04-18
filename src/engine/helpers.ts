@@ -24,6 +24,30 @@ export function buildLink(template: string, json: unknown, vars: Variables): str
   return interpolate(pathPart, false) + interpolate(queryPart, true);
 }
 
+export function formatNumber(input: unknown): string {
+  if (input === undefined || input === null) return '';
+  const n = typeof input === 'number' ? input : typeof input === 'string' ? Number(input) : NaN;
+  if (!isFinite(n)) return '';
+  if (Math.abs(n) < 1000) return String(Math.round(n));
+  const sign = n < 0 ? '-' : '';
+  const abs = Math.abs(n);
+  const units: Array<[number, string]> = [
+    [1e9, 'B'],
+    [1e6, 'M'],
+    [1e3, 'k'],
+  ];
+  for (const [mag, suffix] of units) {
+    if (abs >= mag) {
+      const scaled = abs / mag;
+      const body = scaled >= 10
+        ? String(Math.round(scaled))
+        : (Math.round(scaled * 10) / 10).toFixed(1).replace(/\.0$/, '');
+      return `${sign}${body}${suffix}`;
+    }
+  }
+  return String(n);
+}
+
 export function formatDate(input: unknown, fmt: string | undefined): string {
   if (input === undefined || input === null) return '';
   const d = new Date(String(input));

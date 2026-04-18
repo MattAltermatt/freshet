@@ -1,12 +1,13 @@
 import { htmlEscape } from './escape';
 import { lookup } from './lookup';
-import { formatDate, buildLink } from './helpers';
+import { formatDate, buildLink, formatNumber } from './helpers';
 import { sanitize } from './sanitize';
 import type { Variables } from '../shared/types';
 
 const INLINE_RE = /\{\{\{([^}]+)\}\}\}|\{\{([^}]+)\}\}/g;
 const LINK_RE = /\{\{link\s+"([^"]*)"\s*\}\}/g;
 const DATE_RE = /\{\{date\s+(@?[\w.]+)(?:\s+"([^"]*)")?\s*\}\}/g;
+const NUM_RE = /\{\{num\s+(@?[\w.]+)\s*\}\}/g;
 const OPEN_WHEN_G = /\{\{#when\s+(@?[\w.]+)\s+"([^"]*)"\s*\}\}/g;
 const OPEN_EACH_G = /\{\{#each\s+(@?[\w.]+)\s*\}\}/g;
 const CLOSE_WHEN = '{{/when}}';
@@ -24,6 +25,9 @@ function renderHelpers(text: string, json: unknown, vars: Variables): string {
     .replace(LINK_RE, (_m, tmpl: string) => htmlEscape(buildLink(tmpl, json, vars)))
     .replace(DATE_RE, (_m, path: string, fmt?: string) =>
       htmlEscape(formatDate(lookup(path, json, vars), fmt)),
+    )
+    .replace(NUM_RE, (_m, path: string) =>
+      htmlEscape(formatNumber(lookup(path, json, vars))),
     );
 }
 
