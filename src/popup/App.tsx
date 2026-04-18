@@ -127,14 +127,26 @@ export function App(): JSX.Element {
       <section class="pj-popup-test" aria-label="Test URL in options">
         <label class="pj-popup-label" for="pj-popup-test-url">Test URL</label>
         <div class="pj-popup-test-row">
-          <input
-            id="pj-popup-test-url"
-            type="text"
-            class="pj-popup-test-input"
-            value={testUrl}
-            onInput={(e) => setTestUrl((e.target as HTMLInputElement).value)}
-            placeholder="https://…"
-          />
+          <div class="pj-popup-test-input-wrap">
+            <input
+              id="pj-popup-test-url"
+              type="text"
+              class="pj-popup-test-input"
+              value={testUrl}
+              onInput={(e) => setTestUrl((e.target as HTMLInputElement).value)}
+              placeholder="https://…"
+            />
+            {testUrl ? (
+              <button
+                type="button"
+                class="pj-popup-test-clear"
+                aria-label="Clear test URL"
+                onClick={() => setTestUrl('')}
+              >
+                ✕
+              </button>
+            ) : null}
+          </div>
           <button
             type="button"
             class="pj-btn"
