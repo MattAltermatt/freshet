@@ -1,0 +1,10 @@
+html, body { margin: 0; padding: 0; }
+body {
+  width: 320px;
+  font: 13px/1.4 -apple-system, system-ui, sans-serif;
+  background: var(--pj-bg);
+  color: var(--pj-fg);
+}
+
+.pj-popup { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+.pj-popup-placeholder { margin: 0; color: var(--pj-muted); }
