@@ -79,6 +79,50 @@
 .pj-menu-item--danger { color: var(--pj-danger); }
 .pj-menu-item-icon { display: inline-flex; width: 16px; justify-content: center; }
 
+/* ───── KVEditor ───── */
+.pj-kv-editor { display: flex; flex-direction: column; gap: var(--pj-space-1); }
+.pj-kv-row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto;
+  gap: var(--pj-space-2);
+  align-items: center;
+}
+.pj-kv-eq { color: var(--pj-fg-subtle); }
+.pj-kv-err {
+  grid-column: 1 / -1;
+  color: var(--pj-danger);
+  font-size: var(--pj-font-size-sm);
+}
+.pj-invalid { border-color: var(--pj-danger) !important; }
+.pj-kv-key, .pj-kv-value {
+  padding: var(--pj-space-1) var(--pj-space-2);
+  border: 1px solid var(--pj-border);
+  border-radius: var(--pj-radius);
+  background: var(--pj-bg-elevated);
+  color: var(--pj-fg);
+  font: var(--pj-font-size-md) var(--pj-font-mono);
+}
+.pj-kv-remove {
+  background: transparent;
+  border: 0;
+  color: var(--pj-fg-subtle);
+  cursor: pointer;
+  padding: 2px 6px;
+}
+.pj-kv-remove:hover { color: var(--pj-danger); }
+.pj-kv-add {
+  align-self: flex-start;
+  background: transparent;
+  border: 1px dashed var(--pj-border);
+  color: var(--pj-fg-muted);
+  padding: var(--pj-space-1) var(--pj-space-3);
+  border-radius: var(--pj-radius);
+  cursor: pointer;
+  font: inherit;
+  margin-top: var(--pj-space-1);
+}
+.pj-kv-add:hover { background: var(--pj-accent-wash); color: var(--pj-accent); }
+
 :root[data-theme="dark"] {
   --pj-bg:            #1c1917;   /* warm near-black (stone-950) */
   --pj-bg-elevated:   #292524;
