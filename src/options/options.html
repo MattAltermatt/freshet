@@ -1,71 +1,13 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <title>Present-JSON — Options</title>
+    <link rel="stylesheet" href="../ui/theme.css" />
     <link rel="stylesheet" href="./options.css" />
   </head>
   <body>
-    <header>
-      <h1>Present-JSON</h1>
-      <nav>
-        <button id="tab-rules" class="tab active">Rules</button>
-        <button id="tab-templates" class="tab">Templates</button>
-      </nav>
-    </header>
-
-    <section id="view-rules">
-      <div class="toolbar">
-        <button id="rules-add">+ Add rule</button>
-        <button id="rules-save">Save</button>
-        <span id="rules-status" class="status"></span>
-      </div>
-      <table>
-        <thead><tr><th></th><th>Host</th><th>Path</th><th>Template</th><th>Variables</th><th>On</th><th></th></tr></thead>
-        <tbody id="rules-body"></tbody>
-      </table>
-    </section>
-
-    <section id="view-templates" hidden>
-      <div class="toolbar">
-        <select id="tmpl-list"></select>
-        <button id="tmpl-new">New</button>
-        <button id="tmpl-rename">Rename</button>
-        <button id="tmpl-duplicate">Duplicate</button>
-        <button id="tmpl-delete">Delete</button>
-        <button id="tmpl-save">Save</button>
-        <span id="tmpl-status" class="status"></span>
-      </div>
-      <div class="editor-split">
-        <textarea id="tmpl-editor" spellcheck="false" aria-label="Template editor"></textarea>
-        <div class="preview-pane">
-          <label>Sample JSON for preview</label>
-          <textarea id="tmpl-preview-json" spellcheck="false"></textarea>
-          <label>Rendered preview</label>
-          <iframe id="tmpl-preview" sandbox="allow-same-origin"></iframe>
-        </div>
-      </div>
-    </section>
-
-    <dialog id="rule-dialog">
-      <form method="dialog">
-        <h2>Edit rule</h2>
-        <label>Host pattern <input name="hostPattern" /></label>
-        <label>Path pattern <input name="pathPattern" /></label>
-        <label>Template <select name="templateName"></select></label>
-        <fieldset>
-          <legend>Variables</legend>
-          <div id="rule-vars"></div>
-          <button type="button" id="rule-var-add">+ Add variable</button>
-        </fieldset>
-        <label><input type="checkbox" name="enabled" /> Enabled</label>
-        <menu>
-          <button value="cancel">Cancel</button>
-          <button value="ok">Save</button>
-        </menu>
-      </form>
-    </dialog>
-
-    <script type="module" src="./options.ts"></script>
+    <div id="app"></div>
+    <script type="module" src="./options.tsx"></script>
   </body>
 </html>

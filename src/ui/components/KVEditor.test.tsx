@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import type { JSX } from 'preact';
 import { render, fireEvent, screen } from '@testing-library/preact';
 import { useState } from 'preact/hooks';
 import { KVEditor } from './KVEditor';

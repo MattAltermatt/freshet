@@ -3,8 +3,12 @@ import { renderHook, act } from '@testing-library/preact';
 import { useDebounce } from './useDebounce';
 
 describe('useDebounce', () => {
-  beforeEach(() => vi.useFakeTimers());
-  afterEach(() => vi.useRealTimers());
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
 
   it('emits after the delay and collapses rapid updates', () => {
     const { result, rerender } = renderHook(

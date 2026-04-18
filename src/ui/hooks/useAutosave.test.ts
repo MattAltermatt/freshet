@@ -8,7 +8,9 @@ describe('useAutosave', () => {
     vi.useFakeTimers();
     clearAllToasts();
   });
-  afterEach(() => vi.useRealTimers());
+  afterEach(() => {
+    vi.useRealTimers();
+  });
 
   it('does not save on first render', async () => {
     const save = vi.fn().mockResolvedValue(undefined);
