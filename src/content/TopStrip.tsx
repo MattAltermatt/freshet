@@ -35,10 +35,10 @@ export function TopStrip({
     'hostSkipList',
     [],
   );
-  const [settings] = useStorage<'settings', { themePreference: ThemePreference }>(
+  const [settings, writeSettings] = useStorage<
     'settings',
-    { themePreference: 'system' },
-  );
+    { themePreference: ThemePreference }
+  >('settings', { themePreference: 'system' });
   useTheme(
     shadowHost
       ? { preference: settings.themePreference, root: shadowHost }
@@ -110,6 +110,26 @@ export function TopStrip({
     setTimeout(() => window.location.reload(), 1600);
   };
 
+  // Same labels + icons as the options-page Header theme control so the two
+  // surfaces read identically (see src/options/Header.tsx).
+  const THEME_OPTIONS: Array<{ pref: ThemePreference; label: string; icon: string }> = [
+    { pref: 'system', label: 'Theme: Auto', icon: '◐' },
+    { pref: 'light', label: 'Theme: Light', icon: '☀' },
+    { pref: 'dark', label: 'Theme: Dark', icon: '☾' },
+  ];
+
+  const themeItems: MenuItem[] = THEME_OPTIONS.map(({ pref, label, icon }) => {
+    const active = settings.themePreference === pref;
+    const item: MenuItem = {
+      label,
+      icon: <span aria-hidden="true">{icon}</span>,
+      onSelect: () =>
+        void writeSettings({ ...settings, themePreference: pref }),
+    };
+    if (active) item.trailingIcon = <span aria-hidden="true">✓</span>;
+    return item;
+  });
+
   const menuItems: MenuItem[] = [
     {
       label: 'Copy URL',
@@ -122,6 +142,7 @@ export function TopStrip({
       trailingIcon: <span aria-hidden="true">↗</span>,
       onSelect: openEditRule,
     },
+    ...themeItems,
     {
       label: 'Skip this host',
       icon: <span aria-hidden="true">✕</span>,

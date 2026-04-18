@@ -105,3 +105,16 @@ test('degraded state hides the toggle-group + menu and shows the reason', () => 
   expect(screen.queryByRole('group', { name: 'View mode' })).toBeNull();
   expect(screen.queryByTestId('pj-menu-trigger')).toBeNull();
 });
+
+test('menu exposes a theme submenu with the active preference checked', async () => {
+  // Mock chrome default seeds themePreference: 'light' — active should be Light.
+  render(<TopStrip {...baseProps()} />);
+  fireEvent.click(screen.getByTestId('pj-menu-trigger'));
+  // All three theme options render
+  expect(await screen.findByText('Theme: Auto')).toBeInTheDocument();
+  const lightItem = screen.getByText('Theme: Light').closest('button')!;
+  const darkItem = screen.getByText('Theme: Dark').closest('button')!;
+  // Only the active one has the ✓ trailing icon
+  expect(lightItem.textContent).toContain('✓');
+  expect(darkItem.textContent).not.toContain('✓');
+});
