@@ -2,8 +2,8 @@ import type { JSX } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import { promoteStorageToLocal } from '../storage/promoteStorageToLocal';
 import { truncateUrlMiddle } from '../shared/truncateUrl';
-import { useStorage } from '../ui';
-import type { Rule } from '../shared/types';
+import { Toggle, useStorage } from '../ui';
+import type { HostSkipList, Rule } from '../shared/types';
 import { findMatchingRule } from '../matcher/matcher';
 
 interface ActiveTab {
@@ -30,6 +30,10 @@ export function App(): JSX.Element {
   const [ready, setReady] = useState(false);
   const [tab, setTab] = useState<ActiveTab>({ url: '', host: '' });
   const [rules] = useStorage<'rules', Rule[]>('rules', []);
+  const [skipList, writeSkipList] = useStorage<'hostSkipList', HostSkipList>(
+    'hostSkipList',
+    [],
+  );
 
   useEffect(() => {
     void Promise.all([promoteStorageToLocal(), readActiveTab()]).then(([, t]) => {
@@ -37,6 +41,16 @@ export function App(): JSX.Element {
       setReady(true);
     });
   }, []);
+
+  const skipped = tab.host ? skipList.includes(tab.host) : false;
+
+  const toggleSkip = async (next: boolean): Promise<void> => {
+    if (!tab.host) return;
+    const updated = next
+      ? Array.from(new Set([...skipList, tab.host]))
+      : skipList.filter((h) => h !== tab.host);
+    await writeSkipList(updated);
+  };
 
   const matched = (() => {
     if (!tab.url) return null;
@@ -93,6 +107,18 @@ export function App(): JSX.Element {
             </button>
           </div>
         )}
+      </section>
+      <section class="pj-popup-skip" aria-label="Skip toggle">
+        <Toggle
+          checked={skipped}
+          onChange={(next) => void toggleSkip(next)}
+          disabled={!tab.host}
+          label={
+            tab.host
+              ? `Skip Present-JSON on ${tab.host}`
+              : 'Skip toggle unavailable on this page'
+          }
+        />
       </section>
     </div>
   );

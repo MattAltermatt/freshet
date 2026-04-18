@@ -32,6 +32,8 @@ body {
 .pj-popup-match,
 .pj-popup-test { display: flex; flex-direction: column; gap: 4px; }
 
+.pj-popup-skip { padding-top: 2px; }
+
 .pj-popup-label {
   font-size: 10px;
   text-transform: uppercase;
