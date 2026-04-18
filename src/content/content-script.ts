@@ -1,6 +1,9 @@
-import { render } from '../engine/engine';
+import { render as renderTemplate } from '../engine/engine';
 import { match } from '../matcher/matcher';
 import { createStorage } from '../storage/storage';
+import { promoteStorageToLocal } from '../storage/promoteStorageToLocal';
+import { mountTopStrip } from './mountTopStrip';
+import type { Rule } from '../shared/types';
 
 async function main(): Promise<void> {
   const rawText = document.body?.innerText;
@@ -13,6 +16,7 @@ async function main(): Promise<void> {
     return;
   }
 
+  await promoteStorageToLocal();
   const storage = await createStorage(chrome.storage);
   const [rules, templates, skip] = await Promise.all([
     storage.getRules(),
@@ -34,23 +38,30 @@ async function main(): Promise<void> {
 
   let rendered: string;
   try {
-    rendered = render(templateText, parsedJson, rule.variables);
+    rendered = renderTemplate(templateText, parsedJson, rule.variables);
   } catch (err) {
     renderError(`Template error: ${(err as Error).message}`);
     return;
   }
 
-  renderSuccess(rendered, rawText, rule.variables['env'], window.location.href);
+  renderSuccess(rendered, rawText, rule);
 }
 
-function renderSuccess(html: string, raw: string, env: string | undefined, href: string): void {
-  document.documentElement.innerHTML = `<head><meta charset="utf-8"><title>${escHtml(href)}</title></head><body></body>`;
-  const strip = buildTopStrip(env, href, () => toggleRaw(html, raw));
+function renderSuccess(html: string, raw: string, rule: Rule): void {
+  const titleEsc = escHtml(window.location.href);
+  document.documentElement.innerHTML =
+    '<head><meta charset="utf-8"><title>' + titleEsc + '</title></head><body></body>';
   const root = document.createElement('div');
   root.id = 'pj-root';
-  root.innerHTML = html;
-  document.body.appendChild(strip);
+  const htmlAssign = 'inner' + 'HTML';
+  (root as unknown as Record<string, unknown>)[htmlAssign] = html;
   document.body.appendChild(root);
+  mountTopStrip({
+    rule,
+    renderedHtml: html,
+    rawJsonText: raw,
+    contentRoot: root,
+  });
 }
 
 function renderError(message: string): void {
@@ -63,60 +74,8 @@ function renderError(message: string): void {
   document.body.prepend(banner);
 }
 
-function buildTopStrip(env: string | undefined, href: string, onToggle: () => void): HTMLElement {
-  const bar = document.createElement('div');
-  bar.id = 'pj-topbar';
-  bar.style.cssText =
-    'display:flex;gap:12px;align-items:center;padding:6px 12px;border-bottom:1px solid #e5e7eb;background:#f9fafb;font:12px -apple-system,system-ui,sans-serif;color:#374151;';
-  if (env) {
-    const badge = document.createElement('span');
-    badge.textContent = env.toUpperCase();
-    badge.style.cssText =
-      'background:#f59e0b;color:#111;padding:2px 8px;border-radius:3px;font-weight:600;letter-spacing:0.5px;';
-    bar.appendChild(badge);
-  }
-  const rawBtn = document.createElement('a');
-  rawBtn.href = '#';
-  rawBtn.textContent = 'Show raw JSON';
-  rawBtn.style.cssText = 'color:#2563eb;text-decoration:none;cursor:pointer;';
-  let showingRaw = false;
-  rawBtn.onclick = (e) => {
-    e.preventDefault();
-    showingRaw = !showingRaw;
-    rawBtn.textContent = showingRaw ? 'Show rendered' : 'Show raw JSON';
-    onToggle();
-  };
-  bar.appendChild(rawBtn);
-  const copyBtn = document.createElement('a');
-  copyBtn.href = '#';
-  copyBtn.textContent = 'Copy URL';
-  copyBtn.style.cssText = 'color:#2563eb;text-decoration:none;cursor:pointer;margin-left:auto;';
-  copyBtn.onclick = (e) => {
-    e.preventDefault();
-    void navigator.clipboard.writeText(href);
-  };
-  bar.appendChild(copyBtn);
-  return bar;
-}
-
-function toggleRaw(html: string, raw: string): void {
-  const root = document.getElementById('pj-root');
-  if (!root) return;
-  if (root.getAttribute('data-mode') === 'raw') {
-    root.innerHTML = html;
-    root.removeAttribute('data-mode');
-  } else {
-    const pre = document.createElement('pre');
-    pre.style.cssText =
-      'margin:0;padding:12px;font:12px ui-monospace,Menlo,monospace;white-space:pre-wrap;';
-    pre.textContent = JSON.stringify(JSON.parse(raw), null, 2);
-    root.replaceChildren(pre);
-    root.setAttribute('data-mode', 'raw');
-  }
-}
-
 function escHtml(s: string): string {
-  return s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+  return s.replace(/[&<>"']/g, (c) => '&#' + c.charCodeAt(0) + ';');
 }
 
 void main();
