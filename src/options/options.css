@@ -674,14 +674,25 @@ button.pj-templates-label:focus-visible {
   border-radius: var(--pj-radius);
 }
 .pj-disclosure-arrow {
-  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--pj-bg-subtle);
   color: var(--pj-fg-muted);
-  margin-right: 6px;
-  display: inline-block;
-  min-width: 12px;
+  font-size: 11px;
   line-height: 1;
+  margin-right: 8px;
+  flex: 0 0 auto;
+  transition: background 120ms ease, color 120ms ease;
 }
-button.pj-templates-label:hover .pj-disclosure-arrow { color: var(--pj-fg); }
+button.pj-templates-label:hover .pj-disclosure-arrow,
+button.pj-templates-label:focus-visible .pj-disclosure-arrow {
+  background: var(--pj-accent-wash);
+  color: var(--pj-accent-strong);
+}
 .pj-templates-label-hint {
   font-weight: normal;
   color: var(--pj-fg-subtle);
