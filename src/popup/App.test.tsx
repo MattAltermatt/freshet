@@ -65,7 +65,13 @@ function mockChrome(): void {
   };
 }
 
-beforeEach(() => mockChrome());
+beforeEach(() => {
+  mockChrome();
+  // openOptionsAt calls window.close() after dispatching chrome.tabs.create —
+  // stubbing it keeps testing-library's afterEach cleanup from tripping on a
+  // detached document.
+  vi.spyOn(window, 'close').mockImplementation(() => {});
+});
 
 test('shows no-match CTA when rules is empty', async () => {
   render(<App />);
@@ -75,10 +81,20 @@ test('shows no-match CTA when rules is empty', async () => {
   expect(screen.getByText('+ Add rule for this host')).toBeInTheDocument();
 });
 
-test('shows test-url input pre-filled with the active tab url', async () => {
+test('test link opens options with the active tab url preloaded', async () => {
   render(<App />);
-  const input = await waitFor(() =>
-    screen.getByLabelText('Test URL') as HTMLInputElement,
+  await waitFor(() =>
+    expect(
+      screen.getByText(/Test this URL in options/i).closest('button'),
+    ).not.toBeDisabled(),
   );
-  expect(input.value).toBe('http://127.0.0.1:4391/internal/user/1');
+  const create = (globalThis as unknown as { chrome: { tabs: { create: ReturnType<typeof vi.fn> } } })
+    .chrome.tabs.create;
+  (screen.getByText(/Test this URL in options/i).closest('button') as HTMLButtonElement).click();
+  expect(create).toHaveBeenCalledTimes(1);
+  const arg = create.mock.calls[0]![0] as { url: string };
+  expect(arg.url).toContain('#test-url=');
+  expect(decodeURIComponent(arg.url.split('#test-url=')[1]!)).toBe(
+    'http://127.0.0.1:4391/internal/user/1',
+  );
 });

@@ -34,43 +34,6 @@ body {
 
 .pj-popup-skip { padding-top: 2px; }
 
-.pj-popup-test-row { display: flex; gap: 6px; }
-.pj-popup-test-input-wrap { flex: 1; min-width: 0; position: relative; }
-.pj-popup-test-input {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 4px 24px 4px 6px;
-  border: 1px solid var(--pj-border);
-  border-radius: var(--pj-radius-lg);
-  background: var(--pj-bg-elevated);
-  color: var(--pj-fg);
-  font-family: var(--pj-font-mono);
-  font-size: 11px;
-}
-.pj-popup-test-input:focus {
-  outline: 2px solid var(--pj-accent);
-  outline-offset: 1px;
-}
-.pj-popup-test-clear {
-  position: absolute;
-  top: 50%;
-  right: 4px;
-  transform: translateY(-50%);
-  width: 16px;
-  height: 16px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  border: 0;
-  background: var(--pj-bg-subtle);
-  color: var(--pj-fg-muted);
-  cursor: pointer;
-  font-size: 10px;
-  line-height: 1;
-  padding: 0;
-}
-.pj-popup-test-clear:hover { background: var(--pj-bg-elevated); color: var(--pj-fg); }
 
 .pj-popup-footer {
   display: flex;
