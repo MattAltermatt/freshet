@@ -15,7 +15,6 @@ Editorial + QOL sweep before the Chrome Web Store submission. Aim: "as good as w
 
 ### Functional gaps
 
-- **`liquidCompletions` after a filter argument** — cursor inside `{{ ts | date: "`<cursor>`"` returns no completions because the regex cascade falls through. Extend `inOutput` detection or add a dedicated `inFilterArg` case.
 - **`walkJsonPaths` hint comment mismatch** — source comment says arrays appear as `items[]` but the implementation emits `items[0]`. Pick `[0]` (valid Liquid accessor), align docs.
 
 ### UX — rule + template flows
