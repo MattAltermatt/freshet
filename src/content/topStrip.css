@@ -8,6 +8,8 @@
   --pj-accent: #ea580c;
   --pj-accent-fg: #ffffff;
   --pj-accent-strong: #c2410c;
+  --pj-accent-overlay: rgba(234, 88, 12, 0.08);
+  --pj-danger-text: #b91c1c;
   --pj-font: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
   --pj-font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
   display: block;
@@ -26,6 +28,8 @@
   --pj-fg: #fafafa;
   --pj-fg-muted: #a8a29e;
   --pj-accent-strong: #c2410c;
+  --pj-accent-overlay: rgba(234, 88, 12, 0.16);
+  --pj-danger-text: #fca5a5;
 }
 
 .pj-topstrip {
@@ -186,8 +190,8 @@
   align-items: center;
   gap: 8px;
 }
-.pj-menu-item:hover { background: rgba(234,88,12,0.08); }
-.pj-menu-item--danger { color: #b91c1c; }
+.pj-menu-item:hover { background: var(--pj-accent-overlay); }
+.pj-menu-item--danger { color: var(--pj-danger-text); }
 .pj-menu-item-label { flex: 1 1 auto; }
 .pj-menu-item-trailing { display: inline-flex; color: var(--pj-fg-muted); margin-left: 8px; }
 
