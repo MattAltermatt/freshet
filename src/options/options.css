@@ -224,6 +224,12 @@ input:focus, select:focus, textarea:focus {
   font: inherit;
   min-width: 0;
 }
+.pj-rule-name {
+  font-weight: 600;
+  color: var(--pj-fg);
+  font-size: var(--pj-font-size-sm);
+  width: 100%;
+}
 .pj-rule-pattern {
   font-family: var(--pj-font-mono);
   color: var(--pj-fg);
@@ -406,7 +412,17 @@ input:focus, select:focus, textarea:focus {
 .pj-url-result[data-state="miss-path"] { color: var(--pj-fg-subtle); }
 .pj-url-icon { font-family: var(--pj-font-mono); }
 .pj-url-order { color: var(--pj-fg-subtle); font-variant-numeric: tabular-nums; }
-.pj-url-pattern { font-family: var(--pj-font-mono); overflow-wrap: anywhere; }
+.pj-url-identity {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 2px;
+}
+.pj-url-name {
+  font-weight: 600;
+  color: var(--pj-fg);
+}
+.pj-url-pattern { font-family: var(--pj-font-mono); overflow-wrap: anywhere; color: var(--pj-fg-muted); font-size: 11px; }
 .pj-url-reason { color: var(--pj-fg-subtle); font-size: 11px; }
 
 /* ── Rule edit modal ── */

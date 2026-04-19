@@ -152,6 +152,29 @@ export function RuleEditModal({
         </header>
 
         <div class="pj-modal-body">
+          <div class="pj-field">
+            <label for="pj-rule-name">Name <span class="pj-field-hint">(optional)</span></label>
+            <input
+              id="pj-rule-name"
+              type="text"
+              value={rule.name ?? ''}
+              onInput={(e) => {
+                const v = (e.target as HTMLInputElement).value;
+                if (v) {
+                  setRule({ ...rule, name: v });
+                } else {
+                  const { name: _drop, ...rest } = rule;
+                  void _drop;
+                  setRule(rest);
+                }
+              }}
+              placeholder="[qa] PagerDuty incidents"
+            />
+            <p class="pj-field-hint">
+              Human-readable label. Shown on rule cards and in exported bundles.
+              Falls back to the host pattern if empty.
+            </p>
+          </div>
           <PatternField
             label="Host pattern"
             value={rule.hostPattern}

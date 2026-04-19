@@ -95,6 +95,7 @@ export function ImportInput(props: ImportInputProps): JSX.Element {
           class="pj-btn"
           data-variant="primary"
           onClick={handleNext}
+          disabled={!text.trim()}
         >
           Next: Review
         </button>

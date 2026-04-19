@@ -144,9 +144,14 @@ export function UrlTester({ rules, initialUrl }: UrlTesterProps): JSX.Element {
                 {ICONS[state]}
               </span>
               <span class="pj-url-order">{i + 1}.</span>
-              <code class="pj-url-pattern">
-                {rule.hostPattern || '(any)'} · {rule.pathPattern || '(any)'}
-              </code>
+              <span class="pj-url-identity">
+                {rule.name ? (
+                  <span class="pj-url-name">{rule.name}</span>
+                ) : null}
+                <code class="pj-url-pattern">
+                  {rule.hostPattern || '(any)'} · {rule.pathPattern || '(any)'}
+                </code>
+              </span>
               {REASONS[state] ? (
                 <span class="pj-url-reason">{REASONS[state]}</span>
               ) : null}
