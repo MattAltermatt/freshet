@@ -112,7 +112,7 @@ export function TopStrip({
     await writeSkipList(next);
     setToast({
       kind: 'skip',
-      text: `Skipped ${host}. Un-skip from the extension popup or options → Rules.`,
+      text: `Skipped ${host} — undo from the popup`,
     });
     setTimeout(() => window.location.reload(), 1600);
   };
