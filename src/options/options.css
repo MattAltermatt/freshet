@@ -246,6 +246,34 @@ input:focus, select:focus, textarea:focus {
   font-size: var(--pj-font-size-sm);
   font-weight: 600;
 }
+
+/* Brand-flavored template name pill: {name> */
+.pj-tpl-pill {
+  display: inline-flex;
+  align-items: baseline;
+  font-family: var(--pj-font-mono);
+  font-size: var(--pj-font-size-sm);
+  font-weight: 600;
+  color: var(--pj-fg);
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+.pj-tpl-pill--button {
+  cursor: pointer;
+}
+.pj-tpl-pill--button:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--pj-accent-strong);
+  text-decoration-thickness: 2px;
+}
+.pj-tpl-pill-bracket {
+  color: var(--pj-accent-strong);
+  font-weight: 700;
+}
+.pj-tpl-pill-name {
+  color: inherit;
+}
 .pj-rule-vars {
   font-size: var(--pj-font-size-sm);
   color: var(--pj-fg-muted);
@@ -417,6 +445,12 @@ input:focus, select:focus, textarea:focus {
   flex-direction: column;
   min-width: 0;
   gap: 2px;
+}
+.pj-url-id-line {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--pj-space-2);
+  flex-wrap: wrap;
 }
 .pj-url-name {
   font-weight: 600;

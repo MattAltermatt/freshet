@@ -5,6 +5,7 @@ import { truncateUrlMiddle } from '../shared/truncateUrl';
 // Deep imports (not the `../ui` barrel) so the popup bundle doesn't pull in
 // CodeMirror via `CodeMirrorBox` / `pjHighlightStyle`. Keeps popup under budget.
 import { Toggle } from '../ui/components/Toggle';
+import { TemplatePill } from '../ui/components/TemplatePill';
 import { useStorage } from '../ui/hooks/useStorage';
 import type { HostSkipList, Rule } from '../shared/types';
 import { findMatchingRule } from '../matcher/matcher';
@@ -101,7 +102,11 @@ export function App(): JSX.Element {
         <span class="pj-popup-label">Matched rule</span>
         {matched ? (
           <div class="pj-popup-match-row">
-            <span class="pj-rule-chip">{matched.templateName || matched.id}</span>
+            {matched.templateName ? (
+              <TemplatePill name={matched.templateName} />
+            ) : (
+              <span class="pj-rule-chip">{matched.id}</span>
+            )}
             <button
               type="button"
               class="pj-linkish"

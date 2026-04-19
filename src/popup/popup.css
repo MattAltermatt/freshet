@@ -158,3 +158,22 @@ body {
   background: var(--pj-accent);
   border-color: var(--pj-accent);
 }
+
+.pj-tpl-pill {
+  display: inline-flex;
+  align-items: baseline;
+  font-family: var(--pj-font-mono);
+  font-size: var(--pj-font-size-sm);
+  font-weight: 600;
+  color: var(--pj-fg);
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+.pj-tpl-pill-bracket {
+  color: var(--pj-accent-strong);
+  font-weight: 700;
+}
+.pj-tpl-pill-name {
+  color: inherit;
+}

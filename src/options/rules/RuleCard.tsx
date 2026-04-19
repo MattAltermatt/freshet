@@ -1,5 +1,6 @@
 import type { JSX } from 'preact';
 import { Toggle } from '../../ui';
+import { TemplatePill } from '../../ui/components/TemplatePill';
 import type { Rule } from '../../shared/types';
 import type { ImportFlagEntry } from '../../storage/storage';
 import { NeedsAttention } from '../badges/NeedsAttention';
@@ -41,9 +42,7 @@ export function RuleCard({
           {rule.hostPattern || '(any host)'} <span class="pj-rule-sep">·</span>{' '}
           {rule.pathPattern || '(any path)'}
         </code>
-        <span class="pj-rule-template" title={`Template: ${rule.templateName}`}>
-          {rule.templateName}
-        </span>
+        <TemplatePill name={rule.templateName} />
         {rule.isExample ? (
           rule.exampleUrl ? (
             <a
