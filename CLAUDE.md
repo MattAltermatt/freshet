@@ -1,6 +1,8 @@
 # Freshet
 
-Chrome MV3 extension that renders API responses as user-templated HTML, with Liquid. Previously "Present-JSON"; renamed 2026-04-18.
+**Tagline:** *Thaw any JSON URL into a more useful page.* (short: *JSON in. Page out.*)
+
+Chrome MV3 extension. Per-URL rules + Liquid templates render API responses into proper pages — fields surfaced, statuses colored, IDs turned into clickable links. Previously "Present-JSON"; renamed 2026-04-18.
 
 ## Commands
 
@@ -37,7 +39,8 @@ Chrome glue (imports the cores):
 - `src/background/background.ts` — migration + starter seed on install; relays `chrome.commands.onCommand('toggle-raw')` → active tab (`pj:toggle-raw` message); relays `pj:open-options` messages from the content script to `chrome.tabs.create` (content scripts can't call `chrome.tabs.create` directly in MV3).
 - `src/ui/` — shared Preact component library: `Button`, `Toggle`, `Toast`, `ToastHost`, `Menu`, `KVEditor`, `Cheatsheet`, `CodeMirrorBox` + hooks `useTheme`, `useToast`, `useStorage`, `useDebounce`, `useAutosave` + `theme.css` design tokens (`--pj-*`) + `cmHighlight.ts` (CodeMirror syntax style driven by the same tokens)
 - `src/options/` — Preact SPA (`App.tsx`, `Header.tsx`, `ShortcutsFooter.tsx`, `directives.ts`); `rules/` has `RulesTab`, `RuleStack`, `RuleCard`, `UrlTester`, `PatternField`, `RuleEditModal`; `templates/` has `TemplatesTab`, `TemplatesToolbar`, `TemplateEditor` (CodeMirror 6 + Liquid grammar + autocomplete), `SampleJsonEditor`, `PreviewIframe`, `liquidMode.ts` (hand-rolled CM6 StreamParser), `liquidCompletions.ts`
-- `src/popup/` — Preact SPA (`popup.tsx`, `App.tsx`, `popup.css`). Owns boot + active-tab read; reads `rules` / `hostSkipList` / `settings` via `useStorage`; runs `promoteStorageToLocal()` on boot (same as options). Hands off to the options page via URL-hash directives (`#test-url=…`, `#new-rule:host=…`, `#edit-rule=…`). Popup writes only `hostSkipList`; rules + templates are read-only here.
+- `src/popup/` — Preact SPA (`popup.tsx`, `App.tsx`, `FirstRunBanner.tsx`, `popup.css`). Owns boot + active-tab read; reads `rules` / `hostSkipList` / `settings` via `useStorage`; runs `promoteStorageToLocal()` on boot (same as options). Hands off to the options page via URL-hash directives (`#test-url=…`, `#new-rule:host=…`, `#edit-rule=…`). Popup writes only `hostSkipList` + `pj_first_run_dismissed`; rules + templates are read-only here. `FirstRunBanner` renders only when not dismissed AND user has no non-example rule.
+- `src/starter/` — bundled starter HTML + sample JSON (`?raw` imports). 5 starters seed on fresh install (Phase 3): `service-health`, `incident-detail`, `github-repo`, `pokemon`, `country`. Templates are dark-AND-light-themed via `[data-theme="dark"]` selectors; content-script writes the `data-theme` attribute. URL-from-id is the convention — JSONs carry only IDs/slugs/handles, templates construct canonical URLs via Liquid string interpolation in `href` attrs.
 - `src/storage/` — facade over `chrome.storage`; `createStorage` is async and picks `.sync` or `.local` by reading a `pj_storage_area` sentinel from `.local` (migration writes it at 90KB). `promoteStorageToLocal()` runs at boot on both options and popup to converge any legacy sync-area data into local, so the Preact `useStorage` hook (which talks to `.local` only) has authoritative data.
 
 Content script is declared **statically** in the manifest (`content_scripts: [{ matches: ['<all_urls>'] }]`) — dynamic `chrome.scripting.registerContentScripts` doesn't work because @crxjs rewrites source paths at build time.
@@ -60,6 +63,9 @@ Content script is declared **statically** in the manifest (`content_scripts: [{ 
 - **`useTheme` captures `matchMedia` once in a `useRef`.** `window.matchMedia(...)` returns a fresh `MediaQueryList` on every call, so caching it stabilizes the `useEffect` deps and avoids re-running `applyTheme` on every parent re-render. Matters for strip consumers that re-render frequently (toasts, mode toggles, storage writes).
 - **`⌘⇧J` is wired via `chrome.commands`** declared in `vite.config.ts`; the background SW forwards `chrome.commands.onCommand('toggle-raw')` → `chrome.tabs.sendMessage(tabId, { kind: 'pj:toggle-raw' })`. `TopStrip` listens via `chrome.runtime.onMessage`. User rebinding stays with Chrome's native `chrome://extensions/shortcuts`.
 - **Content scripts cannot call `chrome.tabs.create` in MV3.** The top-strip's "Edit rule" action sends a `pj:open-options` message to the background SW, which opens the URL. Same pattern any future top-strip action that needs `chrome.tabs.*` should follow.
+- **Demo-template theming via `data-theme` on `<html>`.** Starter templates carry both light (default) and dark (`[data-theme="dark"]` selector) CSS. The content-script reads `settings.themePreference`, calls `resolveTheme()` from `src/ui/theme.ts`, and writes `data-theme="light"|"dark"` to `document.documentElement` after replacing innerHTML. The `PreviewIframe` does the same trick by wrapping its srcdoc as `<html data-theme="...">` so the in-editor preview matches the user's Freshet setting. New starter templates should follow suit.
+- **Engine treats array-root JSON specially.** When `render(template, json, vars)` is called with `Array.isArray(json) === true` (e.g. REST Countries returns `[{...}]`), the engine exposes the array as `items` instead of spreading numeric keys. Templates start with `{% assign c = items[0] %}` for predictable handles. Object roots continue to spread directly. Tests in `src/engine/engine.test.ts` cover the array-root paths — preserve those if touching the engine.
+- **`docs/try/` is a ship dependency.** The marketing page at `docs/try/index.md` (rendered at `mattaltermatt.github.io/freshet/try/`) shows a raw-JSON-vs-rendered "before / after" for each starter, with "Try it live" links to the canonical demo URL. Anytime a starter changes (template structure, sample JSON shape, rule pattern, the `STARTERS` array in `src/background/background.ts`, or the user-facing pill text), update `/try/` in the same branch. Otherwise the page lies about what Freshet does and the popup first-run banner sends users to a stale page.
 ## Storage keys (`chrome.storage.local`)
 
 | Key | Type | Purpose |
@@ -74,6 +80,18 @@ Content script is declared **statically** in the manifest (`content_scripts: [{ 
 | `pj_ui_collapse` | `{ editor, sample, preview }` | Collapsed/expanded state of the three Templates-tab panels. |
 | `pj_ui_split_ratio` | `number` | 0–1 flex-grow share for the Template panel in the left-column split. |
 | `pj_storage_area` | `'local'` | Sentinel: once set, `useStorage` and facade both read `.local`. |
+| `pj_first_run_dismissed` | `boolean` | Sticky flag — once `true`, the popup welcome banner never reappears. |
+
+## `Rule` schema
+
+`Rule` (`src/shared/types.ts`) carries the user-set fields (`hostPattern`, `pathPattern`, `templateName`, `variables`, `enabled`) plus two optional starter-only fields:
+
+| Field | Type | Set by | Purpose |
+|---|---|---|---|
+| `isExample` | `boolean?` | seeder | Marks the rule as bundled with Freshet → renders the grey "Example ↗" pill on the rule card. Persists across enable/disable so users always see the provenance. |
+| `exampleUrl` | `string?` | seeder | Canonical demo URL the Example pill links to (opens in new tab). Defined per starter in `STARTERS` in `src/background/background.ts`. |
+
+User-created rules don't set either field; they fall through the `RuleCard` pill check and render without the pill.
 
 ## Testing philosophy
 

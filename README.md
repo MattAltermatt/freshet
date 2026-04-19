@@ -6,18 +6,21 @@
 
 # Freshet
 
-> A Chrome extension that renders API responses as the UI you wish they shipped with — Liquid templates, per-URL rules. Turn the internal admin JSON URL you keep squinting at into a proper dashboard.
+> **Thaw any JSON URL into a more useful page.** A Chrome extension that pays you back time on every JSON URL you revisit. Write one small Liquid template per URL pattern; from then on, the response renders as a real dashboard — fields surfaced, statuses colored, IDs turned into clickable links to whatever they reference.
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Manifest V3](https://img.shields.io/badge/Chrome-MV3-brightgreen.svg)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6.svg)
-![Tests](https://img.shields.io/badge/tests-242%20unit%20%2B%2021%20E2E-success.svg)
+![Tests](https://img.shields.io/badge/tests-295%20unit%20%2B%2021%20E2E-success.svg)
 
 Paste a JSON URL into Chrome, get a table instead of a `<pre>`. Works against any host you configure — internal tooling, public APIs, webhooks you're debugging. Templates are small HTML snippets with `{{placeholders}}`; rules map URL patterns to templates.
+
+**👉 [See live demos at mattaltermatt.github.io/freshet/try/](https://mattaltermatt.github.io/freshet/try/)** — five starter templates against real APIs (PokéAPI, REST Countries, GitHub) and self-hosted SRE-style examples (service health → incident detail).
 
 ## Table of contents
 
 - [Features](#features)
+- [Demos](#demos)
 - [Install](#install)
 - [Quick start](#quick-start)
 - [Template syntax](#template-syntax)
@@ -45,6 +48,22 @@ Paste a JSON URL into Chrome, get a table instead of a `<pre>`. Works against an
 - ⚡ **CSP-safe everywhere** — [LiquidJS](https://github.com/harttle/liquidjs) interpreter (no runtime codegen, no `unsafe-eval`); CodeMirror 6 is tree-shaken ESM with no eval path either.
 - ♿ **WCAG 2.1 AA** — axe-core passes on the options page; AA-compliant contrast in both light and dark.
 
+## Demos
+
+Freshet ships with five starter rules + templates so a fresh install is never a blank slate. Two render against self-hosted JSON we control (enabled out of the box, won't surprise anyone) and three target popular public APIs (disabled by default — flip the toggle to try them on real responses):
+
+| Starter | Endpoint | Default | Try it |
+|---|---|---|---|
+| **Service Health** | `mattaltermatt.github.io/freshet/examples/services/*` | enabled | [payments.json →](https://mattaltermatt.github.io/freshet/examples/services/payments.json) |
+| **Incident Detail** | `mattaltermatt.github.io/freshet/examples/incidents/*` | enabled | [INC-2026-001 →](https://mattaltermatt.github.io/freshet/examples/incidents/INC-2026-001.json) |
+| **GitHub Repo** | `api.github.com/repos/*/*` | disabled | [facebook/react →](https://api.github.com/repos/facebook/react) |
+| **Pokémon** | `pokeapi.co/api/v2/pokemon/*` | disabled | [pikachu →](https://pokeapi.co/api/v2/pokemon/pikachu) |
+| **Countries** | `restcountries.com/v3.1/name/*` | disabled | [japan →](https://restcountries.com/v3.1/name/japan) |
+
+The full marketing page with raw-JSON-vs-rendered side-by-sides lives at [**mattaltermatt.github.io/freshet/try/**](https://mattaltermatt.github.io/freshet/try/).
+
+Each starter rule carries an `Example ↗` pill on its rule card — click to open the canonical demo URL in a new tab.
+
 ## Install
 
 ### From source (unpacked — current install method)
@@ -67,19 +86,18 @@ Not yet listed. Planned for a future release.
 
 ## Quick start
 
+The fastest way is to click any "Try it live" link from the [Demos](#demos) section above — the two self-hosted starters render immediately. To author your own:
+
 1. **Open the options page**: right-click the toolbar icon → **Options**.
-2. **Templates tab** — an `internal-user` template is seeded on first run. Paste sample JSON to see the live preview:
-   ```json
-   {"id":1234,"insertDate":"2026-04-17T23:09:30Z","status":"DOWN"}
-   ```
+2. **Templates tab** — five starter templates are seeded on first run (`service-health`, `incident-detail`, `github-repo`, `pokemon`, `country`). Pick any to study, or click **+ New** to start fresh.
 3. **Rules tab** — **+ Add rule**, fill in:
    - Host pattern: `api.example.com`
    - Path pattern: `/internal/user/*`
-   - Template: `internal-user`
-   - Variables: `adminHost=admin.example.com`, `env=prod`
+   - Template: pick from the seeded list, or your own
+   - Variables: `env=prod`, `adminHost=admin.example.com`, etc. — accessible as `{{ vars.env }}` in the template
    - Enabled ✓
-4. Click **Save** in the dialog, then **Save** in the toolbar (persists to `chrome.storage`).
-5. Navigate to a matching URL. The JSON response is replaced with rendered HTML and a control strip (env badge, raw/rendered toggle, copy URL).
+4. Click **Save** in the dialog (autosaves to `chrome.storage`).
+5. Navigate to a matching URL. The JSON response is replaced with rendered HTML and a top control strip (env chip, raw/rendered toggle, copy URL).
 
 ### Try it locally
 
@@ -194,7 +212,7 @@ scripts/            # one-off dev scripts (e.g. rasterize-icons.mjs)
 
 ## Testing
 
-- **Unit** (Vitest): 192 tests covering the engine, matcher, storage facade + migration, fixture-snapshot render, `src/ui/` primitives + hooks (including shadow-root-aware Menu outside-click), options-page components (RuleCard, UrlTester, Header, liquidCompletions, liquidMode StreamParser, directive parser), popup rendering, and the URL middle-truncation helper. Content-side adds `TopStrip` + `mountTopStrip` component tests.
+- **Unit** (Vitest): 295 tests covering the engine (incl. array-root JSON exposed as `items`), matcher, storage facade + migration, fixture-snapshot render, all 5 starter templates (light + dark variants, URL-from-id link construction), `src/ui/` primitives + hooks (including shadow-root-aware Menu outside-click), options-page components (RuleCard with the Example pill, UrlTester, Header, liquidCompletions, liquidMode StreamParser, directive parser), popup rendering + the FirstRunBanner gating, and the URL middle-truncation helper. Content-side adds `TopStrip` + `mountTopStrip` component tests.
 - **E2E** (Playwright, headed Chrome): 21 specs — render smoke, LiquidJS CSP smoke, CodeMirror 6 CSP smoke, popup Preact CSP smoke, top-strip shadow-DOM CSP smoke, axe-core WCAG 2.1 AA on the options page, on the popup (light + dark), and on the top-strip (light + dark), options CRUD flows (add rule, delete + undo, URL-tester match/shadowed, template delete-guard, per-template sample JSON persistence), popup match chip, popup skip toggle persistence, popup → options directive handoff, top-strip rendered-on-matched-page + toggle-raw message + skip-host writes.
 
 The cores (`engine/` + `matcher/`) are deliberately free of `chrome.*` calls — grep to verify. That discipline is what makes the test suite possible in Node.

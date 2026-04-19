@@ -1,5 +1,5 @@
 title: Freshet
-description: Render API responses as the UI you wish they shipped with — Liquid templates, per-URL rules.
+description: Thaw any JSON URL into a more useful page. Liquid templates per URL pattern — fields surfaced, statuses colored, IDs linkified.
 theme: jekyll-theme-minimal
 logo: /assets/logo.png
 url: https://mattaltermatt.github.io

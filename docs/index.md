@@ -1,6 +1,6 @@
 ---
 title: Freshet
-description: Render API responses as the UI you wish they shipped with — Liquid templates, per-URL rules.
+description: Thaw any JSON URL into a more useful page. Liquid templates per URL pattern — fields surfaced, statuses colored, IDs linkified.
 ---
 
 <p align="center">
@@ -9,7 +9,9 @@ description: Render API responses as the UI you wish they shipped with — Liqui
 
 # Freshet
 
-A Chrome extension that renders API responses as user-templated HTML. Author a small Liquid template per URL pattern; the raw JSON response becomes the dashboard you wish it shipped with.
+**Thaw any JSON URL into a more useful page.** A Chrome extension that pays you back time on every JSON URL you revisit. Write one small Liquid template per URL pattern; from then on, the response renders as a real dashboard — fields surfaced, statuses colored, IDs turned into clickable links.
+
+[**See live demos →**](try/)
 
 - [Privacy policy](privacy/)
 - [Source code on GitHub](https://github.com/MattAltermatt/freshet)

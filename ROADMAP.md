@@ -13,14 +13,27 @@ Pre-publication hardening (regex escape guard, scripting-permission drop, 16/48/
 
 ---
 
-## Now — Real-world example JSONs (Phase 3)
+## Now — Phase 3 (Real-world example JSONs) — wrapping up
 
-Unblocks the store screenshots *and* gives the pre-release polish sweep a real testbed.
+Spec: `docs/superpowers/specs/2026-04-18-phase3-real-world-examples-design.md`. Branch: `feature/phase3-real-world-examples`.
 
-- Host static JSON fixtures at `mattaltermatt.github.io/freshet/examples/...` via Jekyll.
-- Bundle 2–3 starter rules + templates against public APIs. Candidates: JSONPlaceholder, HTTPBin, GitHub API, PokéAPI, REST Countries.
-- **Bundled starter rules ship disabled by default.** Templates are seeded so the user can preview/edit them, but the matching rules start with `enabled: false` so a fresh install never surprises anyone by rewriting pages they didn't opt into. The Rules tab should visibly signal "enable me to try" on a disabled starter rule.
-- First-run empty state gets a "Try it now" affordance that drops the bundled rules in and optionally flips them on.
+**Shipped on the branch:**
+- ✅ `Rule.isExample` + `Rule.exampleUrl` schema; clickable `Example ↗` pill on rule cards (commit `b2a52b3`, refined in `ce5a8d5`).
+- ✅ Self-hosted demo JSONs at `docs/examples/services/payments.json` + `docs/examples/incidents/INC-2026-001.json`, cross-linked by ID (commits `384257b` + `c910c57`).
+- ✅ `service-health` + `incident-detail` Liquid templates — SRE-style cards with status pills, kind-coded timeline rail, env chip from `vars.env`, light + dark variants (commits `773ebf4`, `c910c57`, `04e03c4`).
+- ✅ Engine: array-root JSON exposed as `items` so REST Countries-style top-level arrays have a stable handle (commit `4653e69`).
+- ✅ `pokemon` + `country` real-API templates with light + dark + per-type colors / language colors / flag emojis / native names (commit `93806ab`).
+- ✅ `github-repo` template refresh — language chip with colored dot, pulse on Active, URL-from-id Issues/PRs/Releases footer, light + dark (commit `f04edd5`).
+- ✅ Content-script + PreviewIframe write `data-theme` so demo templates honor the user's Freshet theme on real pages AND in the editor preview (commit `04e03c4`).
+- ✅ URL-from-ID convention: starter JSONs carry only IDs / slugs / handles; templates build canonical URLs in-template (commit `c910c57`).
+- ✅ First-run popup banner — dismiss-once via `pj_first_run_dismissed`, auto-hides once user creates their own rule, opens docs `/try/` page (commit `5d19ec7`).
+- ✅ Docs `/try/` marketing page at `docs/try/index.md` — 5 demo blocks with raw JSON + try-live links + how-to-enable for disabled starters (commit `4e29b54`).
+
+**Remaining before FF-merge:**
+- README + ROADMAP + CLAUDE.md updates (this commit).
+- Code-review pass (fresh reviewer agent).
+- Capture 5 screenshots @ 1280×800 to `docs/assets/try/*.png` and replace the placeholders on `/try/` — deferred from 3.6 to keep momentum, tracked as a follow-up. Screenshots double as Web Store listing assets.
+- Final manual approval gate (Matt eyeball reload + click-through), then FF-merge.
 
 ---
 

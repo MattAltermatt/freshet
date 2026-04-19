@@ -1,6 +1,6 @@
 ---
 title: Try Freshet
-description: See what Freshet does — five live demos, raw JSON on the left, the dashboard you wish your API shipped on the right.
+description: Thaw any JSON URL into a more useful page. Five live demos — raw JSON in, rendered dashboard out.
 ---
 
 <style>
@@ -123,8 +123,8 @@ description: See what Freshet does — five live demos, raw JSON on the left, th
 </style>
 
 <section class="try-hero">
-  <h1>See what Freshet does</h1>
-  <p>Raw JSON on the left, the dashboard you wish your API shipped on the right.</p>
+  <h1>Thaw any JSON URL into a more useful page</h1>
+  <p>Five live demos — fields surfaced, statuses colored, IDs turned into clickable links. <strong>JSON in. Page out.</strong></p>
 </section>
 
 <div class="try-note">
