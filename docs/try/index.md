@@ -11,7 +11,9 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
      For /try/ we want the full viewport: drop the sidebar, unfloat the content,
      widen the wrapper. The install banner below already carries the brand. */
   body { padding: 24px !important; }
-  .wrapper { width: auto !important; max-width: 1100px !important; margin: 0 auto !important; padding: 0 !important; }
+  /* Full-bleed wrapper; individual content blocks below are themselves capped
+     so they stay readable on ultrawide displays. */
+  .wrapper { width: auto !important; max-width: none !important; margin: 0 !important; padding: 0 !important; }
   .wrapper > header,
   .wrapper > footer { display: none !important; }
   .wrapper > section { width: auto !important; max-width: none !important; float: none !important; padding-bottom: 32px !important; }
@@ -21,7 +23,7 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
   .try-hero p { margin:0; color:#656d76; }
   .try-note {
     margin:18px auto;
-    max-width:880px;
+    max-width:1000px;
     background:#fff8c5;
     border:1px solid #d4a72c;
     border-radius:6px;
@@ -31,7 +33,7 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
   }
   .try-demo {
     margin:32px auto;
-    max-width:880px;
+    max-width:1000px;
     border:1px solid #d0d7de;
     border-radius:10px;
     overflow:hidden;
@@ -137,7 +139,7 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
 
   /* Install CTA — sits between the hero and the first demo block */
   .try-install {
-    max-width:880px;
+    max-width:1000px;
     margin:24px auto;
     padding:14px 18px;
     background:#fff7ed;
@@ -157,6 +159,55 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
     text-decoration:none;
   }
   .try-install-link:hover { text-decoration:underline; }
+
+  /* "How it works" explainer between hero and install banner */
+  .try-how {
+    max-width:1000px;
+    margin:24px auto;
+    padding:18px 22px;
+    background:#ffffff;
+    border:1px solid #d0d7de;
+    border-radius:8px;
+    color:#1f2328;
+    font-size:14px;
+    line-height:1.55;
+  }
+  .try-how h2 { margin:0 0 12px; font-size:18px; }
+  .try-how ol { margin:0; padding-left:22px; }
+  .try-how ol li { margin:6px 0; }
+  .try-how ol li strong { color:#1f2328; }
+  .try-how-vs {
+    margin:14px 0 0;
+    padding-top:12px;
+    border-top:1px dashed #d0d7de;
+    font-size:13px;
+    color:#656d76;
+  }
+  .try-how-vs strong { color:#cf222e; }
+
+  /* Per-demo "template + JSON = output" equation strip */
+  .try-demo__equation {
+    padding:10px 18px;
+    background:#fff7ed;
+    border-bottom:1px solid #fed7aa;
+    font-size:13px;
+    color:#1f2328;
+    display:flex;
+    flex-wrap:wrap;
+    align-items:baseline;
+    gap:6px 8px;
+  }
+  .try-demo__equation code {
+    font-family:ui-monospace,Menlo,monospace;
+    font-size:12px;
+    background:#ffffff;
+    border:1px solid #fed7aa;
+    padding:2px 6px;
+    border-radius:3px;
+    color:#9a3412;
+  }
+  .try-demo__equation .try-eq-op { color:#9a3412; font-weight:700; }
+
   .try-demo__cta details { font-size:12px; color:#656d76; flex:1 1 100%; }
   .try-demo__cta summary { cursor:pointer; padding:6px 0; font-weight:500; }
   .try-demo__cta ol { margin:6px 0 0 18px; padding:0; }
@@ -167,6 +218,22 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
   <h1>Thaw any JSON URL into a more useful page</h1>
   <p>Five live demos — fields surfaced, statuses colored, IDs turned into clickable links. <strong>JSON in. Page out.</strong></p>
 </div>
+
+<section class="try-how">
+  <h2>What Freshet does — three things, automatically</h2>
+  <ol>
+    <li><strong>Matches the URL you visit</strong> against your rule (e.g. <code>pokeapi.co/api/v2/pokemon/*</code>).</li>
+    <li><strong>Reads the JSON</strong> the API already returned — no extra request, no proxy, no copy-paste.</li>
+    <li><strong>Renders your Liquid template</strong> against that JSON, replacing the page in-place with a real dashboard.</li>
+  </ol>
+  <p class="try-how-vs">
+    <strong>Different from the LiquidJS playground:</strong> the
+    <a href="https://liquidjs.com/playground.html" target="_blank" rel="noopener noreferrer">playground</a>
+    is a one-shot render of JSON you paste. Freshet runs every time you visit a matching URL —
+    the dashboards become part of your normal browsing. The same template + a real API response
+    = a useful page with actionable links, every visit.
+  </p>
+</section>
 
 <aside class="try-install">
   <strong>You'll need Freshet installed.</strong>
@@ -182,6 +249,13 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
     <h2 class="try-demo__name">Service Health</h2>
     <code class="try-demo__pattern">mattaltermatt.github.io/freshet/examples/services/*</code>
     <span class="try-demo__tag try-demo__tag--enabled">Enabled out of the box</span>
+  </div>
+  <div class="try-demo__equation">
+    Template <code>service-health.html</code>
+    <span class="try-eq-op">+</span>
+    JSON from the URL on the left
+    <span class="try-eq-op">=</span>
+    the rendered card on the right — every visit, automatic.
   </div>
   <div class="try-demo__body">
     <div class="try-demo__cols">
@@ -225,6 +299,13 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
     <code class="try-demo__pattern">mattaltermatt.github.io/freshet/examples/incidents/*</code>
     <span class="try-demo__tag try-demo__tag--enabled">Enabled out of the box</span>
   </div>
+  <div class="try-demo__equation">
+    Template <code>incident-detail.html</code>
+    <span class="try-eq-op">+</span>
+    JSON from any incident URL
+    <span class="try-eq-op">=</span>
+    the timeline on the right. The breadcrumb + related-incident links are built from IDs, not URL fields.
+  </div>
   <div class="try-demo__body">
     <div class="try-demo__cols">
       <div class="try-demo__col">
@@ -265,6 +346,13 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
     <h2 class="try-demo__name">GitHub Repo</h2>
     <code class="try-demo__pattern">api.github.com/repos/*/*</code>
     <span class="try-demo__tag try-demo__tag--disabled">Disabled by default</span>
+  </div>
+  <div class="try-demo__equation">
+    Template <code>github-repo.html</code>
+    <span class="try-eq-op">+</span>
+    GitHub's real API response
+    <span class="try-eq-op">=</span>
+    the repo card on the right. Issues / PRs / Releases / Discussions footer links built from <code>full_name</code> alone.
   </div>
   <div class="try-demo__body">
     <div class="try-demo__cols">
@@ -310,6 +398,13 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
     <h2 class="try-demo__name">Pokémon (PokéAPI)</h2>
     <code class="try-demo__pattern">pokeapi.co/api/v2/pokemon/*</code>
     <span class="try-demo__tag try-demo__tag--disabled">Disabled by default</span>
+  </div>
+  <div class="try-demo__equation">
+    Template <code>pokemon.html</code>
+    <span class="try-eq-op">+</span>
+    PokéAPI's real response
+    <span class="try-eq-op">=</span>
+    the styled card on the right. Bulbapedia link built from <code>name</code> alone.
   </div>
   <div class="try-demo__body">
     <div class="try-demo__cols">
@@ -358,6 +453,13 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
     <h2 class="try-demo__name">Countries (REST Countries)</h2>
     <code class="try-demo__pattern">restcountries.com/v3.1/name/*</code>
     <span class="try-demo__tag try-demo__tag--disabled">Disabled by default</span>
+  </div>
+  <div class="try-demo__equation">
+    Template <code>country.html</code>
+    <span class="try-eq-op">+</span>
+    REST Countries' top-level array response
+    <span class="try-eq-op">=</span>
+    the country card on the right. Wikipedia link built from <code>name.common</code> alone.
   </div>
   <div class="try-demo__body">
     <div class="try-demo__cols">
