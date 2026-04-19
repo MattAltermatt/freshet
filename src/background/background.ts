@@ -5,9 +5,12 @@ import {
   migrateSyncToLocal,
   migrateTemplatesToV2,
 } from '../storage/migration';
-import starterInternalUser from '../starter/internal-user.html?raw';
+import type { Rule } from '../shared/types';
+import starterServiceHealth from '../starter/service-health.html?raw';
+import starterIncidentDetail from '../starter/incident-detail.html?raw';
 import starterGithubRepo from '../starter/github-repo.html?raw';
-import sampleInternalUser from '../starter/internal-user.sample.json?raw';
+import sampleServiceHealth from '../starter/service-health.sample.json?raw';
+import sampleIncidentDetail from '../starter/incident-detail.sample.json?raw';
 import sampleGithubRepo from '../starter/github-repo.sample.json?raw';
 import { appearanceFor, type BadgeSignal } from './badge';
 
@@ -17,6 +20,52 @@ async function main(): Promise<void> {
   await seedStartersIfEmpty();
 }
 
+interface Starter {
+  name: string;
+  template: string;
+  sample: string;
+  rule: Omit<Rule, 'id' | 'isStarter'>;
+}
+
+const STARTERS: Starter[] = [
+  {
+    name: 'service-health',
+    template: starterServiceHealth,
+    sample: sampleServiceHealth,
+    rule: {
+      hostPattern: 'mattaltermatt.github.io',
+      pathPattern: '/freshet/examples/services/*',
+      templateName: 'service-health',
+      variables: { env: 'production' },
+      enabled: true,
+    },
+  },
+  {
+    name: 'incident-detail',
+    template: starterIncidentDetail,
+    sample: sampleIncidentDetail,
+    rule: {
+      hostPattern: 'mattaltermatt.github.io',
+      pathPattern: '/freshet/examples/incidents/*',
+      templateName: 'incident-detail',
+      variables: {},
+      enabled: true,
+    },
+  },
+  {
+    name: 'github-repo',
+    template: starterGithubRepo,
+    sample: sampleGithubRepo,
+    rule: {
+      hostPattern: 'api.github.com',
+      pathPattern: '/repos/*/*',
+      templateName: 'github-repo',
+      variables: {},
+      enabled: false,
+    },
+  },
+];
+
 async function seedStartersIfEmpty(): Promise<void> {
   const storage = await createStorage(chrome.storage);
   const templates = await storage.getTemplates();
@@ -24,18 +73,24 @@ async function seedStartersIfEmpty(): Promise<void> {
   // Combined starter bodies exceed the 8 KB per-item quota on chrome.storage.sync
   // once JSON-encoded. Commit this install to local up-front so the seed write
   // lands in an area without that limit.
+  const sampleJsonByName: Record<string, string> = Object.fromEntries(
+    STARTERS.map((s) => [s.name, s.sample]),
+  );
   await chrome.storage.local.set({
     pj_storage_area: 'local',
-    pj_sample_json: {
-      'internal-user': sampleInternalUser,
-      'github-repo': sampleGithubRepo,
-    },
+    pj_sample_json: sampleJsonByName,
   });
   const localStorage = await createStorage(chrome.storage);
-  await localStorage.setTemplates({
-    'internal-user': starterInternalUser,
-    'github-repo': starterGithubRepo,
-  });
+  await localStorage.setTemplates(
+    Object.fromEntries(STARTERS.map((s) => [s.name, s.template])),
+  );
+  await localStorage.setRules(
+    STARTERS.map((s, i) => ({
+      ...s.rule,
+      id: `starter-${s.name}-${i}`,
+      isStarter: true,
+    })),
+  );
   await localStorage.setSchemaVersion(2);
 }
 

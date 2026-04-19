@@ -1,0 +1,136 @@
+{%- comment -%}
+  Freshet starter — Service Health page. Liquid syntax.
+  Bundled rule: `mattaltermatt.github.io` / `/freshet/examples/services/*`
+  Bundled rule var: `env` → renders the env chip in the header AND the top-strip.
+  Try it: https://mattaltermatt.github.io/freshet/examples/services/payments.json
+{%- endcomment -%}
+<div class="sh">
+  <header class="sh__head">
+    <div class="sh__brand">
+      <span class="sh__env" data-env="{{ vars.env }}">{{ vars.env | default: "live" }}</span>
+      <h1 class="sh__title">{{ name }}</h1>
+      <span class="sh__status sh__status--{{ status }}">
+        <span class="sh__dot"></span>
+        {% if status == "operational" %}All systems operational{% endif %}
+        {% if status == "degraded" %}Degraded performance{% endif %}
+        {% if status == "down" %}Major outage{% endif %}
+      </span>
+    </div>
+    {% if description != blank %}<p class="sh__desc">{{ description }}</p>{% endif %}
+  </header>
+
+  <section class="sh__row">
+    <div class="sh__metric">
+      <span class="sh__metric-label">Uptime · 30d</span>
+      <span class="sh__metric-value">{{ uptime30d }}<span class="sh__metric-unit">%</span></span>
+    </div>
+    <div class="sh__metric">
+      <span class="sh__metric-label">Last incident</span>
+      <span class="sh__metric-value sh__metric-value--ts">{{ lastIncidentAt | date }}</span>
+    </div>
+    <div class="sh__metric sh__metric--oncall">
+      <span class="sh__metric-label">On-call</span>
+      <span class="sh__metric-value">
+        <a href="{{ oncall.pageDeepLink }}" class="sh__oncall">{{ oncall.name }} <span class="sh__oncall-handle">{{ oncall.handle }}</span></a>
+      </span>
+    </div>
+  </section>
+
+  <section class="sh__deps">
+    <h2 class="sh__h2">Dependencies</h2>
+    <ul class="sh__deps-list">
+      {% for dep in dependencies %}
+      <li class="sh__dep sh__dep--{{ dep.status }}">
+        <span class="sh__dep-dot"></span>
+        <span class="sh__dep-name">{{ dep.name }}</span>
+        <span class="sh__dep-status">{{ dep.status }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section class="sh__incidents">
+    <h2 class="sh__h2">Recent incidents</h2>
+    {%- comment -%} Each row links to the incident JSON. Because Freshet has a
+    bundled rule for /examples/incidents/*, clicking renders that page too. {%- endcomment -%}
+    <ul class="sh__inc-list">
+      {% for inc in recentIncidents %}
+      <li class="sh__inc sh__inc--{{ inc.severity }}">
+        <a class="sh__inc-link" href="{{ inc.url }}">
+          <span class="sh__inc-sev">{{ inc.severity }}</span>
+          <span class="sh__inc-title">{{ inc.title }}</span>
+          <span class="sh__inc-meta">
+            {% if inc.resolvedAt == nil %}
+              <span class="sh__inc-open">● Open</span>
+            {% else %}
+              <span class="sh__inc-resolved">Resolved {{ inc.resolvedAt | date: "MM/dd HH:mm" }}</span>
+            {% endif %}
+            <span class="sh__inc-when">opened {{ inc.openedAt | date: "MM/dd HH:mm" }}</span>
+          </span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <footer class="sh__foot">
+    {% if links.runbook != blank %}<a href="{{ links.runbook }}">📖 Runbook</a>{% endif %}
+    {% if links.dashboard != blank %}<a href="{{ links.dashboard }}">📈 Dashboard</a>{% endif %}
+    {% if links.repo != blank %}<a href="{{ links.repo }}">📦 Repo</a>{% endif %}
+  </footer>
+</div>
+
+<style>
+  body { background:#0d1117; margin:0; padding:24px; font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif; color:#e6edf3; }
+  .sh { max-width:880px; margin:0 auto; background:#161b22; border:1px solid #30363d; border-radius:10px; overflow:hidden; }
+  .sh__head { padding:24px; border-bottom:1px solid #30363d; }
+  .sh__brand { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+  .sh__env { background:#1f6feb; color:#fff; font:600 10px/1 ui-monospace,Menlo,monospace; padding:4px 8px; border-radius:4px; letter-spacing:.08em; text-transform:uppercase; }
+  .sh__env[data-env="production"] { background:#da3633; }
+  .sh__env[data-env="staging"] { background:#bf8700; }
+  .sh__title { margin:0; font-size:22px; font-weight:600; flex:1 1 auto; }
+  .sh__status { display:inline-flex; align-items:center; gap:6px; font:600 12px/1.4 ui-monospace,Menlo,monospace; padding:4px 10px; border-radius:999px; text-transform:uppercase; letter-spacing:.04em; }
+  .sh__status--operational { background:rgba(35,134,54,.15); color:#3fb950; }
+  .sh__status--degraded    { background:rgba(210,153,34,.18); color:#d29922; }
+  .sh__status--down        { background:rgba(248,81,73,.18); color:#f85149; }
+  .sh__dot { width:8px; height:8px; border-radius:50%; background:currentColor; }
+  .sh__desc { margin:12px 0 0; color:#8d96a0; }
+
+  .sh__row { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:#30363d; border-bottom:1px solid #30363d; }
+  .sh__metric { background:#161b22; padding:18px 24px; display:flex; flex-direction:column; gap:6px; }
+  .sh__metric-label { font:600 10px/1 ui-monospace,Menlo,monospace; color:#8d96a0; text-transform:uppercase; letter-spacing:.06em; }
+  .sh__metric-value { font:600 24px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:#e6edf3; }
+  .sh__metric-value--ts { font-size:14px; color:#8d96a0; font-weight:500; }
+  .sh__metric-unit { color:#8d96a0; font-size:14px; margin-left:2px; }
+  .sh__oncall { color:#2f81f7; text-decoration:none; font-size:14px; font-weight:500; }
+  .sh__oncall:hover { text-decoration:underline; }
+  .sh__oncall-handle { color:#8d96a0; font-family:ui-monospace,Menlo,monospace; font-size:12px; margin-left:4px; }
+
+  .sh__h2 { margin:0 0 12px; font-size:13px; font-weight:600; color:#8d96a0; text-transform:uppercase; letter-spacing:.06em; }
+
+  .sh__deps { padding:20px 24px; border-bottom:1px solid #30363d; }
+  .sh__deps-list { list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(2,1fr); gap:8px 16px; }
+  .sh__dep { display:flex; align-items:center; gap:10px; padding:8px 12px; background:#0d1117; border:1px solid #30363d; border-radius:6px; font-size:13px; }
+  .sh__dep-dot { width:8px; height:8px; border-radius:50%; flex:none; }
+  .sh__dep--operational .sh__dep-dot { background:#3fb950; }
+  .sh__dep--degraded    .sh__dep-dot { background:#d29922; }
+  .sh__dep--down        .sh__dep-dot { background:#f85149; }
+  .sh__dep-name { flex:1 1 auto; color:#e6edf3; }
+  .sh__dep-status { font:600 10px/1 ui-monospace,Menlo,monospace; text-transform:uppercase; letter-spacing:.06em; color:#8d96a0; }
+
+  .sh__incidents { padding:20px 24px; border-bottom:1px solid #30363d; }
+  .sh__inc-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px; }
+  .sh__inc-link { display:grid; grid-template-columns:auto 1fr auto; gap:12px; align-items:center; padding:12px 14px; background:#0d1117; border:1px solid #30363d; border-radius:6px; text-decoration:none; color:inherit; transition:border-color 120ms ease, background 120ms ease; }
+  .sh__inc-link:hover { border-color:#2f81f7; background:#161b22; }
+  .sh__inc-sev { font:700 10px/1 ui-monospace,Menlo,monospace; text-transform:uppercase; letter-spacing:.08em; padding:4px 8px; border-radius:4px; background:rgba(210,153,34,.18); color:#d29922; }
+  .sh__inc--sev-1 .sh__inc-sev { background:rgba(248,81,73,.2); color:#f85149; }
+  .sh__inc--sev-3 .sh__inc-sev { background:rgba(125,133,144,.2); color:#8d96a0; }
+  .sh__inc-title { font-size:14px; color:#e6edf3; font-weight:500; }
+  .sh__inc-meta { display:flex; flex-direction:column; align-items:flex-end; gap:2px; font-size:11px; color:#8d96a0; }
+  .sh__inc-open { color:#f85149; font-weight:600; }
+  .sh__inc-resolved { color:#3fb950; }
+
+  .sh__foot { display:flex; gap:18px; padding:14px 24px; background:#0d1117; }
+  .sh__foot a { color:#2f81f7; text-decoration:none; font-size:13px; }
+  .sh__foot a:hover { text-decoration:underline; }
+</style>

@@ -1,0 +1,33 @@
+{
+  "id": "INC-2026-001",
+  "title": "Elevated 5xx on /charge — Redis rate-limiter saturating",
+  "severity": "sev-2",
+  "status": "monitoring",
+  "openedAt": "2026-04-18T14:22:00Z",
+  "resolvedAt": null,
+  "service": {
+    "name": "Payments",
+    "slug": "payments",
+    "url": "https://mattaltermatt.github.io/freshet/examples/services/payments.json"
+  },
+  "oncall": {
+    "name": "Priya Raman",
+    "handle": "@priya"
+  },
+  "summary": "Redis rate-limiter cluster CPU climbed past 92% sustaining ~14k RPS over baseline. Surfaces as intermittent 503s on POST /charge with `rate_limit_unavailable` reason. Mitigated by failing open on rate-limit lookups; root cause under investigation.",
+  "impact": "Approximately 0.4% of /charge requests returning 503 between 14:22 and 14:51 UTC. No data loss. Retried client requests succeeding within 2s.",
+  "timeline": [
+    { "at": "2026-04-18T14:22:00Z", "author": "alertmanager", "kind": "alert",   "message": "5xx-rate alert fired on payments-api (threshold 1.0%, observed 4.3%)." },
+    { "at": "2026-04-18T14:24:30Z", "author": "@priya",       "kind": "ack",     "message": "Acknowledged. Investigating — looks like rate-limiter saturation, not Stripe." },
+    { "at": "2026-04-18T14:31:10Z", "author": "@priya",       "kind": "update",  "message": "Confirmed Redis CPU at 92% on the rate-limit cluster. Failing open on rate-limit lookups via runtime flag." },
+    { "at": "2026-04-18T14:34:45Z", "author": "deploybot",    "kind": "deploy",  "message": "Flag `rate_limit.fail_open` rolled to 100% in production." },
+    { "at": "2026-04-18T14:51:02Z", "author": "@priya",       "kind": "update",  "message": "5xx rate back at baseline. Monitoring for the next 30 min before resolving." }
+  ],
+  "relatedIncidents": [
+    {
+      "id": "INC-2026-000",
+      "title": "Stripe webhook delivery latency spike",
+      "url": "https://mattaltermatt.github.io/freshet/examples/incidents/INC-2026-000.json"
+    }
+  ]
+}
