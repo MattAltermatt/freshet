@@ -5,6 +5,9 @@ build/
 .vite/
 *.log
 
+# Release artifacts (regenerated via `pnpm build && zip -r freshet-v*.zip dist`)
+freshet-*.zip
+
 # OS
 .DS_Store
 
