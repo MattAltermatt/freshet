@@ -42,6 +42,52 @@ body {
   border-top: 1px solid var(--pj-border);
 }
 
+/* First-run welcome card — sits between the popup header and the URL section.
+   Sticky-dismissable via pj_first_run_dismissed; auto-suppresses once the user
+   creates any non-example rule. */
+.pj-first-run {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--pj-accent-wash);
+  border: 1px solid var(--pj-accent);
+  border-radius: var(--pj-radius);
+  position: relative;
+}
+.pj-first-run__glyph {
+  font-family: var(--pj-font-mono);
+  font-size: 16px;
+  line-height: 1;
+}
+.pj-first-run__body { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.pj-first-run__title { margin: 0; font-size: 12px; font-weight: 600; color: var(--pj-fg); line-height: 1.2; }
+.pj-first-run__sub { margin: 0; font-size: 11px; color: var(--pj-fg-muted); line-height: 1.3; }
+.pj-first-run__cta {
+  background: var(--pj-accent-strong);
+  color: var(--pj-accent-fg);
+  border: 1px solid var(--pj-accent-strong);
+  border-radius: var(--pj-radius);
+  padding: 4px 10px;
+  font: 600 11px/1.2 inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.pj-first-run__cta:hover { background: var(--pj-accent); border-color: var(--pj-accent); }
+.pj-first-run__cta:focus-visible { outline: 2px solid var(--pj-accent); outline-offset: 1px; }
+.pj-first-run__close {
+  background: transparent;
+  border: 0;
+  color: var(--pj-fg-muted);
+  cursor: pointer;
+  font: 14px/1 inherit;
+  padding: 2px 6px;
+  border-radius: var(--pj-radius);
+}
+.pj-first-run__close:hover { background: var(--pj-bg-elevated); color: var(--pj-fg); }
+.pj-first-run__close:focus-visible { outline: 2px solid var(--pj-accent); outline-offset: 1px; }
+
 .pj-popup-label {
   font-size: 10px;
   text-transform: uppercase;

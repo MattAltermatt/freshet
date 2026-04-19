@@ -9,6 +9,7 @@ import { useStorage } from '../ui/hooks/useStorage';
 import type { HostSkipList, Rule } from '../shared/types';
 import { findMatchingRule } from '../matcher/matcher';
 import { directiveHash } from '../options/directives';
+import { FirstRunBanner } from './FirstRunBanner';
 
 interface ActiveTab {
   url: string;
@@ -89,6 +90,7 @@ export function App(): JSX.Element {
         </span>
         <h1>Freshet</h1>
       </header>
+      <FirstRunBanner rules={rules} />
       <section class="pj-popup-url" aria-label="Active tab URL">
         <span class="pj-popup-label">Tab URL</span>
         <code class="pj-popup-url-text" title={tab.url}>
