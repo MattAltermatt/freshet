@@ -854,6 +854,16 @@ button.pj-templates-label:focus-visible .pj-disclosure-arrow {
   justify-content: center;
   gap: var(--pj-space-2);
 }
+.pj-shortcuts-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+.pj-shortcuts-action-glyph {
+  color: var(--pj-accent-strong);
+  font-size: 12px;
+}
 .pj-shortcuts-links {
   flex: 0 0 auto;
   display: inline-flex;

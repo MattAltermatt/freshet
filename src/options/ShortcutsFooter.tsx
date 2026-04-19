@@ -64,11 +64,13 @@ export function ShortcutsFooter({ onExport, onImport }: ShortcutsFooterProps): J
           {open ? '▾' : '▸'} Keyboard shortcuts
         </button>
         <div class="pj-shortcuts-center">
-          <button type="button" class="pj-btn" data-variant="ghost" onClick={onExport}>
-            ⬇ Export
+          <button type="button" class="pj-btn pj-shortcuts-action" onClick={onExport}>
+            <span class="pj-shortcuts-action-glyph" aria-hidden="true">⬇</span>
+            Export
           </button>
-          <button type="button" class="pj-btn" data-variant="ghost" onClick={onImport}>
-            ⬆ Import
+          <button type="button" class="pj-btn pj-shortcuts-action" onClick={onImport}>
+            <span class="pj-shortcuts-action-glyph" aria-hidden="true">⬆</span>
+            Import
           </button>
         </div>
         <nav class="pj-shortcuts-links" aria-label="Project links">
