@@ -62,6 +62,12 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
   @media (min-width:760px) {
     .try-demo__cols { grid-template-columns:1fr 1fr; }
   }
+  .try-demo__col {
+    /* Critical: lets the grid item shrink below its intrinsic content width.
+       Without this, the wide <pre> JSON block forces the left column to its
+       natural size and squeezes the screenshot column to a sliver. */
+    min-width:0;
+  }
   .try-demo__col h3 {
     margin:0 0 6px;
     font:600 11px/1 ui-monospace,Menlo,monospace;
@@ -110,6 +116,35 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
     font-weight:600;
   }
   .try-demo__cta a.try-link:hover { background:#a40e26; }
+  .try-demo__cta-needs-ext {
+    flex:1 1 100%;
+    margin:6px 0 0;
+    font-size:12px;
+    color:#9a6700;
+  }
+
+  /* Install CTA — sits between the hero and the first demo block */
+  .try-install {
+    max-width:880px;
+    margin:24px auto;
+    padding:14px 18px;
+    background:#fff7ed;
+    border:1px solid #ea580c;
+    border-left-width:4px;
+    border-radius:6px;
+    color:#1f2328;
+    font-size:14px;
+    line-height:1.5;
+  }
+  .try-install strong { color:#c2410c; }
+  .try-install-link {
+    display:inline-block;
+    margin-top:6px;
+    color:#c2410c;
+    font-weight:600;
+    text-decoration:none;
+  }
+  .try-install-link:hover { text-decoration:underline; }
   .try-demo__cta details { font-size:12px; color:#656d76; flex:1 1 100%; }
   .try-demo__cta summary { cursor:pointer; padding:6px 0; font-weight:500; }
   .try-demo__cta ol { margin:6px 0 0 18px; padding:0; }
@@ -120,6 +155,14 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
   <h1>Thaw any JSON URL into a more useful page</h1>
   <p>Five live demos — fields surfaced, statuses colored, IDs turned into clickable links. <strong>JSON in. Page out.</strong></p>
 </section>
+
+<aside class="try-install">
+  <strong>You'll need Freshet installed.</strong>
+  These demos render through the extension running in your browser. Without it, the
+  "Try it live" links open raw JSON — Freshet is what turns it into the styled dashboard
+  on the right.
+  <br><a class="try-install-link" href="https://github.com/MattAltermatt/freshet#install">Install Freshet (from source) →</a>
+</aside>
 
 <!-- ─── Service Health (self-hosted, enabled by default) ─── -->
 <article class="try-demo" id="service-health">
