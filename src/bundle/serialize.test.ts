@@ -82,8 +82,8 @@ describe('buildBundle', () => {
       stripVariables: new Set(),
       exportedAt: '2026-04-19T00:00:00Z',
     });
-    expect((b.rules[0] as Record<string, unknown>).isExample).toBeUndefined();
-    expect((b.rules[0] as Record<string, unknown>).exampleUrl).toBeUndefined();
+    expect((b.rules[0] as unknown as Record<string, unknown>).isExample).toBeUndefined();
+    expect((b.rules[0] as unknown as Record<string, unknown>).exampleUrl).toBeUndefined();
   });
 
   it('preserves selected order of rules', () => {

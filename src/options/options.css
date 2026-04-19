@@ -845,11 +845,17 @@ button.pj-templates-label:focus-visible .pj-disclosure-arrow {
 .pj-shortcuts-bar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: var(--pj-space-3);
   flex-wrap: wrap;
 }
+.pj-shortcuts-center {
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: center;
+  gap: var(--pj-space-2);
+}
 .pj-shortcuts-links {
+  flex: 0 0 auto;
   display: inline-flex;
   gap: var(--pj-space-3);
   align-items: center;
@@ -864,6 +870,7 @@ button.pj-templates-label:focus-visible .pj-disclosure-arrow {
 .pj-shortcuts-links a:hover { text-decoration: underline; }
 .pj-shortcuts-links .pj-ext-arrow { font-size: 11px; opacity: 0.75; }
 .pj-shortcuts-toggle {
+  flex: 0 0 auto;
   background: transparent;
   border: 0;
   color: inherit;

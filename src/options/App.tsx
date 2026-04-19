@@ -58,6 +58,8 @@ export function App(): JSX.Element {
   const toast = useToast();
 
   const [tab, setTab] = useState<Tab>('rules');
+  const [exportOpen, setExportOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
 
   useEffect(() => {
     if (!directive) return;
@@ -151,7 +153,12 @@ export function App(): JSX.Element {
           />
         )}
       </main>
-      <ShortcutsFooter />
+      <ShortcutsFooter
+        onExport={() => setExportOpen(true)}
+        onImport={() => setImportOpen(true)}
+      />
+      {exportOpen ? <div data-test="export-open-marker" hidden /> : null}
+      {importOpen ? <div data-test="import-open-marker" hidden /> : null}
       <ToastHost />
     </div>
   );

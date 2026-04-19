@@ -25,7 +25,12 @@ function isTypingTarget(target: EventTarget | null): boolean {
   return false;
 }
 
-export function ShortcutsFooter(): JSX.Element {
+export interface ShortcutsFooterProps {
+  onExport: () => void;
+  onImport: () => void;
+}
+
+export function ShortcutsFooter({ onExport, onImport }: ShortcutsFooterProps): JSX.Element {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -58,6 +63,14 @@ export function ShortcutsFooter(): JSX.Element {
         >
           {open ? '▾' : '▸'} Keyboard shortcuts
         </button>
+        <div class="pj-shortcuts-center">
+          <button type="button" class="pj-btn" data-variant="ghost" onClick={onExport}>
+            ⬇ Export
+          </button>
+          <button type="button" class="pj-btn" data-variant="ghost" onClick={onImport}>
+            ⬆ Import
+          </button>
+        </div>
         <nav class="pj-shortcuts-links" aria-label="Project links">
           <a
             href="https://mattaltermatt.github.io/freshet/"
