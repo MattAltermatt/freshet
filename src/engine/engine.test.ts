@@ -89,6 +89,26 @@ describe('render — filters', () => {
   });
 });
 
+describe('render — array-root JSON', () => {
+  it('exposes the array as `items` so it has a stable identifier-safe handle', () => {
+    const t = '{% for c in items %}{{ c.name }};{% endfor %}';
+    expect(render(t, [{ name: 'A' }, { name: 'B' }], {})).toBe('A;B;');
+  });
+  it('supports indexed access via items[N]', () => {
+    const t = '{{ items[0].name }}';
+    expect(render(t, [{ name: 'first' }, { name: 'second' }], {})).toBe('first');
+  });
+  it('supports {% assign %} from items[0] for top-level array roots', () => {
+    const t = '{% assign c = items[0] %}{{ c.name.common }}';
+    expect(render(t, [{ name: { common: 'Japan' } }], {})).toBe('Japan');
+  });
+  it('exposes items.size and the empty branch fires on empty arrays', () => {
+    const t = '{% if items.size == 0 %}empty{% else %}{{ items.size }}{% endif %}';
+    expect(render(t, [], {})).toBe('empty');
+    expect(render(t, [1, 2, 3], {})).toBe('3');
+  });
+});
+
 describe('render — sanitizer pass', () => {
   it('strips a <script> tag from the final output', () => {
     expect(render('<p>hi</p><script>alert(1)</script>', {}, {})).toBe('<p>hi</p>');

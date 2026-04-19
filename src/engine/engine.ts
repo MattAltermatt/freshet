@@ -28,9 +28,14 @@ function makeEngine(): Liquid {
 
 export function render(templateText: string, json: unknown, vars: Variables): string {
   const engine = makeEngine();
-  const context = typeof json === 'object' && json !== null
-    ? { ...(json as Record<string, unknown>), vars }
-    : { vars };
+  // When the root is an array (e.g. `restcountries.com/v3.1/name/{name}` returns
+  // `[{...}]`), expose it as `items` so templates have a stable, identifier-safe
+  // handle. Object roots continue to spread directly as before.
+  const context = Array.isArray(json)
+    ? { items: json, vars }
+    : typeof json === 'object' && json !== null
+      ? { ...(json as Record<string, unknown>), vars }
+      : { vars };
   const output = engine.parseAndRenderSync(templateText, context);
   return sanitize(output);
 }
