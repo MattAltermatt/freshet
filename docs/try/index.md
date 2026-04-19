@@ -4,7 +4,18 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
 ---
 
 <style>
-  .try-hero { text-align:center; padding:24px 0 8px; }
+  /* Override the Jekyll minimal theme's tight 500px-floated content column for
+     this marketing page. The theme styles every <section> with
+     `width:500px; float:right;` and pins the sidebar <header> with
+     `position:fixed`, which jointly squish demo blocks into an unreadable column.
+     For /try/ we want the full viewport: drop the sidebar, unfloat the content,
+     widen the wrapper. The install banner below already carries the brand. */
+  body { padding: 24px !important; }
+  .wrapper { width: auto !important; max-width: 1100px !important; margin: 0 auto !important; padding: 0 !important; }
+  .wrapper > header { display: none !important; }
+  .wrapper > section { width: auto !important; max-width: none !important; float: none !important; padding-bottom: 32px !important; }
+
+  .try-hero { text-align:center; padding:24px 0 8px; max-width:880px; margin:0 auto; }
   .try-hero h1 { margin:0 0 6px; font-size:32px; }
   .try-hero p { margin:0; color:#656d76; }
   .try-note {
@@ -151,10 +162,10 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
   .try-demo__cta code { background:#f6f8fa; border:1px solid #d0d7de; padding:1px 6px; border-radius:3px; font-size:11px; }
 </style>
 
-<section class="try-hero">
+<div class="try-hero">
   <h1>Thaw any JSON URL into a more useful page</h1>
   <p>Five live demos — fields surfaced, statuses colored, IDs turned into clickable links. <strong>JSON in. Page out.</strong></p>
-</section>
+</div>
 
 <aside class="try-install">
   <strong>You'll need Freshet installed.</strong>
