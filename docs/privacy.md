@@ -5,7 +5,7 @@ permalink: /privacy/
 
 # Freshet Privacy Policy
 
-**Last updated: 2026-04-17**
+**Last updated: 2026-04-19**
 
 ## Summary
 
@@ -48,7 +48,7 @@ When a page loads, the extension's content script reads the page's text and chec
 ## Data you can export, share, or delete
 
 - **Delete:** uninstalling the extension from `chrome://extensions` clears all extension storage. You may also clear individual rules and templates from the Options page.
-- **Sharing:** the extension does not share data with anyone. A future export feature may allow you to manually export your templates as files; if/when that ships, it will include a "scrub before share" dialog that gives you control over what is included.
+- **Sharing:** the extension does not share data with anyone. You can manually export your rules and templates as a `.freshet.json` bundle from the Options page; the export dialog includes a "scrub before share" step so you control exactly what is included, and a secret-sniff scan flags anything that looks like a credential before you copy or download. See [Sharing rules and templates](/freshet/sharing/) for the full reference.
 
 ## Third parties
 

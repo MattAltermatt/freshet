@@ -40,7 +40,7 @@ Chrome glue (imports the cores):
 - `src/background/background.ts` — migration + starter seed on install; relays `chrome.commands.onCommand('toggle-raw')` → active tab (`pj:toggle-raw` message); relays `pj:open-options` messages from the content script to `chrome.tabs.create` (content scripts can't call `chrome.tabs.create` directly in MV3).
 - `src/ui/` — shared Preact component library: `Button`, `Toggle`, `Toast`, `ToastHost`, `Menu`, `KVEditor`, `Cheatsheet`, `CodeMirrorBox` + hooks `useTheme`, `useToast`, `useStorage`, `useDebounce`, `useAutosave` + `theme.css` design tokens (`--pj-*`) + `cmHighlight.ts` (CodeMirror syntax style driven by the same tokens)
 - `src/options/` — Preact SPA (`App.tsx`, `Header.tsx`, `ShortcutsFooter.tsx`, `directives.ts`); `rules/` has `RulesTab`, `RuleStack`, `RuleCard`, `UrlTester`, `PatternField`, `RuleEditModal`; `templates/` has `TemplatesTab`, `TemplatesToolbar`, `TemplateEditor` (CodeMirror 6 + Liquid grammar + autocomplete), `SampleJsonEditor`, `PreviewIframe`, `liquidMode.ts` (hand-rolled CM6 StreamParser), `liquidCompletions.ts`; `export/` has `ExportDialog` / `ExportPicker` / `ExportScrub` / `ExportOutput` (picker → scrub → download/clipboard); `import/` has `ImportDialog` / `ImportInput` / `ImportReview` / `ImportAppendModal` / `commit.ts` (three-way input → mode pick → review-or-append → atomic commit); `badges/NeedsAttention.tsx` (persistent flag shown on rule + template cards when `pj_import_flags` has an entry).
-- `src/popup/` — Preact SPA (`popup.tsx`, `App.tsx`, `FirstRunBanner.tsx`, `popup.css`). Owns boot + active-tab read; reads `rules` / `hostSkipList` / `settings` via `useStorage`; runs `promoteStorageToLocal()` on boot (same as options). Hands off to the options page via URL-hash directives (`#test-url=…`, `#new-rule:host=…`, `#edit-rule=…`). Popup writes only `hostSkipList` + `pj_first_run_dismissed`; rules + templates are read-only here. `FirstRunBanner` renders only when not dismissed AND user has no non-example rule.
+- `src/popup/` — Preact SPA (`popup.tsx`, `App.tsx`, `FirstRunBanner.tsx`, `ConflictSection.tsx`, `popup.css`). Owns boot + active-tab read; reads `rules` / `hostSkipList` / `settings` via `useStorage`; runs `promoteStorageToLocal()` on boot (same as options). Hands off to the options page via URL-hash directives (`#test-url=…`, `#new-rule:host=…`, `#edit-rule=…`). Popup writes only `hostSkipList` + `pj_first_run_dismissed`; rules + templates are read-only here. `FirstRunBanner` renders only when not dismissed AND user has no non-example rule. `ConflictSection` renders only when `pj_conflicts[activeHost]` is populated; shows the detected viewer name, the matched fingerprint/rationale, and Dismiss / Skip-host actions.
 - `src/starter/` — bundled starter HTML + sample JSON (`?raw` imports). 5 starters seed on fresh install (Phase 3): `service-health`, `incident-detail`, `github-repo`, `pokemon`, `country`. Templates are dark-AND-light-themed via `[data-theme="dark"]` selectors; content-script writes the `data-theme` attribute. URL-from-id is the convention — JSONs carry only IDs/slugs/handles, templates construct canonical URLs via Liquid string interpolation in `href` attrs.
 - `src/storage/` — facade over `chrome.storage`; `createStorage` is async and picks `.sync` or `.local` by reading a `pj_storage_area` sentinel from `.local` (migration writes it at 90KB). `promoteStorageToLocal()` runs at boot on both options and popup to converge any legacy sync-area data into local, so the Preact `useStorage` hook (which talks to `.local` only) has authoritative data.
 
@@ -112,13 +112,5 @@ User-created rules don't set either field; they fall through the `RuleCard` pill
 
 ## Docs
 
-- `docs/superpowers/specs/2026-04-17-present-json-design.md` — Phase 1 spec
-- `docs/superpowers/specs/2026-04-18-phase2-ux-polish-design.md` — Phase 2 spec
-- `docs/superpowers/plans/2026-04-17-present-json-phase1.md` — Phase 1 plan (shipped)
-- `docs/superpowers/plans/2026-04-18-phase2-plan1-foundation.md` — Phase 2 Plan 1 (shipped)
-- `docs/superpowers/plans/2026-04-18-phase2-plan2-engine-swap.md` — Phase 2 Plan 2 (Liquid engine, shipped)
-- `docs/superpowers/plans/2026-04-18-phase2-plan3-options.md` — Phase 2 Plan 3 (options rewrite, shipped)
-- `docs/superpowers/plans/2026-04-18-phase2-plan4-popup.md` — Phase 2 Plan 4 (popup rewrite, shipped)
-- `docs/superpowers/plans/2026-04-18-phase2-plan5-topstrip.md` — Phase 2 Plan 5 (top-strip rewrite, shipped)
-- `docs/superpowers/reviews/2026-04-17-phase1-review.md` — Phase 1 reviewer notes
-- `ROADMAP.md` — phases + backlog
+- `ROADMAP.md` — launch status + post-launch checklist; future work lives in GitHub Issues
+- `docs/superpowers/cws-listing.md` — CWS listing text of record (frozen during review)
