@@ -39,4 +39,4 @@ Artifacts: `freshet-v1.0.0.zip` (gitignored; rebuild with `pnpm build && zip -r 
 - **Shared template registry** (community templates).
 - **Non-JSON content support** — HTML / CSV / XML content-type routing.
 - **Marquee promo image (1400×560)** — only surfaces if Google picks us for the homepage carousel. Skippable.
-- **Official URL via GSC verification** — verify `mattaltermatt.github.io/freshet/` in Search Console so the CWS listing can show an Official URL (add `google-site-verification` meta via `docs/_config.yml`).
+- **Official URL via GSC verification** — verification file (`docs/googleb699e27e48b22e41.html`) shipped 2026-04-19; serves at `https://mattaltermatt.github.io/freshet/googleb699e27e48b22e41.html` once the Pages deploy completes. Matt to click **Verify** in Search Console afterwards, then once v1.0.0 goes live set the CWS listing's **Official URL** to `https://mattaltermatt.github.io/freshet/`.
