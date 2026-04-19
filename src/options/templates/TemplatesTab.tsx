@@ -1,5 +1,5 @@
 import type { JSX } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { Cheatsheet, useAutosave, useStorage } from '../../ui';
 import type { Rule, Templates } from '../../shared/types';
 import { TemplatesToolbar } from './TemplatesToolbar';
@@ -85,8 +85,16 @@ export function TemplatesTab({
     'pj_ui_collapse',
     DEFAULT_COLLAPSE,
   );
+  // Advance synchronously inside the handler so rapid clicks on different
+  // chips compose rather than clobbering each other's writes. Without the ref,
+  // three clicks in the same tick all close over the same `collapse` snapshot
+  // and only the last one's mutation survives.
+  const collapseRef = useRef(collapse);
+  collapseRef.current = collapse;
   const toggleCollapse = (key: keyof CollapseState): void => {
-    void writeCollapse({ ...collapse, [key]: !collapse[key] });
+    const next = { ...collapseRef.current, [key]: !collapseRef.current[key] };
+    collapseRef.current = next;
+    void writeCollapse(next);
   };
 
   const templateNames = Object.keys(templates);

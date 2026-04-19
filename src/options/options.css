@@ -649,13 +649,14 @@ input:focus, select:focus, textarea:focus {
 .pj-playground-links .pj-ext-arrow { font-size: 11px; opacity: 0.75; }
 .pj-templates-label {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
+  align-items: center;
+  justify-content: flex-start;
   gap: var(--pj-space-2);
   font-size: var(--pj-font-size-sm);
   color: var(--pj-fg-muted);
   font-weight: 600;
 }
+.pj-templates-label-hint { margin-left: auto; }
 button.pj-templates-label {
   background: transparent;
   border: 0;
@@ -677,14 +678,13 @@ button.pj-templates-label:focus-visible {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: var(--pj-bg-subtle);
   color: var(--pj-fg-muted);
-  font-size: 14px;
+  font-size: 24px;
   line-height: 1;
-  margin-right: 10px;
   flex: 0 0 auto;
   transition: background 120ms ease, color 120ms ease;
 }
