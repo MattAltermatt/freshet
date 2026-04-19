@@ -7,8 +7,7 @@
   "resolvedAt": null,
   "service": {
     "name": "Payments",
-    "slug": "payments",
-    "url": "https://mattaltermatt.github.io/freshet/examples/services/payments.json"
+    "slug": "payments"
   },
   "oncall": {
     "name": "Priya Raman",
@@ -26,8 +25,7 @@
   "relatedIncidents": [
     {
       "id": "INC-2026-000",
-      "title": "Stripe webhook delivery latency spike",
-      "url": "https://mattaltermatt.github.io/freshet/examples/incidents/INC-2026-000.json"
+      "title": "Stripe webhook delivery latency spike"
     }
   ]
 }

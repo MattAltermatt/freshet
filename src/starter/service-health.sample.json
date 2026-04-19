@@ -7,8 +7,7 @@
   "lastIncidentAt": "2026-04-18T14:22:00Z",
   "oncall": {
     "name": "Priya Raman",
-    "handle": "@priya",
-    "pageDeepLink": "https://oncall.example.com/u/priya"
+    "handle": "@priya"
   },
   "owners": ["payments-platform", "billing-infra"],
   "dependencies": [
@@ -23,21 +22,15 @@
       "title": "Elevated 5xx on /charge — Redis rate-limiter saturating",
       "severity": "sev-2",
       "openedAt": "2026-04-18T14:22:00Z",
-      "resolvedAt": null,
-      "url": "https://mattaltermatt.github.io/freshet/examples/incidents/INC-2026-001.json"
+      "resolvedAt": null
     },
     {
       "id": "INC-2026-000",
       "title": "Stripe webhook delivery latency spike",
       "severity": "sev-3",
       "openedAt": "2026-04-11T09:08:00Z",
-      "resolvedAt": "2026-04-11T10:42:00Z",
-      "url": "https://mattaltermatt.github.io/freshet/examples/incidents/INC-2026-000.json"
+      "resolvedAt": "2026-04-11T10:42:00Z"
     }
   ],
-  "links": {
-    "runbook": "https://runbooks.example.com/payments",
-    "dashboard": "https://grafana.example.com/d/payments-overview",
-    "repo": "https://github.com/example/payments-service"
-  }
+  "repo": "example/payments-service"
 }

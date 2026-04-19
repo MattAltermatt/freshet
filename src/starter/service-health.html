@@ -30,8 +30,13 @@
     </div>
     <div class="sh__metric sh__metric--oncall">
       <span class="sh__metric-label">On-call</span>
+      {%- comment -%} URL-FROM-ID demo (1/3): the JSON only carries `oncall.handle`
+      ("@priya"). The template builds the canonical pager URL by stripping the @
+      and slotting it into our org's known pattern. No more hunting bookmarks. {%- endcomment -%}
       <span class="sh__metric-value">
-        <a href="{{ oncall.pageDeepLink }}" class="sh__oncall">{{ oncall.name }} <span class="sh__oncall-handle">{{ oncall.handle }}</span></a>
+        <a href="https://oncall.example.com/u/{{ oncall.handle | remove: '@' }}" class="sh__oncall">
+          {{ oncall.name }} <span class="sh__oncall-handle">{{ oncall.handle }}</span>
+        </a>
       </span>
     </div>
   </section>
@@ -51,12 +56,14 @@
 
   <section class="sh__incidents">
     <h2 class="sh__h2">Recent incidents</h2>
-    {%- comment -%} Each row links to the incident JSON. Because Freshet has a
-    bundled rule for /examples/incidents/*, clicking renders that page too. {%- endcomment -%}
+    {%- comment -%} URL-FROM-ID demo (2/3): the JSON has no `url` on each
+    incident — just an `id` like "INC-2026-001". The template constructs the
+    canonical URL from the ID + our known incident-page route. Click → Freshet
+    matches the incident-detail rule and renders the next page too. {%- endcomment -%}
     <ul class="sh__inc-list">
       {% for inc in recentIncidents %}
       <li class="sh__inc sh__inc--{{ inc.severity }}">
-        <a class="sh__inc-link" href="{{ inc.url }}">
+        <a class="sh__inc-link" href="https://mattaltermatt.github.io/freshet/examples/incidents/{{ inc.id }}.json">
           <span class="sh__inc-sev">{{ inc.severity }}</span>
           <span class="sh__inc-title">{{ inc.title }}</span>
           <span class="sh__inc-meta">
@@ -74,63 +81,107 @@
   </section>
 
   <footer class="sh__foot">
-    {% if links.runbook != blank %}<a href="{{ links.runbook }}">📖 Runbook</a>{% endif %}
-    {% if links.dashboard != blank %}<a href="{{ links.dashboard }}">📈 Dashboard</a>{% endif %}
-    {% if links.repo != blank %}<a href="{{ links.repo }}">📦 Repo</a>{% endif %}
+    {%- comment -%} URL-FROM-ID demo (3/3): JSON has just `repo: "example/payments-service"`.
+    Runbook + dashboard URLs follow the org's conventions, slotted from `slug`. {%- endcomment -%}
+    <a href="https://runbooks.example.com/{{ slug }}">📖 Runbook</a>
+    <a href="https://grafana.example.com/d/{{ slug }}-overview">📈 Dashboard</a>
+    {% if repo != blank %}<a href="https://github.com/{{ repo }}">📦 Repo</a>{% endif %}
   </footer>
 </div>
 
 <style>
-  body { background:#0d1117; margin:0; padding:24px; font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif; color:#e6edf3; }
-  .sh { max-width:880px; margin:0 auto; background:#161b22; border:1px solid #30363d; border-radius:10px; overflow:hidden; }
-  .sh__head { padding:24px; border-bottom:1px solid #30363d; }
+  /* Light theme (default) */
+  body { background:#f6f8fa; margin:0; padding:24px; font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif; color:#1f2328; }
+  .sh { max-width:880px; margin:0 auto; background:#ffffff; border:1px solid #d0d7de; border-radius:10px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,.04); }
+  .sh__head { padding:24px; border-bottom:1px solid #d0d7de; }
   .sh__brand { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
-  .sh__env { background:#1f6feb; color:#fff; font:600 10px/1 ui-monospace,Menlo,monospace; padding:4px 8px; border-radius:4px; letter-spacing:.08em; text-transform:uppercase; }
-  .sh__env[data-env="production"] { background:#da3633; }
-  .sh__env[data-env="staging"] { background:#bf8700; }
-  .sh__title { margin:0; font-size:22px; font-weight:600; flex:1 1 auto; }
+  .sh__env { background:#0969da; color:#fff; font:600 10px/1 ui-monospace,Menlo,monospace; padding:4px 8px; border-radius:4px; letter-spacing:.08em; text-transform:uppercase; }
+  .sh__env[data-env="production"] { background:#cf222e; }
+  .sh__env[data-env="staging"]    { background:#9a6700; }
+  .sh__title { margin:0; font-size:22px; font-weight:600; flex:1 1 auto; color:#1f2328; }
   .sh__status { display:inline-flex; align-items:center; gap:6px; font:600 12px/1.4 ui-monospace,Menlo,monospace; padding:4px 10px; border-radius:999px; text-transform:uppercase; letter-spacing:.04em; }
-  .sh__status--operational { background:rgba(35,134,54,.15); color:#3fb950; }
-  .sh__status--degraded    { background:rgba(210,153,34,.18); color:#d29922; }
-  .sh__status--down        { background:rgba(248,81,73,.18); color:#f85149; }
+  .sh__status--operational { background:rgba(26,127,55,.12); color:#1a7f37; }
+  .sh__status--degraded    { background:rgba(154,103,0,.14); color:#9a6700; }
+  .sh__status--down        { background:rgba(207,34,46,.12); color:#cf222e; }
   .sh__dot { width:8px; height:8px; border-radius:50%; background:currentColor; }
-  .sh__desc { margin:12px 0 0; color:#8d96a0; }
+  .sh__desc { margin:12px 0 0; color:#656d76; }
 
-  .sh__row { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:#30363d; border-bottom:1px solid #30363d; }
-  .sh__metric { background:#161b22; padding:18px 24px; display:flex; flex-direction:column; gap:6px; }
-  .sh__metric-label { font:600 10px/1 ui-monospace,Menlo,monospace; color:#8d96a0; text-transform:uppercase; letter-spacing:.06em; }
-  .sh__metric-value { font:600 24px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:#e6edf3; }
-  .sh__metric-value--ts { font-size:14px; color:#8d96a0; font-weight:500; }
-  .sh__metric-unit { color:#8d96a0; font-size:14px; margin-left:2px; }
-  .sh__oncall { color:#2f81f7; text-decoration:none; font-size:14px; font-weight:500; }
+  .sh__row { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:#d0d7de; border-bottom:1px solid #d0d7de; }
+  .sh__metric { background:#ffffff; padding:18px 24px; display:flex; flex-direction:column; gap:6px; }
+  .sh__metric-label { font:600 10px/1 ui-monospace,Menlo,monospace; color:#656d76; text-transform:uppercase; letter-spacing:.06em; }
+  .sh__metric-value { font:600 24px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:#1f2328; }
+  .sh__metric-value--ts { font-size:14px; color:#656d76; font-weight:500; }
+  .sh__metric-unit { color:#656d76; font-size:14px; margin-left:2px; }
+  .sh__oncall { color:#0969da; text-decoration:none; font-size:14px; font-weight:500; }
   .sh__oncall:hover { text-decoration:underline; }
-  .sh__oncall-handle { color:#8d96a0; font-family:ui-monospace,Menlo,monospace; font-size:12px; margin-left:4px; }
+  .sh__oncall-handle { color:#656d76; font-family:ui-monospace,Menlo,monospace; font-size:12px; margin-left:4px; }
 
-  .sh__h2 { margin:0 0 12px; font-size:13px; font-weight:600; color:#8d96a0; text-transform:uppercase; letter-spacing:.06em; }
+  .sh__h2 { margin:0 0 12px; font-size:13px; font-weight:600; color:#656d76; text-transform:uppercase; letter-spacing:.06em; }
 
-  .sh__deps { padding:20px 24px; border-bottom:1px solid #30363d; }
+  .sh__deps { padding:20px 24px; border-bottom:1px solid #d0d7de; }
   .sh__deps-list { list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(2,1fr); gap:8px 16px; }
-  .sh__dep { display:flex; align-items:center; gap:10px; padding:8px 12px; background:#0d1117; border:1px solid #30363d; border-radius:6px; font-size:13px; }
+  .sh__dep { display:flex; align-items:center; gap:10px; padding:8px 12px; background:#f6f8fa; border:1px solid #d0d7de; border-radius:6px; font-size:13px; }
   .sh__dep-dot { width:8px; height:8px; border-radius:50%; flex:none; }
-  .sh__dep--operational .sh__dep-dot { background:#3fb950; }
-  .sh__dep--degraded    .sh__dep-dot { background:#d29922; }
-  .sh__dep--down        .sh__dep-dot { background:#f85149; }
-  .sh__dep-name { flex:1 1 auto; color:#e6edf3; }
-  .sh__dep-status { font:600 10px/1 ui-monospace,Menlo,monospace; text-transform:uppercase; letter-spacing:.06em; color:#8d96a0; }
+  .sh__dep--operational .sh__dep-dot { background:#1a7f37; }
+  .sh__dep--degraded    .sh__dep-dot { background:#9a6700; }
+  .sh__dep--down        .sh__dep-dot { background:#cf222e; }
+  .sh__dep-name { flex:1 1 auto; color:#1f2328; }
+  .sh__dep-status { font:600 10px/1 ui-monospace,Menlo,monospace; text-transform:uppercase; letter-spacing:.06em; color:#656d76; }
 
-  .sh__incidents { padding:20px 24px; border-bottom:1px solid #30363d; }
+  .sh__incidents { padding:20px 24px; border-bottom:1px solid #d0d7de; }
   .sh__inc-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px; }
-  .sh__inc-link { display:grid; grid-template-columns:auto 1fr auto; gap:12px; align-items:center; padding:12px 14px; background:#0d1117; border:1px solid #30363d; border-radius:6px; text-decoration:none; color:inherit; transition:border-color 120ms ease, background 120ms ease; }
-  .sh__inc-link:hover { border-color:#2f81f7; background:#161b22; }
-  .sh__inc-sev { font:700 10px/1 ui-monospace,Menlo,monospace; text-transform:uppercase; letter-spacing:.08em; padding:4px 8px; border-radius:4px; background:rgba(210,153,34,.18); color:#d29922; }
-  .sh__inc--sev-1 .sh__inc-sev { background:rgba(248,81,73,.2); color:#f85149; }
-  .sh__inc--sev-3 .sh__inc-sev { background:rgba(125,133,144,.2); color:#8d96a0; }
-  .sh__inc-title { font-size:14px; color:#e6edf3; font-weight:500; }
-  .sh__inc-meta { display:flex; flex-direction:column; align-items:flex-end; gap:2px; font-size:11px; color:#8d96a0; }
-  .sh__inc-open { color:#f85149; font-weight:600; }
-  .sh__inc-resolved { color:#3fb950; }
+  .sh__inc-link { display:grid; grid-template-columns:auto 1fr auto; gap:12px; align-items:center; padding:12px 14px; background:#f6f8fa; border:1px solid #d0d7de; border-radius:6px; text-decoration:none; color:inherit; transition:border-color 120ms ease, background 120ms ease; }
+  .sh__inc-link:hover { border-color:#0969da; background:#ffffff; }
+  .sh__inc-sev { font:700 10px/1 ui-monospace,Menlo,monospace; text-transform:uppercase; letter-spacing:.08em; padding:4px 8px; border-radius:4px; background:rgba(154,103,0,.16); color:#9a6700; }
+  .sh__inc--sev-1 .sh__inc-sev { background:rgba(207,34,46,.14); color:#cf222e; }
+  .sh__inc--sev-3 .sh__inc-sev { background:rgba(101,109,118,.14); color:#656d76; }
+  .sh__inc-title { font-size:14px; color:#1f2328; font-weight:500; }
+  .sh__inc-meta { display:flex; flex-direction:column; align-items:flex-end; gap:2px; font-size:11px; color:#656d76; }
+  .sh__inc-open { color:#cf222e; font-weight:600; }
+  .sh__inc-resolved { color:#1a7f37; }
 
-  .sh__foot { display:flex; gap:18px; padding:14px 24px; background:#0d1117; }
-  .sh__foot a { color:#2f81f7; text-decoration:none; font-size:13px; }
+  .sh__foot { display:flex; gap:18px; padding:14px 24px; background:#f6f8fa; }
+  .sh__foot a { color:#0969da; text-decoration:none; font-size:13px; }
   .sh__foot a:hover { text-decoration:underline; }
+
+  /* Dark theme — applied when Freshet sets data-theme="dark" on <html>. */
+  [data-theme="dark"] body { background:#0d1117; color:#e6edf3; }
+  [data-theme="dark"] .sh { background:#161b22; border-color:#30363d; box-shadow:none; }
+  [data-theme="dark"] .sh__head { border-bottom-color:#30363d; }
+  [data-theme="dark"] .sh__env { background:#1f6feb; }
+  [data-theme="dark"] .sh__env[data-env="production"] { background:#da3633; }
+  [data-theme="dark"] .sh__env[data-env="staging"]    { background:#bf8700; }
+  [data-theme="dark"] .sh__title { color:#e6edf3; }
+  [data-theme="dark"] .sh__status--operational { background:rgba(35,134,54,.15); color:#3fb950; }
+  [data-theme="dark"] .sh__status--degraded    { background:rgba(210,153,34,.18); color:#d29922; }
+  [data-theme="dark"] .sh__status--down        { background:rgba(248,81,73,.18); color:#f85149; }
+  [data-theme="dark"] .sh__desc { color:#8d96a0; }
+  [data-theme="dark"] .sh__row { background:#30363d; border-bottom-color:#30363d; }
+  [data-theme="dark"] .sh__metric { background:#161b22; }
+  [data-theme="dark"] .sh__metric-label { color:#8d96a0; }
+  [data-theme="dark"] .sh__metric-value { color:#e6edf3; }
+  [data-theme="dark"] .sh__metric-value--ts { color:#8d96a0; }
+  [data-theme="dark"] .sh__metric-unit { color:#8d96a0; }
+  [data-theme="dark"] .sh__oncall { color:#2f81f7; }
+  [data-theme="dark"] .sh__oncall-handle { color:#8d96a0; }
+  [data-theme="dark"] .sh__h2 { color:#8d96a0; }
+  [data-theme="dark"] .sh__deps { border-bottom-color:#30363d; }
+  [data-theme="dark"] .sh__dep { background:#0d1117; border-color:#30363d; }
+  [data-theme="dark"] .sh__dep-name { color:#e6edf3; }
+  [data-theme="dark"] .sh__dep-status { color:#8d96a0; }
+  [data-theme="dark"] .sh__dep--operational .sh__dep-dot { background:#3fb950; }
+  [data-theme="dark"] .sh__dep--degraded    .sh__dep-dot { background:#d29922; }
+  [data-theme="dark"] .sh__dep--down        .sh__dep-dot { background:#f85149; }
+  [data-theme="dark"] .sh__incidents { border-bottom-color:#30363d; }
+  [data-theme="dark"] .sh__inc-link { background:#0d1117; border-color:#30363d; }
+  [data-theme="dark"] .sh__inc-link:hover { border-color:#2f81f7; background:#161b22; }
+  [data-theme="dark"] .sh__inc-sev { background:rgba(210,153,34,.18); color:#d29922; }
+  [data-theme="dark"] .sh__inc--sev-1 .sh__inc-sev { background:rgba(248,81,73,.2); color:#f85149; }
+  [data-theme="dark"] .sh__inc--sev-3 .sh__inc-sev { background:rgba(125,133,144,.2); color:#8d96a0; }
+  [data-theme="dark"] .sh__inc-title { color:#e6edf3; }
+  [data-theme="dark"] .sh__inc-meta { color:#8d96a0; }
+  [data-theme="dark"] .sh__inc-open { color:#f85149; }
+  [data-theme="dark"] .sh__inc-resolved { color:#3fb950; }
+  [data-theme="dark"] .sh__foot { background:#0d1117; }
+  [data-theme="dark"] .sh__foot a { color:#2f81f7; }
 </style>
