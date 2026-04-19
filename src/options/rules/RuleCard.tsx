@@ -1,9 +1,9 @@
 import type { JSX } from 'preact';
 import { Toggle } from '../../ui';
-import { TemplatePill } from '../../ui/components/TemplatePill';
 import type { Rule } from '../../shared/types';
 import type { ImportFlagEntry } from '../../storage/storage';
 import { NeedsAttention } from '../badges/NeedsAttention';
+import { RuleIdentity } from './RuleIdentity';
 
 export interface RuleCardProps {
   rule: Rule;
@@ -37,12 +37,7 @@ export function RuleCard({
     >
       <div class="pj-rule-num" aria-label={`Rule ${index + 1}`}>{index + 1}</div>
       <button type="button" class="pj-rule-body" onClick={onEdit}>
-        {rule.name ? <span class="pj-rule-name">{rule.name}</span> : null}
-        <code class="pj-rule-pattern">
-          {rule.hostPattern || '(any host)'} <span class="pj-rule-sep">·</span>{' '}
-          {rule.pathPattern || '(any path)'}
-        </code>
-        <TemplatePill name={rule.templateName} />
+        <RuleIdentity rule={rule} density="card" />
         {rule.isExample ? (
           rule.exampleUrl ? (
             <a

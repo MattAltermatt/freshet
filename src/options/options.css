@@ -224,15 +224,51 @@ input:focus, select:focus, textarea:focus {
   font: inherit;
   min-width: 0;
 }
-.pj-rule-name {
-  font-weight: 600;
-  color: var(--pj-fg);
-  font-size: var(--pj-font-size-sm);
+/* Shared rule identity — used by rule cards + URL tester so they scan alike.
+   Layout: row 1 = name (or hostPattern fallback), row 2 = host/path + pill. */
+.pj-rule-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
   width: 100%;
 }
+.pj-rule-identity-primary {
+  font-weight: 600;
+  color: var(--pj-fg);
+  overflow-wrap: anywhere;
+}
+.pj-rule-identity--card .pj-rule-identity-primary { font-size: var(--pj-font-size-md); }
+.pj-rule-identity--row  .pj-rule-identity-primary { font-size: var(--pj-font-size-sm); }
+.pj-rule-identity-secondary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--pj-space-2);
+  flex-wrap: wrap;
+  min-width: 0;
+}
+.pj-rule-identity-pattern {
+  font-family: var(--pj-font-mono);
+  color: var(--pj-fg-muted);
+  font-size: var(--pj-font-size-sm);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.pj-rule-identity-host { color: var(--pj-fg); }
+.pj-rule-identity-slash {
+  color: var(--pj-accent-strong);
+  font-weight: 700;
+  margin: 0 2px;
+}
+.pj-rule-identity-path { color: var(--pj-fg-muted); }
+
+/* Back-compat aliases — some old callers still hand-render rule names/patterns.
+   Kept as simple mirrors so the single source of truth stays at .pj-rule-identity*. */
+.pj-rule-name { font-weight: 600; color: var(--pj-fg); }
 .pj-rule-pattern {
   font-family: var(--pj-font-mono);
-  color: var(--pj-fg);
+  color: var(--pj-fg-muted);
   overflow-wrap: anywhere;
 }
 .pj-rule-sep { color: var(--pj-fg-subtle); margin: 0 2px; }
@@ -440,23 +476,7 @@ input:focus, select:focus, textarea:focus {
 .pj-url-result[data-state="miss-path"] { color: var(--pj-fg-subtle); }
 .pj-url-icon { font-family: var(--pj-font-mono); }
 .pj-url-order { color: var(--pj-fg-subtle); font-variant-numeric: tabular-nums; }
-.pj-url-identity {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  gap: 2px;
-}
-.pj-url-id-line {
-  display: inline-flex;
-  align-items: baseline;
-  gap: var(--pj-space-2);
-  flex-wrap: wrap;
-}
-.pj-url-name {
-  font-weight: 600;
-  color: var(--pj-fg);
-}
-.pj-url-pattern { font-family: var(--pj-font-mono); overflow-wrap: anywhere; color: var(--pj-fg-muted); font-size: 11px; }
+/* URL tester uses RuleIdentity now — no per-result identity rules needed here. */
 .pj-url-reason { color: var(--pj-fg-subtle); font-size: 11px; }
 
 /* ── Rule edit modal ── */

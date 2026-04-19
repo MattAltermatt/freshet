@@ -2,7 +2,7 @@ import type { JSX } from 'preact';
 import { useEffect, useMemo, useState } from 'preact/hooks';
 import type { Rule } from '../../shared/types';
 import { findMatchingRule, matchesHost, matchesPath } from '../../matcher/matcher';
-import { TemplatePill } from '../../ui/components/TemplatePill';
+import { RuleIdentity } from './RuleIdentity';
 
 export interface UrlTesterProps {
   rules: Rule[];
@@ -145,17 +145,7 @@ export function UrlTester({ rules, initialUrl }: UrlTesterProps): JSX.Element {
                 {ICONS[state]}
               </span>
               <span class="pj-url-order">{i + 1}.</span>
-              <span class="pj-url-identity">
-                <span class="pj-url-id-line">
-                  {rule.name ? (
-                    <span class="pj-url-name">{rule.name}</span>
-                  ) : null}
-                  <TemplatePill name={rule.templateName} />
-                </span>
-                <code class="pj-url-pattern">
-                  {rule.hostPattern || '(any)'} · {rule.pathPattern || '(any)'}
-                </code>
-              </span>
+              <RuleIdentity rule={rule} density="row" />
               {REASONS[state] ? (
                 <span class="pj-url-reason">{REASONS[state]}</span>
               ) : null}
