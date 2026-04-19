@@ -11,7 +11,7 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Manifest V3](https://img.shields.io/badge/Chrome-MV3-brightgreen.svg)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6.svg)
-![Tests](https://img.shields.io/badge/tests-295%20unit%20%2B%2021%20E2E-success.svg)
+![Tests](https://img.shields.io/badge/tests-302%20unit%20%2B%2021%20E2E-success.svg)
 
 Paste a JSON URL into Chrome, get a table instead of a `<pre>`. Works against any host you configure — internal tooling, public APIs, webhooks you're debugging. Templates are small HTML snippets with `{{placeholders}}`; rules map URL patterns to templates.
 
@@ -82,7 +82,7 @@ Each starter rule carries an `Example ↗` pill on its rule card — click to op
 
 ### From the Chrome Web Store
 
-Not yet listed. Planned for a future release.
+Submission in progress.
 
 ## Quick start
 
@@ -212,7 +212,7 @@ scripts/            # one-off dev scripts (e.g. rasterize-icons.mjs)
 
 ## Testing
 
-- **Unit** (Vitest): 295 tests covering the engine (incl. array-root JSON exposed as `items`), matcher, storage facade + migration, fixture-snapshot render, all 5 starter templates (light + dark variants, URL-from-id link construction), `src/ui/` primitives + hooks (including shadow-root-aware Menu outside-click), options-page components (RuleCard with the Example pill, UrlTester, Header, liquidCompletions, liquidMode StreamParser, directive parser), popup rendering + the FirstRunBanner gating, and the URL middle-truncation helper. Content-side adds `TopStrip` + `mountTopStrip` component tests.
+- **Unit** (Vitest): 302 tests covering the engine (incl. array-root JSON exposed as `items`), matcher, storage facade + migration, fixture-snapshot render, all 5 starter templates (light + dark variants, URL-from-id link construction), `src/ui/` primitives + hooks (including shadow-root-aware Menu outside-click), options-page components (RuleCard with the Example pill, UrlTester, Header, liquidCompletions, liquidMode StreamParser, directive parser), popup rendering + the FirstRunBanner gating, and the URL middle-truncation helper. Content-side adds `TopStrip` + `mountTopStrip` component tests.
 - **E2E** (Playwright, headed Chrome): 21 specs — render smoke, LiquidJS CSP smoke, CodeMirror 6 CSP smoke, popup Preact CSP smoke, top-strip shadow-DOM CSP smoke, axe-core WCAG 2.1 AA on the options page, on the popup (light + dark), and on the top-strip (light + dark), options CRUD flows (add rule, delete + undo, URL-tester match/shadowed, template delete-guard, per-template sample JSON persistence), popup match chip, popup skip toggle persistence, popup → options directive handoff, top-strip rendered-on-matched-page + toggle-raw message + skip-host writes.
 
 The cores (`engine/` + `matcher/`) are deliberately free of `chrome.*` calls — grep to verify. That discipline is what makes the test suite possible in Node.
