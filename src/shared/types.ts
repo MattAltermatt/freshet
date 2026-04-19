@@ -8,7 +8,9 @@ export interface Rule {
   variables: Variables;
   enabled: boolean;
   /** True if this rule was bundled by the install seed; informational only. */
-  isStarter?: boolean;
+  isExample?: boolean;
+  /** Canonical demo URL for an example rule — opened when the user clicks the Example pill. */
+  exampleUrl?: string;
 }
 
 export type Templates = Record<string, string>;

@@ -70,13 +70,29 @@ describe('<RuleCard>', () => {
     expect(container.querySelector('.pj-rule-card--disabled')).toBeTruthy();
   });
 
-  it('renders a Starter pill when rule.isStarter=true', () => {
-    renderCard({ rule: { ...rule, isStarter: true } });
-    expect(screen.getByText('Starter')).toBeInTheDocument();
+  it('renders an Example pill when rule.isExample=true', () => {
+    renderCard({ rule: { ...rule, isExample: true } });
+    expect(screen.getByText('Example')).toBeInTheDocument();
   });
 
-  it('does not render a Starter pill on user-created rules', () => {
+  it('does not render an Example pill on user-created rules', () => {
     renderCard();
-    expect(screen.queryByText('Starter')).not.toBeInTheDocument();
+    expect(screen.queryByText('Example')).not.toBeInTheDocument();
+  });
+
+  it('renders the Example pill as a link when exampleUrl is set', () => {
+    renderCard({
+      rule: { ...rule, isExample: true, exampleUrl: 'https://api.example.com/users/1' },
+    });
+    const link = screen.getByText('Example').closest('a');
+    expect(link).not.toBeNull();
+    expect(link).toHaveAttribute('href', 'https://api.example.com/users/1');
+    expect(link).toHaveAttribute('target', '_blank');
+    expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+  });
+
+  it('renders the Example pill as a non-link span when exampleUrl is missing', () => {
+    renderCard({ rule: { ...rule, isExample: true } });
+    expect(screen.getByText('Example').closest('a')).toBeNull();
   });
 });

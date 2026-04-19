@@ -244,9 +244,10 @@ input:focus, select:focus, textarea:focus {
   font-size: var(--pj-font-size-sm);
   color: var(--pj-fg-muted);
 }
-.pj-starter-pill {
+.pj-example-pill {
   display: inline-flex;
   align-items: center;
+  gap: 4px;
   padding: 2px var(--pj-space-2);
   border-radius: 10px;
   background: var(--pj-bg-subtle);
@@ -256,6 +257,20 @@ input:focus, select:focus, textarea:focus {
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  text-decoration: none;
+}
+.pj-example-pill--link:hover {
+  background: var(--pj-accent-overlay);
+  color: var(--pj-accent-strong);
+  border-color: var(--pj-accent);
+}
+.pj-example-pill--link:focus-visible {
+  outline: 2px solid var(--pj-accent);
+  outline-offset: 1px;
+}
+.pj-example-pill-arrow {
+  font-size: 9px;
+  opacity: 0.85;
 }
 
 .pj-rule-controls {

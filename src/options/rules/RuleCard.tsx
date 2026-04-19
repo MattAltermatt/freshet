@@ -37,10 +37,23 @@ export function RuleCard({
         <span class="pj-rule-template" title={`Template: ${rule.templateName}`}>
           {rule.templateName}
         </span>
-        {rule.isStarter ? (
-          <span class="pj-starter-pill" title="Bundled with Freshet">
-            Starter
-          </span>
+        {rule.isExample ? (
+          rule.exampleUrl ? (
+            <a
+              class="pj-example-pill pj-example-pill--link"
+              href={rule.exampleUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={`Example: ${rule.exampleUrl}`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              Example <span class="pj-example-pill-arrow" aria-hidden="true">↗</span>
+            </a>
+          ) : (
+            <span class="pj-example-pill" title="Bundled with Freshet">
+              Example
+            </span>
+          )
         ) : null}
         {varCount > 0 ? (
           <span class="pj-rule-vars" title={`${varCount} variables`}>

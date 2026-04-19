@@ -28,7 +28,7 @@ interface Starter {
   name: string;
   template: string;
   sample: string;
-  rule: Omit<Rule, 'id' | 'isStarter'>;
+  rule: Omit<Rule, 'id' | 'isExample'>;
 }
 
 const STARTERS: Starter[] = [
@@ -42,6 +42,7 @@ const STARTERS: Starter[] = [
       templateName: 'service-health',
       variables: { env: 'production' },
       enabled: true,
+      exampleUrl: 'https://mattaltermatt.github.io/freshet/examples/services/payments.json',
     },
   },
   {
@@ -54,6 +55,7 @@ const STARTERS: Starter[] = [
       templateName: 'incident-detail',
       variables: {},
       enabled: true,
+      exampleUrl: 'https://mattaltermatt.github.io/freshet/examples/incidents/INC-2026-001.json',
     },
   },
   {
@@ -66,6 +68,7 @@ const STARTERS: Starter[] = [
       templateName: 'github-repo',
       variables: {},
       enabled: false,
+      exampleUrl: 'https://api.github.com/repos/facebook/react',
     },
   },
   {
@@ -78,6 +81,7 @@ const STARTERS: Starter[] = [
       templateName: 'pokemon',
       variables: {},
       enabled: false,
+      exampleUrl: 'https://pokeapi.co/api/v2/pokemon/pikachu',
     },
   },
   {
@@ -90,6 +94,7 @@ const STARTERS: Starter[] = [
       templateName: 'country',
       variables: {},
       enabled: false,
+      exampleUrl: 'https://restcountries.com/v3.1/name/japan',
     },
   },
 ];
@@ -116,7 +121,7 @@ async function seedStartersIfEmpty(): Promise<void> {
     STARTERS.map((s, i) => ({
       ...s.rule,
       id: `starter-${s.name}-${i}`,
-      isStarter: true,
+      isExample: true,
     })),
   );
   await localStorage.setSchemaVersion(2);
