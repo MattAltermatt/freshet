@@ -219,7 +219,7 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
   <p>Five live demos — fields surfaced, statuses colored, IDs turned into clickable links. <strong>JSON in. Page out.</strong></p>
 </div>
 
-<section class="try-how">
+<div class="try-how">
   <h2>What Freshet does — three things, automatically</h2>
   <ol>
     <li><strong>Matches the URL you visit</strong> against your rule (e.g. <code>pokeapi.co/api/v2/pokemon/*</code>).</li>
@@ -233,7 +233,7 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
     the dashboards become part of your normal browsing. The same template + a real API response
     = a useful page with actionable links, every visit.
   </p>
-</section>
+</div>
 
 <aside class="try-install">
   <strong>You'll need Freshet installed.</strong>
