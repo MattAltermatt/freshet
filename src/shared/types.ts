@@ -2,6 +2,8 @@ export type Variables = Record<string, string>;
 
 export interface Rule {
   id: string;
+  /** Optional human-readable label. Display falls back to hostPattern if unset. */
+  name?: string;
   hostPattern: string;
   pathPattern: string;
   templateName: string;
