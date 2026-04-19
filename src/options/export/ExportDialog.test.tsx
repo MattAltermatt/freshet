@@ -27,5 +27,7 @@ describe('ExportDialog', () => {
     fireEvent.click(screen.getByLabelText(/only rule/));
     fireEvent.click(screen.getByRole('button', { name: /next: scrub/i }));
     expect(screen.getByRole('heading', { name: /scrub/i })).toBeTruthy();
+    // Output merged into scrub → Download button lives here.
+    expect(screen.getByRole('button', { name: /download/i })).toBeTruthy();
   });
 });

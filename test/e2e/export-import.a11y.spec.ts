@@ -67,7 +67,7 @@ test.describe('a11y — export/import dialogs', () => {
       const page = await ctx.newPage();
       await page.goto(`chrome-extension://${extId}/src/options/options.html`);
       await expect(page.locator('.pj-app')).toBeVisible();
-      await page.getByRole('button', { name: /⬇ Export/ }).click();
+      await page.getByRole('button', { name: /^Export$/ }).click();
       await axeCheck(page);
     } finally {
       await ctx.close();
@@ -96,7 +96,7 @@ test.describe('a11y — export/import dialogs', () => {
       const page = await ctx.newPage();
       await page.goto(`chrome-extension://${extId}/src/options/options.html`);
       await expect(page.locator('.pj-app')).toBeVisible();
-      await page.getByRole('button', { name: /⬇ Export/ }).click();
+      await page.getByRole('button', { name: /^Export$/ }).click();
       await page.getByLabel(/demo/).check();
       await page.getByRole('button', { name: /next: scrub/i }).click();
       await axeCheck(page);
@@ -112,7 +112,7 @@ test.describe('a11y — export/import dialogs', () => {
       const page = await ctx.newPage();
       await page.goto(`chrome-extension://${extId}/src/options/options.html`);
       await expect(page.locator('.pj-app')).toBeVisible();
-      await page.getByRole('button', { name: /⬆ Import/ }).click();
+      await page.getByRole('button', { name: /^Import$/ }).click();
       await axeCheck(page);
     } finally {
       await ctx.close();
@@ -126,7 +126,7 @@ test.describe('a11y — export/import dialogs', () => {
       const page = await ctx.newPage();
       await page.goto(`chrome-extension://${extId}/src/options/options.html`);
       await expect(page.locator('.pj-app')).toBeVisible();
-      await page.getByRole('button', { name: /⬆ Import/ }).click();
+      await page.getByRole('button', { name: /^Import$/ }).click();
       await page.getByPlaceholder(/paste bundle json/i).fill(
         JSON.stringify({
           bundleSchemaVersion: 1,

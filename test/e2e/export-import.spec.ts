@@ -68,24 +68,14 @@ test.describe('Export / Import', () => {
       });
       const page = await openOptions(ctx, extId);
 
-      // Export
-      await page.getByRole('button', { name: /⬇ Export/ }).click();
+      // Export — picker → scrub (download button lives on scrub now)
+      await page.getByRole('button', { name: /^Export$/ }).click();
       await page.getByLabel(/qa/).check();
       await page.getByRole('button', { name: /next: scrub/i }).click();
-      await page.getByRole('button', { name: /next: output/i }).click();
 
-      // Capture the bundle JSON via clipboard button (simpler than download)
-      const json = await page.evaluate(async () => {
-        // Re-build the bundle by reading from storage + running the same serializer
-        // would require importing. Instead, grab the clipboard via the dialog.
-        return '';
-      });
-      expect(json).toBe(''); // placeholder — we'll capture differently below
-
-      // Download path — use Playwright's waitForEvent
       const [download] = await Promise.all([
         page.waitForEvent('download'),
-        page.getByRole('button', { name: /^Download$/ }).click(),
+        page.getByRole('button', { name: /⬇ Download/ }).click(),
       ]);
       const savedPath = await download.path();
       expect(savedPath).toBeTruthy();
@@ -99,7 +89,7 @@ test.describe('Export / Import', () => {
       expect(parsed.rules[0].id).toBe('r1');
 
       // Close export, clear storage
-      await page.getByRole('button', { name: /^Done$/ }).click();
+      await page.getByRole('button', { name: /^Done$/ }).click().catch(() => {});
       await seedStorage(ctx, {
         templates: {},
         pj_sample_json: {},
@@ -110,7 +100,7 @@ test.describe('Export / Import', () => {
       await expect(page.locator('.pj-app')).toBeVisible({ timeout: 5000 });
 
       // Re-import via paste
-      await page.getByRole('button', { name: /⬆ Import/ }).click();
+      await page.getByRole('button', { name: /^Import$/ }).click();
       await page.getByPlaceholder(/paste bundle json/i).fill(bundleText);
       await page.getByRole('button', { name: /next: review/i }).click();
       await page.getByRole('button', { name: /just append all/i }).click();
@@ -143,7 +133,7 @@ test.describe('Export / Import', () => {
       });
       const page = await openOptions(ctx, extId);
 
-      await page.getByRole('button', { name: /⬆ Import/ }).click();
+      await page.getByRole('button', { name: /^Import$/ }).click();
       await page.getByPlaceholder(/paste bundle json/i).fill(
         JSON.stringify({
           bundleSchemaVersion: 1,
@@ -177,7 +167,7 @@ test.describe('Export / Import', () => {
     try {
       await seedStorage(ctx, { templates: {}, rules: [], schemaVersion: 2 });
       const page = await openOptions(ctx, extId);
-      await page.getByRole('button', { name: /⬆ Import/ }).click();
+      await page.getByRole('button', { name: /^Import$/ }).click();
       await page.getByPlaceholder(/paste bundle json/i).fill('{not valid');
       await page.getByRole('button', { name: /next: review/i }).click();
       await expect(page.getByRole('alert')).toBeVisible();
@@ -207,16 +197,15 @@ test.describe('Export / Import', () => {
       });
       const page = await openOptions(ctx, extId);
 
-      await page.getByRole('button', { name: /⬇ Export/ }).click();
+      await page.getByRole('button', { name: /^Export$/ }).click();
       await page.getByLabel(/demo/).check();
       await page.getByRole('button', { name: /next: scrub/i }).click();
       // Strip the sample JSON for this template
       await page.getByLabel(/strip sample json for t1/i).check();
-      await page.getByRole('button', { name: /next: output/i }).click();
 
       const [download] = await Promise.all([
         page.waitForEvent('download'),
-        page.getByRole('button', { name: /^Download$/ }).click(),
+        page.getByRole('button', { name: /⬇ Download/ }).click(),
       ]);
       const fs = await import('node:fs/promises');
       const bundleText = await fs.readFile((await download.path())!, 'utf8');
@@ -225,7 +214,7 @@ test.describe('Export / Import', () => {
       expect(parsed.templates[0].sampleJson).toBeUndefined();
 
       // Close export, clear recipient storage, import the stripped bundle.
-      await page.getByRole('button', { name: /^Done$/ }).click();
+      await page.getByRole('button', { name: /^Done$/ }).click().catch(() => {});
       await seedStorage(ctx, {
         templates: {},
         pj_sample_json: { preserved: '{"kept":true}' },
@@ -233,7 +222,7 @@ test.describe('Export / Import', () => {
         schemaVersion: 2,
       });
       await page.reload();
-      await page.getByRole('button', { name: /⬆ Import/ }).click();
+      await page.getByRole('button', { name: /^Import$/ }).click();
       await page.getByPlaceholder(/paste bundle json/i).fill(bundleText);
       await page.getByRole('button', { name: /next: review/i }).click();
       await page.getByRole('button', { name: /just append all/i }).click();
@@ -253,7 +242,7 @@ test.describe('Export / Import', () => {
     try {
       await seedStorage(ctx, { templates: {}, rules: [], schemaVersion: 2 });
       const page = await openOptions(ctx, extId);
-      await page.getByRole('button', { name: /⬆ Import/ }).click();
+      await page.getByRole('button', { name: /^Import$/ }).click();
 
       const validBundle = JSON.stringify({
         bundleSchemaVersion: 1,
