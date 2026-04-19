@@ -7,22 +7,13 @@
 - **Templates tab layout polish** (2026-04-18) — disclosure collapse/expand per panel (`pj_ui_collapse`), two-column layout with Preview isolated from the left column, draggable Template/Sample split (`pj_ui_split_ratio`), LiquidJS playground deep-links including "Open with current values", Cheatsheet replaced with an external Liquid reference link.
 - **Brand audit** (2026-04-18) — rasterized `docs/assets/logo.png` + `og-image.png`, Jekyll `head-custom.html` with favicon + theme-color + Open Graph + Twitter cards, GH banner links in the options Shortcuts footer.
 - **Rename to Freshet** (2026-04-18) — renamed the extension from "Present-JSON" to "Freshet" across manifest, UI strings, docs, starter comments, GH Pages site, OG wordmark, and the GitHub repository (`present-json` → `freshet`). Internal `pj-*` CSS classes and `pj_*` storage keys intentionally retained (internal, no user-visible cost).
+- **Editorial pass** (2026-04-18) — tightened toast copy (skip-host toast, deduplicated `· Undo` / `✓` now that the action button + green border carry the signal); added semantic CSS tokens `--pj-accent-overlay` (translucent orange hover) + `--pj-danger-text` (WCAG-AA-on-light red text), used in both `theme.css` and `topStrip.css`; styled `ToastHost` (fixed top-right under the header, variants per type, slide-in animation) so save/undo confirmations no longer rendered as bare text near the macOS dock.
 
 Pre-publication hardening (regex escape guard, scripting-permission drop, 16/48/128 icons, privacy policy on GH Pages) landed alongside Phase 1/2. Chrome Web Store developer account registered.
 
 ---
 
-## Now — Pre-release polish sweep
-
-Editorial + QOL sweep before the Chrome Web Store submission. Aim: "as good as we can make it look." Ordered by impact within each group.
-
-### Remaining polish
-
-- **Code/editorial pass** — variable naming (`--pj-*`, `pj-*`, camelCase, storage keys), class-name consistency, dead code, duplicate tokens, stale comments, unused imports, one pass over every user-facing string for voice/tone.
-
----
-
-## Next — Real-world example JSONs (Phase 3)
+## Now — Real-world example JSONs (Phase 3)
 
 Unblocks the store screenshots *and* gives the pre-release polish sweep a real testbed.
 
