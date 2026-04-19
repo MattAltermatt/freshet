@@ -9,7 +9,7 @@ permalink: /privacy/
 
 ## Summary
 
-Freshet is a Chrome extension that renders JSON responses as user-templated HTML, locally, in your browser. It does not collect, transmit, or share any personal information.
+Freshet is a Chrome extension that thaws JSON URLs into rendered pages using per-URL Liquid templates, locally, in your browser. It does not collect, transmit, or share any personal information.
 
 ## Data the extension stores
 

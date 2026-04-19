@@ -1,7 +1,7 @@
 {
   "name": "freshet",
-  "version": "0.1.0",
-  "description": "Chrome extension that renders API responses as user-templated HTML, with Liquid.",
+  "version": "1.0.0",
+  "description": "Chrome extension that thaws JSON URLs into rendered pages — per-URL Liquid templates.",
   "private": true,
   "type": "module",
   "license": "MIT",

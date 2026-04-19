@@ -25,28 +25,17 @@ Paste a JSON URL into Chrome, get a table instead of a `<pre>`. Works against an
 - [Quick start](#quick-start)
 - [Template syntax](#template-syntax)
 - [Permissions & privacy](#permissions--privacy)
-- [Development](#development)
-- [Project structure](#project-structure)
-- [Testing](#testing)
-- [Contributing](#contributing)
+- [For contributors](#for-contributors)
 - [License](#license)
 
 ## Features
 
-- 📝 **Declarative Liquid templates** — no JavaScript, no eval; just `{{ path.to.value }}`, `{% if status == "ok" %}…{% endif %}`, `{% for item in items %}…{% endfor %}`, `{{ ts | date: "yyyy-MM-dd HH:mm" }}`, `{{ "https://host/{{id}}" | link }}`.
-- 🎯 **Per-URL rules** — glob patterns (`*.server.com`, `/api/**`) or raw regex (`/^\/v\d+$/`). First-match wins; ordered; reorderable.
-- 🏷️ **Per-rule variables** — reference with `{{ vars.env }}`, `{{ vars.adminHost }}`. Makes templates portable across environments.
-- 🪄 **Split-view options page** — rule cards on the left, URL tester on the right. Paste a URL, see exactly which rule matches and why the others don't (shadowed / host-miss / path-miss).
-- 💻 **CodeMirror 6 template editor** — Liquid syntax highlighting, autocomplete over your sample JSON's paths + rule variables + helper filters, live sandboxed preview.
-- 🎨 **Dark mode from day 1** — auto-follows your OS or manually choose light/dark. Brand palette (warm cream / warm near-black) stays readable either way.
-- 💾 **Autosave** — every edit persists immediately; `Saved ✓` toast confirms commits; 8-second Undo toast on destructive actions.
-- 👀 **Live preview** per template with per-template sample JSON persistence.
-- 🧯 **Safe by default** — two-stage security: LiquidJS auto-escapes every `{{ }}` output (explicit `| raw` required to bypass), then a sanitizer strips `<script>`, `<iframe>`, `<link>`, `<object>`, `<embed>`, inline event handlers (including the `<img/onerror=…>` bypass), and neutralizes `javascript:`/`data:`/`vbscript:` URLs. Preview iframe is sandboxed with no same-origin access.
-- 🔀 **Shadow-DOM top strip** on matched pages — `{>` brand, env chip (when `vars.env` set), rule name, Rendered / Raw toggle-group (⌘⇧J keyboard shortcut), ⋯ menu with Copy URL, Edit rule (deep-links into the options page), and Skip this host.
-- 🧭 **Preact popup** — match status for the current tab (rule chip + *Edit rule* deep-link), *+ Add rule for this host* one-click jump when nothing matches, test-URL quick-jump that hands off to the options URL tester, per-host skip toggle.
-- ♿ **WCAG 2.1 AA on the popup too** — axe-core sweep covers light + dark.
-- ⚡ **CSP-safe everywhere** — [LiquidJS](https://github.com/harttle/liquidjs) interpreter (no runtime codegen, no `unsafe-eval`); CodeMirror 6 is tree-shaken ESM with no eval path either.
-- ♿ **WCAG 2.1 AA** — axe-core passes on the options page; AA-compliant contrast in both light and dark.
+- 📝 **Liquid templates, per URL** — `{{ path.to.value }}`, `{% if status == "ok" %}…{% endif %}`, `{% for item in items %}…{% endfor %}`, plus helpers for dates, links, and compact numbers.
+- 🎯 **Flexible URL matching** — glob patterns (`*.server.com`, `/api/**`) or raw regex (`/^\/v\d+$/`). First-match wins; rules are ordered and reorderable. Per-rule variables (`{{ vars.env }}`) keep templates portable across environments.
+- 💻 **Proper authoring tools** — split-view options page with a URL tester that tells you exactly which rule matches (or why the others don't). CodeMirror 6 editor with Liquid highlighting, autocomplete over your sample JSON, and a live sandboxed preview.
+- 🔀 **Controls on every matched page** — a minimal top strip with env chip, Rendered / Raw toggle (⌘⇧J), Copy URL, Edit rule, and Skip this host. Isolated in a shadow DOM so it can't collide with the page.
+- 🧯 **Safe + private by default** — auto-escaped output (explicit `| raw` to bypass), a sanitizer that strips `<script>` / `<iframe>` / inline handlers / `javascript:` URLs, sandboxed previews, and zero network calls from the extension itself. All data stays in your `chrome.storage`.
+- 🎨 **Dark mode, WCAG 2.1 AA** — auto-follows your OS or choose manually. Both themes pass axe-core sweeps on options, popup, and the top strip.
 
 ## Demos
 
@@ -66,7 +55,13 @@ Each starter rule carries an `Example ↗` pill on its rule card — click to op
 
 ## Install
 
-### From source (unpacked — current install method)
+### Chrome Web Store
+
+Submission in progress — listing link will go here once it's live.
+
+### From source (unpacked)
+
+Until the Web Store listing is live, load the latest build unpacked:
 
 1. Clone the repo and build:
    ```bash
@@ -79,10 +74,6 @@ Each starter rule carries an `Example ↗` pill on its rule card — click to op
 3. Enable **Developer mode** (top-right toggle).
 4. Click **Load unpacked** and select the `dist/` folder.
 5. Pin the extension to your toolbar (puzzle-piece icon → pin).
-
-### From the Chrome Web Store
-
-Submission in progress.
 
 ## Quick start
 
@@ -144,89 +135,28 @@ This extension requests these permissions and nothing else:
 
 **Privacy:** no network requests are made by the extension itself. No analytics, no telemetry, no external hosts contacted. All data lives in your `chrome.storage` (synced across your own Chrome signed-in devices, or local-only if you exceed the 90 KB sync budget). No data leaves your browser. Full policy: [mattaltermatt.github.io/freshet/privacy/](https://mattaltermatt.github.io/freshet/privacy/).
 
-## Development
+## For contributors
 
-### Prerequisites
+Issues and PRs welcome at [github.com/MattAltermatt/freshet](https://github.com/MattAltermatt/freshet/issues).
 
-- Node.js 20+ (tested on 25.9)
-- [Corepack](https://nodejs.org/api/corepack.html) (ships with Node) — `npm install -g corepack && corepack enable` if not already present. `pnpm` resolves to the version pinned in `package.json`'s `packageManager` field.
-
-### Workflow
+**Setup** — Node.js 20+ and [Corepack](https://nodejs.org/api/corepack.html) (ships with Node, enable once with `corepack enable`). `pnpm` auto-resolves from the `packageManager` field.
 
 ```bash
-pnpm install        # install deps (corepack auto-resolves pnpm@10.33.0)
+pnpm install        # install deps
 pnpm dev            # Vite + @crxjs HMR; writes to dist/ on save
 pnpm build          # production bundle
 pnpm typecheck      # tsc --noEmit
 pnpm lint           # eslint
 pnpm test           # Vitest unit tests (TZ=UTC)
-pnpm test:e2e       # Playwright smoke test (requires pnpm build first)
-pnpm fixtures       # local JSON fixture server (:4391)
+pnpm test:e2e       # Playwright (requires pnpm build first)
+pnpm fixtures       # local JSON fixture server at :4391
 ```
 
-Load `dist/` unpacked in Chrome as described above. With `pnpm dev` running, @crxjs will hot-reload the extension when source files change; you may need to click **Reload** on the extension card in `chrome://extensions` for service-worker changes.
+Load `dist/` unpacked to try your build. With `pnpm dev` running, @crxjs hot-reloads on save (service-worker changes may still need a manual **Reload** on the extension card).
 
-## Project structure
+**Before opening a PR** — run the full pipeline green: `pnpm typecheck && pnpm lint && pnpm test && pnpm build && pnpm test:e2e`. New features get a test; bug fixes get a regression test. Keep `src/engine/` and `src/matcher/` free of `chrome.*` calls — that purity is what makes the 300-plus unit tests possible in Node.
 
-```
-src/
-├── engine/         # pure template engine (zero chrome.* calls)
-│   ├── engine.ts      # LiquidJS wrapper with outputEscape + post-render sanitize
-│   ├── helpers.ts     # date / link / num / raw filter registrations
-│   ├── lookup.ts      # dotted-path lookups (used by the link filter)
-│   ├── migrate.ts     # v1 → v2 syntax rewriter (pre-Phase-2 templates)
-│   └── sanitize.ts    # final-pass sanitizer
-├── matcher/        # pure URL → rule matcher
-│   ├── glob.ts        # glob → RegExp (** = .*, /.../ = raw regex) + validators
-│   └── matcher.ts     # findMatchingRule + matchesHost + matchesPath
-├── storage/        # chrome.storage facade + sync→local migration
-├── shared/types.ts # Rule / Template / StorageShape
-├── content/        # content script (JSON → HTML replacement)
-├── background/     # MV3 service worker (migration + starter seed)
-├── ui/             # shared Preact component library
-│   ├── components/    # Button, Toggle, Toast, ToastHost, Menu, KVEditor, Cheatsheet, CodeMirrorBox
-│   ├── hooks/         # useTheme, useToast, useStorage, useDebounce, useAutosave
-│   ├── theme.css      # --pj-* design tokens (light + dark)
-│   └── cmHighlight.ts # CodeMirror syntax style keyed to the tokens
-├── options/        # Preact SPA: split-view Rules + CodeMirror Templates
-│   ├── App.tsx / Header.tsx / ShortcutsFooter.tsx
-│   ├── directives.ts  # URL-hash directive parser (#test-url, #new-rule:host, #edit-rule)
-│   ├── rules/         # RulesTab, RuleStack, RuleCard, UrlTester, PatternField, RuleEditModal
-│   └── templates/     # TemplatesTab, TemplatesToolbar, TemplateEditor, SampleJsonEditor, PreviewIframe, liquidMode, liquidCompletions
-├── popup/          # Preact popup: match status, +Add rule CTA, test-URL quick-jump, skip toggle
-└── starter/        # bundled starter templates (imported as ?raw)
-
-test/
-├── fixtures/       # input.json / template.html / expected.html snapshots
-├── fixtures-server/# local HTTP JSON server for manual + E2E testing
-└── e2e/            # Playwright specs: CSP smoke, CodeMirror CSP smoke, axe-core, CRUD, render
-
-docs/superpowers/
-├── specs/          # design specs (per phase)
-├── plans/          # per-phase implementation plans
-└── reviews/        # code-review reports
-
-design/             # SVG source of truth for extension icons (16/48/128)
-scripts/            # one-off dev scripts (e.g. rasterize-icons.mjs)
-```
-
-## Testing
-
-- **Unit** (Vitest): 302 tests covering the engine (incl. array-root JSON exposed as `items`), matcher, storage facade + migration, fixture-snapshot render, all 5 starter templates (light + dark variants, URL-from-id link construction), `src/ui/` primitives + hooks (including shadow-root-aware Menu outside-click), options-page components (RuleCard with the Example pill, UrlTester, Header, liquidCompletions, liquidMode StreamParser, directive parser), popup rendering + the FirstRunBanner gating, and the URL middle-truncation helper. Content-side adds `TopStrip` + `mountTopStrip` component tests.
-- **E2E** (Playwright, headed Chrome): 21 specs — render smoke, LiquidJS CSP smoke, CodeMirror 6 CSP smoke, popup Preact CSP smoke, top-strip shadow-DOM CSP smoke, axe-core WCAG 2.1 AA on the options page, on the popup (light + dark), and on the top-strip (light + dark), options CRUD flows (add rule, delete + undo, URL-tester match/shadowed, template delete-guard, per-template sample JSON persistence), popup match chip, popup skip toggle persistence, popup → options directive handoff, top-strip rendered-on-matched-page + toggle-raw message + skip-host writes.
-
-The cores (`engine/` + `matcher/`) are deliberately free of `chrome.*` calls — grep to verify. That discipline is what makes the test suite possible in Node.
-
-## Contributing
-
-Issues and PRs welcome at [github.com/MattAltermatt/freshet](https://github.com/MattAltermatt/freshet/issues).
-
-Before opening a PR:
-
-1. `pnpm typecheck && pnpm lint && pnpm test && pnpm build && pnpm test:e2e` — all green.
-2. New features get a test. Bug fixes get a regression test.
-3. Keep engine + matcher pure. Chrome-specific code lives in `src/content`, `src/background`, `src/options`, `src/popup`.
-4. One-line commit messages; no trailers.
+**Architecture deep-dive** lives in [`CLAUDE.md`](./CLAUDE.md) (directory layout, storage schema, security model, and known gotchas). [`ROADMAP.md`](./ROADMAP.md) tracks what's next.
 
 ## License
 

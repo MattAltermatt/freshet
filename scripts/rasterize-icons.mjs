@@ -90,7 +90,7 @@ try {
         <div class="mark">${bigSvg}</div>
         <div class="words">
           <h1>Freshet</h1>
-          <p>Render API responses as the UI you wish they shipped with.</p>
+          <p>Thaw any JSON URL into a more useful page.</p>
         </div>
       </body></html>`,
       { waitUntil: 'load' },
