@@ -1,0 +1,31 @@
+<!doctype html>
+<!--
+  Minimal JSONView-processed DOM fixture.
+  Source of truth: https://github.com/bhollis/jsonview/blob/master/src/jsonformatter.ts
+  - `jsonToHTMLBody` wraps output in `<div id="json">`
+  - `valueToHTML` for objects produces `<ul class="obj collapsible">...`
+  - `valueToHTML` for arrays produces `<ul class="array collapsible">...`
+  - `toHTML` wraps body with nothing extra beyond the injected stylesheet link
+-->
+<html>
+<head>
+  <title>api.github.com/repos/facebook/react</title>
+  <meta charset="utf-8">
+  <meta name="color-scheme" content="light dark">
+  <link rel="stylesheet" type="text/css" href="chrome-extension://gmegofmjomhknnokphhckolhcffdaihd/viewer.css">
+</head>
+<body>
+  <div id="json">
+    <ul class="obj collapsible">
+      <li>
+        <span class="prop" title="&lt;root&gt;.id"><span class="q">&quot;</span>id<span class="q">&quot;</span></span>:
+        <span class="int">10270250</span>
+      </li>
+      <li>
+        <span class="prop" title="&lt;root&gt;.name"><span class="q">&quot;</span>name<span class="q">&quot;</span></span>:
+        <span class="string">&quot;react&quot;</span>
+      </li>
+    </ul>
+  </div>
+</body>
+</html>

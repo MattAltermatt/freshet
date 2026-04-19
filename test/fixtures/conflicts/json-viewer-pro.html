@@ -1,0 +1,33 @@
+<!doctype html>
+<!--
+  Minimal JSON Viewer Pro (tulios) fixture.
+  Source of truth: https://github.com/tulios/json-viewer
+  - Content script is `extension/src/viewer.js` → loads `highlighter.js`
+  - `Highlighter.highlight()`: `this.editor = CodeMirror(document.body, ...)`
+    which creates a `.CodeMirror` div as a direct child of body.
+  - Also ships `#optionBar` (top-right options panel) visible in `viewer-styles.js`.
+-->
+<html>
+<head>
+  <title>api.github.com/repos/facebook/react</title>
+  <meta charset="utf-8">
+</head>
+<body>
+  <pre hidden>{"id":10270250,"name":"react"}</pre>
+  <div id="optionBar">
+    <span>Options</span>
+  </div>
+  <div class="CodeMirror cm-s-default">
+    <div class="CodeMirror-scroll">
+      <div class="CodeMirror-sizer">
+        <div class="CodeMirror-lines">
+          <pre class="CodeMirror-line">{</pre>
+          <pre class="CodeMirror-line">  "id": 10270250,</pre>
+          <pre class="CodeMirror-line">  "name": "react"</pre>
+          <pre class="CodeMirror-line">}</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

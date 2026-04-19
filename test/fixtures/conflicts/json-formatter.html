@@ -1,0 +1,25 @@
+<!doctype html>
+<!--
+  Minimal JSON Formatter-processed DOM fixture.
+  Source of truth: https://github.com/callumlocke/json-formatter
+  - Content script is `ext/content/core.entry.ts` + `lib/buildDom.ts`
+  - Root structure from CSS `ext/content/style.css`: `.blockInner` contains
+    collapsible `.entry` rows; keys are `.k`, strings `.s`, numbers `.n`.
+  - Body is cleared and repopulated with the formatter's own DOM.
+-->
+<html>
+<head>
+  <title>api.github.com/repos/facebook/react</title>
+  <meta charset="utf-8">
+</head>
+<body>
+  <div class="blockInner">
+    <div class="entry">
+      <span class="k">id</span>: <span class="n">10270250</span>
+    </div>
+    <div class="entry">
+      <span class="k">name</span>: <span class="s">"react"</span>
+    </div>
+  </div>
+</body>
+</html>
