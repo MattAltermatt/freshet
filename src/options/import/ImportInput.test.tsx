@@ -30,10 +30,10 @@ describe('ImportInput', () => {
     expect(screen.getByRole('alert')).toBeTruthy();
   });
 
-  it('shows the three-methods blurb', () => {
+  it('surfaces all three input methods (drop zone, file button, paste label)', () => {
     render(<ImportInput onCancel={() => {}} onParsed={() => {}} />);
-    expect(screen.getByText(/drag a/i)).toBeTruthy();
+    expect(screen.getByText(/drop a/i)).toBeTruthy();
     expect(screen.getAllByText(/choose file/i).length).toBeGreaterThan(0);
-    expect(screen.getByText(/paste bundle json/i)).toBeTruthy();
+    expect(screen.getByText(/or paste bundle json/i)).toBeTruthy();
   });
 });

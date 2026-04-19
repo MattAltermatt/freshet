@@ -39,46 +39,65 @@ export function ImportDialog(props: ImportDialogProps): JSX.Element {
 
   return (
     <div class="pj-modal-backdrop" role="dialog" aria-modal="true">
-      <div class="pj-modal">
+      <div class="pj-modal pj-modal--import">
         {step === 'input' ? (
           <ImportInput onCancel={props.onClose} onParsed={handleParsed} />
         ) : null}
         {step === 'mode' && bundle ? (
-          <div>
-            <h2>Ready to review</h2>
-            <p>
-              Bundle from: <strong>{bundle.exportedBy ?? '(unlabeled)'}</strong>, exported{' '}
-              {bundle.exportedAt}
-            </p>
-            <p>
-              Contains {bundle.rules.length} rule(s) + {bundle.templates.length} template(s).
-            </p>
+          <div class="pj-import-mode">
+            <header class="pj-dialog-header">
+              <h2>Ready to review</h2>
+              <p class="pj-dialog-subtitle">
+                Bundle from{' '}
+                <strong>{bundle.exportedBy ?? '(unlabeled)'}</strong>, exported{' '}
+                {bundle.exportedAt.slice(0, 10)}. Contains{' '}
+                <strong>{bundle.rules.length}</strong> rule(s) +{' '}
+                <strong>{bundle.templates.length}</strong> template(s).
+              </p>
+            </header>
+
             {hits.length > 0 ? (
-              <section aria-label="Flags">
-                <strong>🚩 Secret-sniff flags ({hits.length}):</strong>
+              <aside class="pj-warn-banner" role="note">
+                <span class="pj-warn-banner-icon" aria-hidden="true">⚠</span>
+                <span>
+                  <strong>{hits.length} secret-sniff flag{hits.length === 1 ? '' : 's'}.</strong>{' '}
+                  Review the details below, then choose a mode.
+                </span>
+              </aside>
+            ) : null}
+
+            {hits.length > 0 ? (
+              <section class="pj-import-mode-flags" aria-label="Flags">
                 <ul>
                   {hits.map((h) => (
                     <li key={h.field + h.patternId}>
-                      Matched <code>{h.patternRegex}</code> on <code>{h.field}</code>.
+                      🚩 Matched <code>{h.patternRegex}</code> on <code>{h.field}</code>.
                       Matched text: <code>{h.matchedText}</code>
                     </li>
                   ))}
                 </ul>
               </section>
             ) : null}
-            <div class="pj-dialog-footer">
-              <button
-                type="button"
-                class="pj-btn"
-                data-variant="primary"
-                onClick={() => setStep('review')}
-              >
-                Review & pick
-              </button>
-              <button type="button" class="pj-btn" onClick={() => setStep('append')}>
-                Just append all
-              </button>
-            </div>
+
+            <footer class="pj-dialog-footer">
+              <span class="pj-import-mode-hint">
+                <strong>Review & pick</strong> lets you inspect each item and resolve collisions.{' '}
+                <strong>Just append</strong> auto-renames collisions and imports everything at once.
+              </span>
+              <div class="pj-dialog-footer-actions">
+                <button type="button" class="pj-btn" onClick={() => setStep('append')}>
+                  Just append all
+                </button>
+                <button
+                  type="button"
+                  class="pj-btn"
+                  data-variant="primary"
+                  onClick={() => setStep('review')}
+                >
+                  Review &amp; pick
+                </button>
+              </div>
+            </footer>
           </div>
         ) : null}
         {step === 'review' && bundle ? (

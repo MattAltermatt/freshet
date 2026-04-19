@@ -695,6 +695,78 @@ input:focus, select:focus, textarea:focus {
   gap: 2px;
 }
 
+/* ── Import dialog ── */
+.pj-import-input-body {
+  padding: var(--pj-space-3) var(--pj-space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--pj-space-3);
+  overflow-y: auto;
+}
+.pj-drop-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: var(--pj-space-4);
+  border: 2px dashed var(--pj-border);
+  border-radius: var(--pj-radius-lg);
+  background: var(--pj-bg-subtle);
+  color: var(--pj-fg-muted);
+  transition: background 0.15s, border-color 0.15s;
+}
+.pj-drop-zone:hover,
+.pj-drop-zone:focus-within {
+  border-color: var(--pj-accent-strong);
+  background: var(--pj-accent-wash);
+}
+.pj-drop-zone-headline {
+  font-weight: 600;
+  color: var(--pj-fg);
+}
+.pj-drop-zone-or {
+  font-size: var(--pj-font-size-sm);
+  color: var(--pj-fg-subtle);
+}
+.pj-import-paste-label {
+  font-weight: 600;
+  color: var(--pj-fg-muted);
+  font-size: var(--pj-font-size-sm);
+}
+.pj-import-paste {
+  font-family: var(--pj-font-mono);
+  font-size: var(--pj-font-size-sm);
+  resize: vertical;
+  min-height: 120px;
+}
+.pj-errors {
+  background: color-mix(in srgb, var(--pj-danger) 8%, transparent);
+  border-left: 3px solid var(--pj-danger);
+  padding: var(--pj-space-2) var(--pj-space-3);
+  border-radius: var(--pj-radius);
+  font-size: var(--pj-font-size-sm);
+  color: var(--pj-fg);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.pj-import-input-hint,
+.pj-import-mode-hint {
+  color: var(--pj-fg-muted);
+  font-size: var(--pj-font-size-sm);
+}
+.pj-import-mode-flags {
+  padding: 0 var(--pj-space-4);
+  font-size: var(--pj-font-size-sm);
+}
+.pj-import-mode-flags ul {
+  margin: 0;
+  padding-left: var(--pj-space-4);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 /* ── Pattern / generic fields ── */
 .pj-field { display: flex; flex-direction: column; gap: 4px; }
 .pj-field > label { font-size: var(--pj-font-size-sm); font-weight: 600; color: var(--pj-fg-muted); }
