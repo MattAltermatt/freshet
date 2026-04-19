@@ -34,7 +34,7 @@ interface GroupedHit {
 }
 
 function leafName(field: string): string {
-  const m = field.match(/([^.\[\]]+)(?:\[[^\]]*\])?$/);
+  const m = field.match(/([^.[\]]+)(?:\[[^\]]*\])?$/);
   return m ? m[1]! : field;
 }
 

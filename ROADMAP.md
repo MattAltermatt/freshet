@@ -17,15 +17,15 @@ Artifacts: `freshet-v1.0.0.zip` (gitignored; rebuild with `pnpm build && zip -r 
 
 ### ✅ Shipped (2026-04-19)
 
+**Extension-conflict detection.** `src/content/conflictDetect.ts` pure core with `<pre>` rescue + 3 named-viewer fingerprints (JSONView, JSON Formatter, JSON Viewer Pro) + generic unknown-viewer fallback. Rule-gated detection — hosts without a Freshet rule stay silent. Popup surfaces a `ConflictSection` with targeted `chrome://extensions/?id=<id>` disable link, Skip-host + Dismiss actions, relative-time label. New badge signal `pj:conflict` paints ⚠ in accent-strong. Four cleanup paths (Dismiss / Skip / render-success / rescue-success). Spec: `docs/superpowers/specs/2026-04-19-conflict-detection-design.md`. Plan: `docs/superpowers/plans/2026-04-19-conflict-detection.md`.
+
 **Template + rule export / import.** Unified `.freshet.json` bundle format, workspace-level picker → scrub → output flow with download + clipboard, import review with per-item collision resolution or "just append all" mode, literal-regex secret-sniff warnings on both sides (never hidden, never redacted), persistent "needs attention" badge on rule + template cards, atomic-batch commit with rollback. Principles section added to README. Spec: `docs/superpowers/specs/2026-04-19-export-import-design.md`. Plan: `docs/superpowers/plans/2026-04-19-export-import.md`.
 
 ### P0 — Next up
 
-**Extension-conflict detection.** Detect when another JSON viewer (JSONView, JSON Formatter, etc.) already mutated `document.body` before our content script ran. Hook + degraded UI branch already reserved in `src/content/conflictDetect.ts` and `TopStrip`; this phase fills in the detection. Show an in-popup warning; do not try to programmatically take over.
+**Templates UX convergence with LiquidJS playground.** The [official playground](https://liquidjs.com/playground.html) is the canonical reference: template / JSON / rendered panels, shareable URL-encoded sessions. Converge our Templates tab on those proportions + share-via-URL. (Promoted from P1 on 2026-04-19 after conflict-detect shipped.)
 
 ### P1 — High value
-
-**Templates UX convergence with LiquidJS playground.** The [official playground](https://liquidjs.com/playground.html) is the canonical reference: template / JSON / rendered panels, shareable URL-encoded sessions. Converge our Templates tab on those proportions + share-via-URL.
 
 **Small promo tile (440×280).** Generate once v1.0.0 is live — the only CWS listing asset Google uses on homepage/category/search tiles. Skipping it weakens browse-surface discoverability. Regenerate via the same `scripts/cws-screenshots.mjs` Chromium-composite approach.
 

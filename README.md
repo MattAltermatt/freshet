@@ -38,6 +38,7 @@ Paste a JSON URL into Chrome, get a table instead of a `<pre>`. Works against an
 - 🧯 **Safe + private by default** — auto-escaped output (explicit `| raw` to bypass), a sanitizer that strips `<script>` / `<iframe>` / inline handlers / `javascript:` URLs, sandboxed previews, and zero network calls from the extension itself. All data stays in your `chrome.storage`.
 - 🎨 **Dark mode, WCAG 2.1 AA** — auto-follows your OS or choose manually. Both themes pass axe-core sweeps on options, popup, and the top strip.
 - 📦 **Export / import** — share rules and templates with teammates as a single `.freshet.json` bundle. Imports are always reviewed; imported rules start disabled; secrets in shared payloads are flagged, never hidden.
+- 🚫 **Graceful handling of conflicting JSON viewers** — if another extension (JSONView, JSON Formatter, JSON Viewer Pro, or others) has already formatted the page, Freshet warns you in the popup with a one-click disable link instead of fighting for the DOM. Detection is rule-gated — hosts you haven't configured stay quiet.
 
 ## Principles
 
