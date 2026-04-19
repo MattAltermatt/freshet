@@ -597,9 +597,12 @@ input:focus, select:focus, textarea:focus {
   height: min(calc(100vh - 260px), 900px);
   min-height: 600px;
 }
-/* When any panel is collapsed, relax to auto rows so the collapsed panel's
-   section doesn't leave a tall empty gap. */
-.pj-templates-body:has([data-collapsed="true"]) {
+/* When a LEFT-column panel (template or sample) collapses, relax rows so the
+   collapsed section doesn't leave a tall empty gap. Preview is its own column
+   spanning both rows, so its collapse state must not trigger row reflow —
+   collapsing preview should keep the left column in place. */
+.pj-templates-body:has([data-area="template"][data-collapsed="true"]),
+.pj-templates-body:has([data-area="sample"][data-collapsed="true"]) {
   grid-template-rows: auto auto;
   height: auto;
   min-height: 0;
@@ -622,6 +625,7 @@ input:focus, select:focus, textarea:focus {
 }
 .pj-templates-col > .pj-cm-box { height: auto; }
 .pj-templates-col > .pj-playground-links { flex: 0 0 auto; }
+.pj-templates-col > .pj-cheatsheet { flex: 0 0 auto; margin-top: var(--pj-space-2); }
 .pj-templates-col[data-collapsed="true"] > button.pj-templates-label { opacity: 0.7; }
 
 .pj-playground-links {

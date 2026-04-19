@@ -238,6 +238,7 @@ export function TemplatesTab({
                       <span class="pj-ext-arrow" aria-hidden="true">↗</span>
                     </a>
                   </p>
+                  <Cheatsheet />
                 </>
               ) : null}
             </section>
@@ -290,7 +291,6 @@ export function TemplatesTab({
               ) : null}
             </section>
           </div>
-          <Cheatsheet />
         </>
       )}
     </div>

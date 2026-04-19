@@ -79,7 +79,7 @@ Preserves the Phase 2 UX investment post-install.
 
 ### Template export / import
 
-- Export / import templates with a scrub-before-share dialog so users control what gets included. Useful once multiple installs or team-sharing starts.
+- Export / import templates (with their per-template sample JSON) as a single bundle. Include a scrub-before-share dialog with an explicit leakage warning — sample JSON often holds real response payloads (tokens, emails, internal IDs). Let users preview and redact before download. Useful once multiple installs or team-sharing starts.
 
 ### Nice-to-haves
 
