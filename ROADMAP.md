@@ -31,13 +31,14 @@ Artifacts: `freshet-v1.0.0.zip` (gitignored; rebuild with `pnpm build && zip -r 
 
 **Sharing-docs layout fix.** `docs/sharing/index.md` inherited the jekyll-theme-minimal's 500px-floated content + fixed sidebar layout, which visibly overlapped the main content at narrow viewports. Applied the same `<style>` override pattern used at the top of `docs/try/index.md` — unfloat the wrapper, hide the decorative sidebar/footer, cap body at 960px for readability.
 
+**Visual-regression baselines.** `test/e2e/visual-regression.spec.ts` captures pixel snapshots of two high-churn surfaces (Options page rules-tab and popup empty-state, both light-mode) rendered over deterministic seeded storage. Baselines committed at `test/e2e/visual-regression.spec.ts-snapshots/*-darwin.png`; regenerate intentionally with `pnpm test:e2e -- visual-regression --update-snapshots`. Tolerance set at 2% pixel-ratio in `playwright.config.ts` via `toHaveScreenshot` defaults. Scope is narrow on purpose — dark-mode + top-strip snapshots can follow once these prove stable.
+
 ### P1 — High value
 
 **Small promo tile (440×280).** Generate once v1.0.0 is live — the only CWS listing asset Google uses on homepage/category/search tiles. Skipping it weakens browse-surface discoverability. Regenerate via the same `scripts/cws-screenshots.mjs` Chromium-composite approach.
 
 ### P2 — Polish & nice-to-haves
 
-- **Expanded test coverage** — visual-regression baselines via Playwright screenshots (`test/e2e/__screenshots__/`, CI-breaking). (Storage-promotion E2E shipped 2026-04-19; the 90 KB branch itself is unreachable under Chrome's 8 KB per-item sync cap — see the note on `SYNC_SOFT_LIMIT`.)
 - **Non-JSON content support** — HTML / CSV / XML content-type routing.
 - **Marquee promo image (1400×560)** — only surfaces if Google picks us for the homepage carousel. Skippable.
 
