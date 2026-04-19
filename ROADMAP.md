@@ -27,7 +27,7 @@ Artifacts: `freshet-v1.0.0.zip` (gitignored; rebuild with `pnpm build && zip -r 
 
 **Storage-promotion E2E.** `test/e2e/storage-promotion.spec.ts` covers the sync→local promotion path on options boot — seed `chrome.storage.sync` with legacy data, open options, assert `promoteStorageToLocal` stamps the sentinel + surfaces the data in `.local` + renders on the rule card. Second test pins the no-op guard so sync-side clobber data can't leak into an already-promoted local area. Code comment on `SYNC_SOFT_LIMIT` documents Chrome's 8 KB per-item sync cap and why the strict 90 KB branch can't be exercised without bypassing Chrome's API.
 
-**GSC verification file.** `docs/googleb699e27e48b22e41.html` serves at `https://mattaltermatt.github.io/freshet/googleb699e27e48b22e41.html` once the Pages deploy completes. Matt to click **Verify** in Search Console afterwards; then once v1.0.0 goes live, set the CWS listing's **Official URL** to `https://mattaltermatt.github.io/freshet/`.
+**GSC verification.** `docs/googleb699e27e48b22e41.html` shipped and serves at `https://mattaltermatt.github.io/freshet/googleb699e27e48b22e41.html`; Matt verified the domain in Search Console on 2026-04-19. File stays in-repo indefinitely — GSC re-checks periodically and removing the file un-verifies. Post-launch: once v1.0.0 goes live on CWS, set the listing's **Official URL** field to `https://mattaltermatt.github.io/freshet/`.
 
 ### P1 — High value
 
@@ -35,6 +35,7 @@ Artifacts: `freshet-v1.0.0.zip` (gitignored; rebuild with `pnpm build && zip -r 
 
 ### P2 — Polish & nice-to-haves
 
+- **`docs/sharing/` layout overlaps the jekyll-theme-minimal sidebar.** Repro on 2026-04-19: scroll near the bottom of [mattaltermatt.github.io/freshet/sharing/](https://mattaltermatt.github.io/freshet/sharing/), and the theme's fixed left-rail (Freshet logo, description, "View the Project on GitHub", maintainer block, "Hosted on GitHub Pages" footer) overlaps the main content column — list items sit on top of the logo. Same root cause as the marketing page: the minimal theme pins `<header>` at `position:fixed` and floats sections at `width:500px`. The fix is the same custom `<style>` override used at the top of [`docs/try/index.md`](docs/try/index.md) — unfloat the wrapper, widen the content column, hide the decorative sidebar. Apply to `docs/sharing/index.md` (and, prophylactically, any future full-width reference docs under `docs/`).
 - **Expanded test coverage** — visual-regression baselines via Playwright screenshots (`test/e2e/__screenshots__/`, CI-breaking). (Storage-promotion E2E shipped 2026-04-19; the 90 KB branch itself is unreachable under Chrome's 8 KB per-item sync cap — see the note on `SYNC_SOFT_LIMIT`.)
 - **Shared template registry** (community templates).
 - **Non-JSON content support** — HTML / CSV / XML content-type routing.
