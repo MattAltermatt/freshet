@@ -31,6 +31,7 @@ Artifacts: `freshet-v1.0.0.zip` (gitignored; rebuild with `pnpm build && zip -r 
 
 ### P2 — Polish & nice-to-haves
 
+- **Hide internal rule id in Edit Rule header.** The modal title currently reads `Edit rule · starter-service-health-0` — the `· <id>` suffix leaks an implementation-internal seed id that has no meaning to users. Change the header to use the rule's `name` when set, fall back to `hostPattern`, and drop the id tail entirely (or move it to a small debug-style tooltip).
 - **Export/import documentation page** — a sharing-focused docs page (likely under `docs/sharing/` or `docs/try/`) covering: the `.freshet.json` format reference (schema + example), the full list of secret-sniff patterns and what each catches, collision/rename behavior (including keepBoth + cascading renames), the "warn don't block" security model, and what fields are never shared (starter flags, UI prefs). Linked from the README Principles section; optionally a tiny "docs ↗" link next to the Import/Export footer buttons.
 - **Expanded test coverage** — visual-regression baselines via Playwright screenshots (`test/e2e/__screenshots__/`, CI-breaking); storage-quota overflow E2E covering the 90 KB sync → local fallback.
 - **Form-based template editor** for non-coder users.
