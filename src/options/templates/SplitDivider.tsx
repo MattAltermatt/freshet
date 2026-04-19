@@ -46,9 +46,14 @@ export function SplitDivider({
       dragging.current = false;
       window.removeEventListener('pointermove', move);
       window.removeEventListener('pointerup', up);
+      window.removeEventListener('pointercancel', up);
     };
     window.addEventListener('pointermove', move);
     window.addEventListener('pointerup', up);
+    // pointercancel fires when the pointer is lost without a pointerup —
+    // e.g. touch drags off-screen, stylus disconnect, OS gesture steal. Must
+    // clean up the same listeners or they'd leak until the next pointerup.
+    window.addEventListener('pointercancel', up);
   };
 
   const onKeyDown = (e: KeyboardEvent): void => {

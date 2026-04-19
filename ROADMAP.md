@@ -31,7 +31,8 @@ Unblocks the store screenshots *and* gives the pre-release polish sweep a real t
 
 - Host static JSON fixtures at `mattaltermatt.github.io/present-json/examples/...` via Jekyll.
 - Bundle 2–3 starter rules + templates against public APIs. Candidates: JSONPlaceholder, HTTPBin, GitHub API, PokéAPI, REST Countries.
-- First-run empty state gets a "Try it now" affordance that drops the bundled rules in.
+- **Bundled starter rules ship disabled by default.** Templates are seeded so the user can preview/edit them, but the matching rules start with `enabled: false` so a fresh install never surprises anyone by rewriting pages they didn't opt into. The Rules tab should visibly signal "enable me to try" on a disabled starter rule.
+- First-run empty state gets a "Try it now" affordance that drops the bundled rules in and optionally flips them on.
 
 ---
 

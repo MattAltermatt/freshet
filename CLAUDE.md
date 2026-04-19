@@ -71,6 +71,8 @@ Content script is declared **statically** in the manifest (`content_scripts: [{ 
 | `schemaVersion` | `number` | `2` once v1→Liquid migration has run. |
 | `pj_sample_json` | `Record<string, string>` | Per-template sample JSON for the editor preview. |
 | `pj_migrated_v2` | `string[]` | Template names that need the migration banner. |
+| `pj_ui_collapse` | `{ editor, sample, preview }` | Collapsed/expanded state of the three Templates-tab panels. |
+| `pj_ui_split_ratio` | `number` | 0–1 flex-grow share for the Template panel in the left-column split. |
 | `pj_storage_area` | `'local'` | Sentinel: once set, `useStorage` and facade both read `.local`. |
 
 ## Testing philosophy

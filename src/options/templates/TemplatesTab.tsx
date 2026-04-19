@@ -1,5 +1,5 @@
 import type { JSX } from 'preact';
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { useAutosave, useStorage } from '../../ui';
 import type { Rule, Templates } from '../../shared/types';
 import { TemplatesToolbar } from './TemplatesToolbar';
@@ -136,6 +136,10 @@ export function TemplatesTab({
   const ruleVars = collectRuleVars(rules, active);
   const isMigrated = active !== null && migrated.includes(active);
 
+  // Memoized so CodeMirror onChange bursts don't recompute base64 of
+  // multi-KB templates on every keystroke.
+  const playgroundHref = useMemo(() => playgroundUrl(tpl, sampleText), [tpl, sampleText]);
+
   // Debounced Saved ✓ toast for template body edits. Writes to storage are
   // immediate (above); this hook just confirms the commit visually 600 ms
   // after the user stops typing. We key on the body text only (not the
@@ -269,7 +273,7 @@ export function TemplatesTab({
                         <span class="pj-ext-arrow" aria-hidden="true">↗</span>
                       </a>
                       <a
-                        href={playgroundUrl(tpl, sampleText)}
+                        href={playgroundHref}
                         target="_blank"
                         rel="noopener noreferrer"
                         title="Pre-fills the playground with the current Template + Sample JSON"
