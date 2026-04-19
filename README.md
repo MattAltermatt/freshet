@@ -57,7 +57,7 @@ Each starter rule carries an `Example ↗` pill on its rule card — click to op
 
 ### Chrome Web Store
 
-Submission in progress — listing link will go here once it's live.
+**v1.0.0 submitted 2026-04-19** — currently in compliance review. Listing link will replace this line once it's live.
 
 ### From source (unpacked)
 

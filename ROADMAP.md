@@ -1,25 +1,27 @@
 # Freshet — Roadmap
 
-## Now — Chrome Web Store submission
+## Now — Awaiting Chrome Web Store review
 
-Phases 1–3 shipped (MV3 scaffold + pure cores, UX polish across options/popup/top-strip, real-world starter examples + `/try/` marketing page). The extension is feature-complete for v1.
+Freshet **v1.0.0 was submitted to the Chrome Web Store on 2026-04-19** (commit `738b383` on `main`; artifact `freshet-v1.0.0.zip`, 196 KB; 5 listing screenshots at `docs/assets/cws-screenshots/`). CWS flagged the `<all_urls>` host permission for in-depth review; realistic turnaround is 1–4 weeks.
 
-Submission punch list:
+While we wait:
 
-1. ✅ **Version bump** — `0.1.0` → `1.0.0` in `vite.config.ts` manifest + `package.json`.
-2. ✅ **Build + zip `dist/`** — `pnpm build && zip -r freshet-v1.0.0.zip dist` (196 KB).
-3. ✅ **Screenshots (1280×800)** — 5 shots at `docs/assets/cws-screenshots/`. Hero is a two-Chrome-frame before/after composite (raw JSON → rendered); the other 4 are options page (Rules + Templates) and rendered pages (incident-detail + github-repo). Regenerate with `node scripts/cws-screenshots.mjs`.
-4. ✅ **Store listing copy** — drafted in `docs/superpowers/cws-listing.md` (detailed description, single-purpose statement, permission justifications for `storage`, `tabs`, `<all_urls>`, privacy disclosures, category).
-5. ✅ **Public support contact** — GitHub Issues (`https://github.com/MattAltermatt/freshet/issues`).
-6. ⏳ **Submit for review** — paste copy into CWS dashboard, upload zip + screenshots, submit. Typical turnaround 1–5 business days.
+- **Don't upload another zip until v1.0.0 is resolved** — a new upload replaces the in-review version and restarts the clock. Any further improvements stack locally for v1.1.0.
+- The "Item review completed" CWS notification is enabled, so `altermatt@gmail.com` gets the outcome email.
+- If bounced: read the reviewer note, address surgically, re-upload as v1.0.1 (bump via `vite.config.ts` + `package.json`, rebuild, re-zip).
+- If approved: replace the *"Submission in progress"* line in `README.md` with the live Chrome Web Store URL and announce.
 
-Pre-publication hardening already in place: minimal-permission set (`scripting` already dropped), regex escape guard on the matcher, 16/48/128 icons in `public/`, privacy policy at `mattaltermatt.github.io/freshet/privacy/`, Web Store developer account registered.
+Submission artifacts of record:
+
+- `freshet-v1.0.0.zip` — uploaded to CWS (gitignored; regenerate with `pnpm build && zip -r freshet-v1.0.0.zip dist`)
+- `docs/assets/cws-screenshots/*.png` — 5 shots, regenerate with `node scripts/cws-screenshots.mjs`
+- `docs/superpowers/cws-listing.md` — store listing copy of record (description, permission justifications, privacy disclosures)
 
 ---
 
 ## Post-launch backlog
 
-Ordered by expected impact.
+Ordered by expected impact. Fair game to work on during review (so long as no new CWS upload happens).
 
 ### Extension-conflict handling
 
@@ -43,3 +45,5 @@ Export / import templates (with their per-template sample JSON) as a single bund
 - Form-based template editor (for non-coder users).
 - Shared template registry (community templates).
 - Non-JSON content support (HTML / CSV / XML content-type routing).
+- Small promo tile (440×280) for the CWS carousel + marquee promo (1400×560) for featured placements.
+- Google Search Console verification of `mattaltermatt.github.io/freshet/` so the CWS listing can list an Official URL (currently left blank).
