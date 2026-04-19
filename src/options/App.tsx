@@ -13,6 +13,9 @@ import { RulesTab } from './rules/RulesTab';
 import { TemplatesTab } from './templates/TemplatesTab';
 import { ShortcutsFooter } from './ShortcutsFooter';
 import { ExportDialog } from './export/ExportDialog';
+import { ImportDialog } from './import/ImportDialog';
+import { commitImport } from './import/commit';
+import type { ImportFlagMap } from '../storage/storage';
 import { promoteStorageToLocal } from '../storage/promoteStorageToLocal';
 import { parseDirective, type OptionsDirective } from './directives';
 import pkg from '../../package.json';
@@ -59,8 +62,12 @@ export function App(): JSX.Element {
     'templates',
     {},
   );
-  const [sampleJson] = useStorage<'pj_sample_json', Record<string, string>>(
+  const [sampleJson, writeSampleJson] = useStorage<
     'pj_sample_json',
+    Record<string, string>
+  >('pj_sample_json', {});
+  const [importFlags, writeImportFlags] = useStorage<'pj_import_flags', ImportFlagMap>(
+    'pj_import_flags',
     {},
   );
   const toast = useToast();
@@ -174,7 +181,26 @@ export function App(): JSX.Element {
           onClose={() => setExportOpen(false)}
         />
       ) : null}
-      {importOpen ? <div data-test="import-open-marker" hidden /> : null}
+      {importOpen ? (
+        <ImportDialog
+          existingRules={rules}
+          existingTemplates={templates}
+          onCommit={async (plan) => {
+            await commitImport(plan, {
+              rules,
+              templates,
+              sampleJson,
+              setRules: (r) => writeRules(r),
+              setTemplates: (t) => writeTemplates(t),
+              setSampleJson: (s) => writeSampleJson(s),
+              existingFlags: importFlags,
+              setImportFlags: (f) => writeImportFlags(f),
+            });
+            setImportOpen(false);
+          }}
+          onClose={() => setImportOpen(false)}
+        />
+      ) : null}
       <ToastHost />
     </div>
   );
