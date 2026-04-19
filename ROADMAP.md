@@ -21,9 +21,13 @@ Artifacts: `freshet-v1.0.0.zip` (gitignored; rebuild with `pnpm build && zip -r 
 
 **Template + rule export / import.** Unified `.freshet.json` bundle format, workspace-level picker → scrub → output flow with download + clipboard, import review with per-item collision resolution or "just append all" mode, literal-regex secret-sniff warnings on both sides (never hidden, never redacted), persistent "needs attention" badge on rule + template cards, atomic-batch commit with rollback. Principles section added to README. Spec: `docs/superpowers/specs/2026-04-19-export-import-design.md`. Plan: `docs/superpowers/plans/2026-04-19-export-import.md`.
 
-### P0 — Next up
+**P2 quick wins.** Trailing `/**` in path patterns now matches the bare base path too — `/json/**` correctly matches `/json`, so the popup's *+ Add rule* suggestion for `https://httpbin.org/json` produces a rule that matches the URL that spawned it. Fix in `src/matcher/glob.ts`. Edit Rule modal header dropped the internal `· <id>` suffix; now shows `Edit rule · <name-or-host>`.
 
-**Templates UX convergence with LiquidJS playground.** The [official playground](https://liquidjs.com/playground.html) is the canonical reference: template / JSON / rendered panels, shareable URL-encoded sessions. Converge our Templates tab on those proportions + share-via-URL. (Promoted from P1 on 2026-04-19 after conflict-detect shipped.)
+**Sharing reference docs.** `docs/sharing/index.md` (rendered at `mattaltermatt.github.io/freshet/sharing/`) covers the `.freshet.json` bundle format with a full example, the four secret-sniff patterns (key + value regexes), collision resolution (skip/overwrite/keepBoth + cascading renames for templates, id/name/pattern-overlap for rules), the "imported rules land inactive" posture, atomic-batch commit, the warn-don't-block security model, and the exhaustive list of storage keys + fields that are never shared (hostSkipList, settings, UI prefs, starter flags, conflict state). Linked from README Principles. Inline `Sharing docs ↗` link added to the first step of both Export and Import dialog footers.
+
+**Storage-promotion E2E.** `test/e2e/storage-promotion.spec.ts` covers the sync→local promotion path on options boot — seed `chrome.storage.sync` with legacy data, open options, assert `promoteStorageToLocal` stamps the sentinel + surfaces the data in `.local` + renders on the rule card. Second test pins the no-op guard so sync-side clobber data can't leak into an already-promoted local area. Code comment on `SYNC_SOFT_LIMIT` documents Chrome's 8 KB per-item sync cap and why the strict 90 KB branch can't be exercised without bypassing Chrome's API.
+
+**GSC verification file.** `docs/googleb699e27e48b22e41.html` serves at `https://mattaltermatt.github.io/freshet/googleb699e27e48b22e41.html` once the Pages deploy completes. Matt to click **Verify** in Search Console afterwards; then once v1.0.0 goes live, set the CWS listing's **Official URL** to `https://mattaltermatt.github.io/freshet/`.
 
 ### P1 — High value
 
@@ -31,12 +35,7 @@ Artifacts: `freshet-v1.0.0.zip` (gitignored; rebuild with `pnpm build && zip -r 
 
 ### P2 — Polish & nice-to-haves
 
-- **Auto-add-rule path pattern must match the origin URL.** Repro on 2026-04-19: clicked *+ Add rule for this host* from the popup on `https://httpbin.org/json`, accepted defaults. Got `hostPattern: httpbin.org` + `pathPattern: /json/**`. URL tester then reports *"path doesn't match"* for the very URL that spawned the rule — because `/json/**` requires at least one segment after `/json/`, and the bare `/json` has none. Fix: `src/shared/suggestPathPattern.ts` (or equivalent) should generate a pattern that includes the base (e.g. `/json{,/**}` or simply `/json` when the URL ends at a segment boundary), OR make `**` optionally match zero segments in `src/matcher/glob.ts`. Add a regression test against this exact URL.
-- **Hide internal rule id in Edit Rule header.** The modal title currently reads `Edit rule · starter-service-health-0` — the `· <id>` suffix leaks an implementation-internal seed id that has no meaning to users. Change the header to use the rule's `name` when set, fall back to `hostPattern`, and drop the id tail entirely (or move it to a small debug-style tooltip).
-- **Export/import documentation page** — a sharing-focused docs page (likely under `docs/sharing/` or `docs/try/`) covering: the `.freshet.json` format reference (schema + example), the full list of secret-sniff patterns and what each catches, collision/rename behavior (including keepBoth + cascading renames), the "warn don't block" security model, and what fields are never shared (starter flags, UI prefs). Linked from the README Principles section; optionally a tiny "docs ↗" link next to the Import/Export footer buttons.
-- **Expanded test coverage** — visual-regression baselines via Playwright screenshots (`test/e2e/__screenshots__/`, CI-breaking); storage-quota overflow E2E covering the 90 KB sync → local fallback.
-- **Form-based template editor** for non-coder users.
+- **Expanded test coverage** — visual-regression baselines via Playwright screenshots (`test/e2e/__screenshots__/`, CI-breaking). (Storage-promotion E2E shipped 2026-04-19; the 90 KB branch itself is unreachable under Chrome's 8 KB per-item sync cap — see the note on `SYNC_SOFT_LIMIT`.)
 - **Shared template registry** (community templates).
 - **Non-JSON content support** — HTML / CSV / XML content-type routing.
 - **Marquee promo image (1400×560)** — only surfaces if Google picks us for the homepage carousel. Skippable.
-- **Official URL via GSC verification** — verification file (`docs/googleb699e27e48b22e41.html`) shipped 2026-04-19; serves at `https://mattaltermatt.github.io/freshet/googleb699e27e48b22e41.html` once the Pages deploy completes. Matt to click **Verify** in Search Console afterwards, then once v1.0.0 goes live set the CWS listing's **Official URL** to `https://mattaltermatt.github.io/freshet/`.
