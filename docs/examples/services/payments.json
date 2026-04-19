@@ -1,0 +1,43 @@
+{
+  "name": "Payments",
+  "slug": "payments",
+  "description": "Charge processing, refunds, payout reconciliation.",
+  "status": "degraded",
+  "uptime30d": 99.92,
+  "lastIncidentAt": "2026-04-18T14:22:00Z",
+  "oncall": {
+    "name": "Priya Raman",
+    "handle": "@priya",
+    "pageDeepLink": "https://oncall.example.com/u/priya"
+  },
+  "owners": ["payments-platform", "billing-infra"],
+  "dependencies": [
+    { "name": "Postgres (primary)", "status": "operational" },
+    { "name": "Stripe API", "status": "operational" },
+    { "name": "Redis (rate-limit)", "status": "degraded" },
+    { "name": "Kafka (events)", "status": "operational" }
+  ],
+  "recentIncidents": [
+    {
+      "id": "INC-2026-001",
+      "title": "Elevated 5xx on /charge — Redis rate-limiter saturating",
+      "severity": "sev-2",
+      "openedAt": "2026-04-18T14:22:00Z",
+      "resolvedAt": null,
+      "url": "https://mattaltermatt.github.io/freshet/examples/incidents/INC-2026-001.json"
+    },
+    {
+      "id": "INC-2026-000",
+      "title": "Stripe webhook delivery latency spike",
+      "severity": "sev-3",
+      "openedAt": "2026-04-11T09:08:00Z",
+      "resolvedAt": "2026-04-11T10:42:00Z",
+      "url": "https://mattaltermatt.github.io/freshet/examples/incidents/INC-2026-000.json"
+    }
+  ],
+  "links": {
+    "runbook": "https://runbooks.example.com/payments",
+    "dashboard": "https://grafana.example.com/d/payments-overview",
+    "repo": "https://github.com/example/payments-service"
+  }
+}

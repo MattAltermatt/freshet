@@ -24,6 +24,7 @@ Headline screenshot story: **raw JSON clutter on the left, clean actionable page
 - **First-run UX:** popup banner (dismiss-once) + Jekyll docs `/try/` page. No options-page banner.
 - **Disabled-rule signaling:** persistent neutral grey "Starter" pill on the rule card (stays even after user enables — provenance info).
 - **Docs `/try/` page:** side-by-side embeds — raw JSON on the left, screenshot of Freshet output on the right, "Try it live →" link below each.
+- **Env-vars demo (added 2026-04-18 mid-flight):** the `service-health` starter rule ships with `variables: { env: 'production' }`. The template references `{{ vars.env }}` in its header banner so the rendered page reads "PRODUCTION · Payments service." This also lights up the top-strip env chip (existing TopStrip behavior keys on `rule.variables.env`). Demonstrates per-rule variables in action without needing extra UI explanation.
 
 ## Architecture
 
