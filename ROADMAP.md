@@ -20,7 +20,7 @@ Editorial + QOL sweep before the Chrome Web Store submission. Aim: "as good as w
   - **README.md**: logo at the top, one-liner aligned with the manifest description.
   - **Options, popup, Templates-tab headers**: `{>` becomes a link to the GH Pages site (new tab via `chrome.tabs.create`). Top-strip `{>` stays decorative (no outbound link on arbitrary host pages).
   - **Alignment sweep**: manifest `description`, options + popup `<title>`, every visible instance of the `{>` motif — brace + bracket in the same order, orange always on the bracket.
-- **Collapsible template boxes in the Templates tab** — disclosure-arrow on editor, sample JSON, preview, cheatsheet. Persisted per-user in `settings` or a dedicated `pj_ui_collapse` storage key.
+- **Templates tab layout polish** (shipped 2026-04-18) — disclosure collapse/expand per panel (`pj_ui_collapse`), two-column layout with Preview isolated in its own column, draggable Template/Sample split (`pj_ui_split_ratio`), LiquidJS playground deep-links including "Open with current values", Cheatsheet replaced with external Liquid reference link.
 - **Code/editorial pass** — variable naming (`--pj-*`, `pj-*`, camelCase, storage keys), class-name consistency, dead code, duplicate tokens, stale comments, unused imports, one pass over every user-facing string for voice/tone.
 
 ---
