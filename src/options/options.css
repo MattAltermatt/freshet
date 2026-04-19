@@ -544,13 +544,20 @@ input:focus, select:focus, textarea:focus {
 .pj-export-scrub,
 .pj-import-input,
 .pj-import-mode,
-.pj-import-review {
+.pj-import-review,
+.pj-import-append {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
   min-height: 0;
   overflow: hidden;
 }
+.pj-import-append-list,
+.pj-import-append-flags {
+  padding: var(--pj-space-3) var(--pj-space-4);
+}
+.pj-import-append-list { margin: 0; }
+.pj-import-append-flags ul { margin: 4px 0 0 0; padding-left: var(--pj-space-4); }
 .pj-dialog-scroll {
   flex: 1 1 auto;
   min-height: 0;

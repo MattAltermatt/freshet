@@ -141,6 +141,7 @@ export function ImportReview(props: ImportReviewProps): JSX.Element {
                 ) : null}
                 {isIdCol ? (
                   <ConflictBox
+                    groupId={`rule-${r.id}`}
                     title="Round-trip collision (same id)"
                     options={[
                       { value: 'replace', label: 'Replace existing' },
@@ -210,6 +211,7 @@ export function ImportReview(props: ImportReviewProps): JSX.Element {
                 </div>
                 {col ? (
                   <ConflictBox
+                    groupId={`tmpl-${t.name}`}
                     title="Name already exists"
                     options={[
                       { value: 'rename', label: `Rename to ${col.proposedRename}` },
@@ -266,6 +268,9 @@ export function ImportReview(props: ImportReviewProps): JSX.Element {
 }
 
 interface ConflictBoxProps {
+  /** Stable unique identifier for the radio group (must be unique within the
+      dialog). Used as the radio `name` so selection sticks across re-renders. */
+  groupId: string;
   title: string;
   options: Array<{ value: string; label: string }>;
   selected: string;
@@ -276,7 +281,7 @@ interface ConflictBoxProps {
 }
 
 function ConflictBox(props: ConflictBoxProps): JSX.Element {
-  const groupName = `conflict-${Math.random().toString(36).slice(2, 9)}`;
+  const groupName = `conflict-${props.groupId}`;
   return (
     <div class="pj-conflict-box" role="group" aria-label={props.title}>
       <div class="pj-conflict-box-head">
