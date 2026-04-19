@@ -7,10 +7,11 @@ import { truncateUrlMiddle } from '../shared/truncateUrl';
 import { Toggle } from '../ui/components/Toggle';
 import { TemplatePill } from '../ui/components/TemplatePill';
 import { useStorage } from '../ui/hooks/useStorage';
-import type { HostSkipList, Rule } from '../shared/types';
+import type { HostSkipList, Rule, ConflictMap } from '../shared/types';
 import { findMatchingRule } from '../matcher/matcher';
 import { directiveHash } from '../options/directives';
 import { FirstRunBanner } from './FirstRunBanner';
+import { ConflictSection } from './ConflictSection';
 
 interface ActiveTab {
   url: string;
@@ -45,6 +46,10 @@ export function App(): JSX.Element {
   const [skipList, writeSkipList] = useStorage<'hostSkipList', HostSkipList>(
     'hostSkipList',
     [],
+  );
+  const [conflicts, writeConflicts] = useStorage<'pj_conflicts', ConflictMap>(
+    'pj_conflicts',
+    {},
   );
 
   useEffect(() => {
@@ -99,34 +104,57 @@ export function App(): JSX.Element {
         </code>
       </section>
       <section class="pj-popup-match" aria-label="Match status">
-        <span class="pj-popup-label">Matched rule</span>
-        {matched ? (
-          <div class="pj-popup-match-row">
-            {matched.templateName ? (
-              <TemplatePill name={matched.templateName} />
-            ) : (
-              <span class="pj-rule-chip">{matched.id}</span>
-            )}
-            <button
-              type="button"
-              class="pj-linkish"
-              onClick={() => matched && openOptionsAt(directiveHash.editRule(matched.id))}
-            >
-              Edit rule
-            </button>
-          </div>
+        {tab.host && conflicts[tab.host] ? (
+          <ConflictSection
+            host={tab.host}
+            entry={conflicts[tab.host]!}
+            onDismiss={() => {
+              const next = { ...conflicts };
+              delete next[tab.host];
+              void writeConflicts(next);
+            }}
+            onSkipHost={() => {
+              const host = tab.host;
+              if (!skipList.includes(host)) {
+                void writeSkipList([...skipList, host]);
+              }
+              const next = { ...conflicts };
+              delete next[host];
+              void writeConflicts(next);
+            }}
+          />
         ) : (
-          <div class="pj-popup-match-row">
-            <span class="pj-popup-miss">No rule matches this URL</span>
-            <button
-              type="button"
-              class="pj-btn pj-btn--accent"
-              disabled={!tab.host}
-              onClick={() => openOptionsAt(directiveHash.newRule(tab.url))}
-            >
-              + Add rule for this host
-            </button>
-          </div>
+          <>
+            <span class="pj-popup-label">Matched rule</span>
+            {matched ? (
+              <div class="pj-popup-match-row">
+                {matched.templateName ? (
+                  <TemplatePill name={matched.templateName} />
+                ) : (
+                  <span class="pj-rule-chip">{matched.id}</span>
+                )}
+                <button
+                  type="button"
+                  class="pj-linkish"
+                  onClick={() => matched && openOptionsAt(directiveHash.editRule(matched.id))}
+                >
+                  Edit rule
+                </button>
+              </div>
+            ) : (
+              <div class="pj-popup-match-row">
+                <span class="pj-popup-miss">No rule matches this URL</span>
+                <button
+                  type="button"
+                  class="pj-btn pj-btn--accent"
+                  disabled={!tab.host}
+                  onClick={() => openOptionsAt(directiveHash.newRule(tab.url))}
+                >
+                  + Add rule for this host
+                </button>
+              </div>
+            )}
+          </>
         )}
       </section>
       <section class="pj-popup-test" aria-label="Test in options">

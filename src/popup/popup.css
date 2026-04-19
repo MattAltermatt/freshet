@@ -177,3 +177,46 @@ body {
 .pj-tpl-pill-name {
   color: inherit;
 }
+
+.pj-conflict {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--pj-accent-strong);
+  background: var(--pj-accent-wash);
+  border-radius: var(--pj-radius);
+}
+.pj-conflict-head {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  color: var(--pj-fg);
+}
+.pj-conflict-icon {
+  color: var(--pj-accent-strong);
+  font-size: 14px;
+}
+.pj-conflict-body {
+  margin: 0;
+  line-height: 1.4;
+  color: var(--pj-fg);
+}
+.pj-conflict-hint {
+  margin: -4px 0 0 0;
+  color: var(--pj-fg-muted);
+  font-size: 12px;
+}
+.pj-conflict-disable {
+  align-self: flex-start;
+  text-decoration: none;
+}
+.pj-conflict-secondary {
+  display: flex;
+  gap: 6px;
+}
+.pj-conflict-when {
+  margin: 0;
+  color: var(--pj-fg-subtle);
+  font-size: 11px;
+}
