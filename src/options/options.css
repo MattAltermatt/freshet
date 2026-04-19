@@ -105,6 +105,9 @@ body {
 .pj-main {
   flex: 1;
   padding: var(--pj-space-4);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .pj-placeholder {
@@ -586,25 +589,28 @@ input:focus, select:focus, textarea:focus {
 }
 .pj-templates-label-title { display: inline-flex; align-items: center; }
 
-.pj-templates-body {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  grid-template-rows: minmax(360px, 2fr) minmax(200px, 1fr);
-  grid-template-areas:
-    "template preview"
-    "sample   preview";
-  gap: var(--pj-space-3);
-  height: min(calc(100vh - 260px), 900px);
-  min-height: 600px;
+/* Two-column layout: left column holds Template + divider + Sample JSON
+   (vertically split), right column holds Preview on its own. The columns are
+   siblings, so collapsing a panel in one column never reflows the other. */
+.pj-templates-tab {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
-/* When a LEFT-column panel (template or sample) collapses, relax rows so the
-   collapsed section doesn't leave a tall empty gap. Preview is its own column
-   spanning both rows, so its collapse state must not trigger row reflow —
-   collapsing preview should keep the left column in place. */
-.pj-templates-body:has([data-area="template"][data-collapsed="true"]),
-.pj-templates-body:has([data-area="sample"][data-collapsed="true"]) {
-  grid-template-rows: auto auto;
-  height: auto;
+.pj-templates-body {
+  display: flex;
+  flex-direction: row;
+  gap: var(--pj-space-3);
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.pj-templates-left,
+.pj-templates-right {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
   min-height: 0;
 }
 .pj-templates-col {
@@ -613,10 +619,8 @@ input:focus, select:focus, textarea:focus {
   gap: 4px;
   min-width: 0;
   min-height: 0;
+  overflow: hidden;
 }
-.pj-templates-col[data-area="template"] { grid-area: template; }
-.pj-templates-col[data-area="sample"]   { grid-area: sample; }
-.pj-templates-col[data-area="preview"]  { grid-area: preview; }
 .pj-templates-col > button.pj-templates-label { flex: 0 0 auto; }
 .pj-templates-col > .pj-cm-box,
 .pj-templates-col > .pj-preview-iframe {
@@ -625,8 +629,36 @@ input:focus, select:focus, textarea:focus {
 }
 .pj-templates-col > .pj-cm-box { height: auto; }
 .pj-templates-col > .pj-playground-links { flex: 0 0 auto; }
-.pj-templates-col > .pj-cheatsheet { flex: 0 0 auto; margin-top: var(--pj-space-2); }
 .pj-templates-col[data-collapsed="true"] > button.pj-templates-label { opacity: 0.7; }
+
+/* Draggable split between Template and Sample JSON. Sits between the two
+   panels in the left column; hidden when either panel is collapsed. */
+.pj-split-divider {
+  flex: 0 0 auto;
+  height: 12px;
+  margin: 2px 0;
+  cursor: ns-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--pj-radius);
+  outline: none;
+}
+.pj-split-divider-grip {
+  width: 56px;
+  height: 3px;
+  background: var(--pj-border);
+  border-radius: 2px;
+  transition: background 120ms ease;
+}
+.pj-split-divider:hover .pj-split-divider-grip,
+.pj-split-divider:focus-visible .pj-split-divider-grip {
+  background: var(--pj-accent-strong);
+}
+.pj-split-divider:focus-visible {
+  outline: 2px solid var(--pj-accent);
+  outline-offset: 2px;
+}
 
 .pj-playground-links {
   display: flex;

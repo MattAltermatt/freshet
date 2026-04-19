@@ -139,4 +139,88 @@ describe('<TemplatesTab> disclosures', () => {
       expect(isCollapsed(container as HTMLElement, 'preview')).toBe(true);
     });
   });
+
+  it('preview and left-column panels live in separate DOM subtrees', async () => {
+    installChromeMock();
+    const { container } = render(
+      <TemplatesTab
+        templates={{ 'internal-user': '<div>hi</div>' }}
+        onTemplatesChange={() => {}}
+        rules={[]}
+        onDisableRules={() => {}}
+      />,
+    );
+    await waitFor(() => expect(container.querySelector('[data-area="template"]')).toBeTruthy());
+
+    // The left column contains Template + Sample; the right column contains
+    // only Preview. A layout change in either column cannot affect the other
+    // because they are sibling containers.
+    const left = container.querySelector('.pj-templates-left');
+    const right = container.querySelector('.pj-templates-right');
+    expect(left).toBeTruthy();
+    expect(right).toBeTruthy();
+    expect(left?.querySelector('[data-area="template"]')).toBeTruthy();
+    expect(left?.querySelector('[data-area="sample"]')).toBeTruthy();
+    expect(left?.querySelector('[data-area="preview"]')).toBeNull();
+    expect(right?.querySelector('[data-area="preview"]')).toBeTruthy();
+    expect(right?.querySelector('[data-area="template"]')).toBeNull();
+    expect(right?.querySelector('[data-area="sample"]')).toBeNull();
+  });
+
+  it('hides the split divider when either left panel is collapsed', async () => {
+    installChromeMock();
+    const { container } = render(
+      <TemplatesTab
+        templates={{ 'internal-user': '<div>hi</div>' }}
+        onTemplatesChange={() => {}}
+        rules={[]}
+        onDisableRules={() => {}}
+      />,
+    );
+    await waitFor(() => expect(container.querySelector('[data-area="template"]')).toBeTruthy());
+
+    // Both expanded: divider is present.
+    expect(container.querySelector('.pj-split-divider')).toBeTruthy();
+
+    // Collapse template: divider gone.
+    await act(async () => {
+      fireEvent.click(chipFor(container as HTMLElement, 'template'));
+    });
+    await waitFor(() => expect(isCollapsed(container as HTMLElement, 'template')).toBe(true));
+    expect(container.querySelector('.pj-split-divider')).toBeNull();
+
+    // Re-expand template: divider back.
+    await act(async () => {
+      fireEvent.click(chipFor(container as HTMLElement, 'template'));
+    });
+    await waitFor(() => expect(isCollapsed(container as HTMLElement, 'template')).toBe(false));
+    expect(container.querySelector('.pj-split-divider')).toBeTruthy();
+  });
+
+  it('persists the split ratio via pj_ui_split_ratio', async () => {
+    const { data } = installChromeMock({ pj_ui_split_ratio: 0.3 });
+    const { container } = render(
+      <TemplatesTab
+        templates={{ 'internal-user': '<div>hi</div>' }}
+        onTemplatesChange={() => {}}
+        rules={[]}
+        onDisableRules={() => {}}
+      />,
+    );
+    await waitFor(() => expect(container.querySelector('.pj-split-divider')).toBeTruthy());
+
+    // Seed value 0.3 applied via flex-grow on the template section.
+    const templateSection = container.querySelector('[data-area="template"]') as HTMLElement;
+    expect(templateSection.style.flexGrow).toBe('0.3');
+
+    // Keyboard nudge writes a new ratio to storage.
+    const divider = container.querySelector('.pj-split-divider') as HTMLElement;
+    await act(async () => {
+      fireEvent.keyDown(divider, { key: 'ArrowDown' });
+    });
+    await waitFor(() => {
+      expect(typeof data['pj_ui_split_ratio']).toBe('number');
+      expect(data['pj_ui_split_ratio']).toBeGreaterThan(0.3);
+    });
+  });
 });
