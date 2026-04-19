@@ -2,6 +2,14 @@ import { Liquid } from 'liquidjs';
 import { migrateTemplate } from '../engine/migrate';
 import type { StorageShape } from '../shared/types';
 
+// Threshold (bytes) at which the background SW promotes rules + templates +
+// hostSkipList from `chrome.storage.sync` to `.local` on install/update.
+// Reality check: Chrome's own per-item cap on `storage.sync` is 8 KB, so a
+// user's sync storage can't realistically accumulate past ~24 KB across our
+// three keys — the 90 KB threshold is defensive and effectively never reached
+// in practice. The `promoteStorageToLocal` helper (run on every options/popup
+// boot) handles the actual user-visible migration path regardless of size; see
+// `test/e2e/storage-promotion.spec.ts`.
 export const SYNC_SOFT_LIMIT = 90 * 1024;
 
 export function estimateBytes(payload: Partial<StorageShape>): number {
