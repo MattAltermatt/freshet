@@ -4,6 +4,20 @@ description: The .freshet.json bundle format, secret-sniff patterns, collision r
 permalink: /sharing/
 ---
 
+<style>
+  /* Same override as docs/try/index.md: the jekyll-theme-minimal pins the
+     <header> sidebar at `position:fixed` and floats every <section> at
+     `width:500px`, which collides with reference-style docs (long tables,
+     wide code blocks). Unfloat the wrapper, drop the decorative sidebar,
+     let content use the full viewport. Content itself caps via max-width
+     below so it stays readable on ultrawide displays. */
+  body { padding: 24px !important; }
+  .wrapper { width: auto !important; max-width: none !important; margin: 0 !important; padding: 0 !important; }
+  .wrapper > header,
+  .wrapper > footer { display: none !important; }
+  .wrapper > section { width: auto !important; max-width: 960px !important; margin: 0 auto !important; float: none !important; padding-bottom: 32px !important; }
+</style>
+
 {% raw %}
 # Sharing rules and templates
 

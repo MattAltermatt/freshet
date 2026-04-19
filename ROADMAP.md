@@ -29,14 +29,18 @@ Artifacts: `freshet-v1.0.0.zip` (gitignored; rebuild with `pnpm build && zip -r 
 
 **GSC verification.** `docs/googleb699e27e48b22e41.html` shipped and serves at `https://mattaltermatt.github.io/freshet/googleb699e27e48b22e41.html`; Matt verified the domain in Search Console on 2026-04-19. File stays in-repo indefinitely — GSC re-checks periodically and removing the file un-verifies. Post-launch: once v1.0.0 goes live on CWS, set the listing's **Official URL** field to `https://mattaltermatt.github.io/freshet/`.
 
+**Sharing-docs layout fix.** `docs/sharing/index.md` inherited the jekyll-theme-minimal's 500px-floated content + fixed sidebar layout, which visibly overlapped the main content at narrow viewports. Applied the same `<style>` override pattern used at the top of `docs/try/index.md` — unfloat the wrapper, hide the decorative sidebar/footer, cap body at 960px for readability.
+
 ### P1 — High value
 
 **Small promo tile (440×280).** Generate once v1.0.0 is live — the only CWS listing asset Google uses on homepage/category/search tiles. Skipping it weakens browse-surface discoverability. Regenerate via the same `scripts/cws-screenshots.mjs` Chromium-composite approach.
 
 ### P2 — Polish & nice-to-haves
 
-- **`docs/sharing/` layout overlaps the jekyll-theme-minimal sidebar.** Repro on 2026-04-19: scroll near the bottom of [mattaltermatt.github.io/freshet/sharing/](https://mattaltermatt.github.io/freshet/sharing/), and the theme's fixed left-rail (Freshet logo, description, "View the Project on GitHub", maintainer block, "Hosted on GitHub Pages" footer) overlaps the main content column — list items sit on top of the logo. Same root cause as the marketing page: the minimal theme pins `<header>` at `position:fixed` and floats sections at `width:500px`. The fix is the same custom `<style>` override used at the top of [`docs/try/index.md`](docs/try/index.md) — unfloat the wrapper, widen the content column, hide the decorative sidebar. Apply to `docs/sharing/index.md` (and, prophylactically, any future full-width reference docs under `docs/`).
 - **Expanded test coverage** — visual-regression baselines via Playwright screenshots (`test/e2e/__screenshots__/`, CI-breaking). (Storage-promotion E2E shipped 2026-04-19; the 90 KB branch itself is unreachable under Chrome's 8 KB per-item sync cap — see the note on `SYNC_SOFT_LIMIT`.)
-- **Shared template registry** (community templates).
 - **Non-JSON content support** — HTML / CSV / XML content-type routing.
 - **Marquee promo image (1400×560)** — only surfaces if Google picks us for the homepage carousel. Skippable.
+
+### P3 — Later, blocked on adoption signal
+
+- **Shared template registry** (community templates). Revisit once Freshet has a user base large enough to produce non-trivial templates worth collecting; premature now.
