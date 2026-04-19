@@ -5,6 +5,8 @@ import type { SniffHit } from '../../bundle/sniff';
 import { detectCollisions } from '../../bundle/collide';
 import type { Rule, Templates } from '../../shared/types';
 import type { ImportPlan } from './ImportDialog';
+import { RuleIdentity } from '../rules/RuleIdentity';
+import { TemplatePill } from '../../ui/components/TemplatePill';
 
 export interface ImportReviewProps {
   bundle: FreshetBundle;
@@ -73,195 +75,235 @@ export function ImportReview(props: ImportReviewProps): JSX.Element {
 
   const visibleRules = props.bundle.rules.filter((r) => {
     if (!query) return true;
-    const hay = `${r.name ?? ''} ${r.hostPattern} ${r.pathPattern}`.toLowerCase();
+    const hay = `${r.name ?? ''} ${r.hostPattern} ${r.pathPattern} ${r.templateName}`.toLowerCase();
     return hay.includes(query.toLowerCase());
   });
+  const visibleTemplates = props.bundle.templates.filter((t) => {
+    if (!query) return true;
+    return t.name.toLowerCase().includes(query.toLowerCase());
+  });
+
+  const includedCount =
+    props.bundle.rules.filter((r) => !skipRules.has(r.id)).length +
+    props.bundle.templates.filter((t) => !skipTemplates.has(t.name)).length;
 
   return (
     <div class="pj-import-review">
-      <h2>Review import</h2>
-      <input
-        type="search"
-        placeholder="filter"
-        value={query}
-        onInput={(e) => setQuery((e.target as HTMLInputElement).value)}
-      />
+      <header class="pj-dialog-header">
+        <h2>Review import</h2>
+        <p class="pj-dialog-subtitle">
+          Uncheck anything you don't want. Resolve any collisions flagged with ⚠ before importing.
+        </p>
+      </header>
 
-      <section aria-label="Rules">
+      <div class="pj-review-toolbar">
+        <input
+          type="search"
+          class="pj-picker-filter"
+          placeholder="filter by name, host, path, template…"
+          value={query}
+          onInput={(e) => setQuery((e.target as HTMLInputElement).value)}
+        />
+      </div>
+
+      <section class="pj-review-section" aria-label="Rules">
         <h3>Rules ({visibleRules.length})</h3>
         {visibleRules.map((r) => {
           const isIdCol = report.ruleIdCollisions.some((c) => c.id === r.id);
           const resolution = ruleResolution.get(r.id);
-          const needsReplaceConfirm = resolution === 'replace';
+          const skipped = skipRules.has(r.id);
+          const effectiveRule = {
+            hostPattern: r.hostPattern,
+            pathPattern: r.pathPattern,
+            templateName: renameMap.get(r.templateName) ?? r.templateName,
+            ...(r.name ? { name: r.name } : {}),
+          };
           return (
-            <div key={r.id} class="pj-review-row">
-              <label>
+            <div
+              key={r.id}
+              class={`pj-review-row${skipped ? ' pj-review-row--skipped' : ''}`}
+            >
+              <label class="pj-review-row-include" title="Include in import">
                 <input
                   type="checkbox"
-                  checked={!skipRules.has(r.id)}
+                  checked={!skipped}
                   onChange={() => toggleSkipRule(r.id)}
                 />
-                {r.name ?? r.hostPattern}
               </label>
-              {renameMap.has(r.templateName) ? (
-                <div class="pj-rename-cascade">
-                  → template: {r.templateName} → {renameMap.get(r.templateName)}
-                </div>
-              ) : null}
-              {isIdCol ? (
-                <div class="pj-collision">
-                  <strong>⚠ Round-trip collision (same id).</strong>
-                  <label>
-                    <input
-                      type="radio"
-                      name={`rule-res-${r.id}`}
-                      checked={resolution === 'replace'}
-                      onChange={() =>
-                        setRuleResolution((prev) => new Map(prev).set(r.id, 'replace'))
-                      }
-                    />
-                    Replace existing
-                  </label>
-                  {needsReplaceConfirm ? (
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={replaceConfirmed.has(r.id)}
-                        onChange={() =>
-                          setReplaceConfirmed((prev) => {
-                            const next = new Set(prev);
-                            if (next.has(r.id)) next.delete(r.id);
-                            else next.add(r.id);
-                            return next;
-                          })
-                        }
-                      />
-                      Confirm replace
-                    </label>
-                  ) : null}
-                  <label>
-                    <input
-                      type="radio"
-                      name={`rule-res-${r.id}`}
-                      checked={resolution === 'skip'}
-                      onChange={() =>
-                        setRuleResolution((prev) => new Map(prev).set(r.id, 'skip'))
-                      }
-                    />
-                    Skip
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      name={`rule-res-${r.id}`}
-                      checked={resolution === 'keepBoth'}
-                      onChange={() =>
-                        setRuleResolution((prev) => new Map(prev).set(r.id, 'keepBoth'))
-                      }
-                    />
-                    Keep both
-                  </label>
-                </div>
-              ) : null}
+              <div class="pj-review-row-body">
+                <RuleIdentity rule={effectiveRule} density="card" />
+                {renameMap.has(r.templateName) ? (
+                  <p class="pj-review-rename-note">
+                    template reference rewritten from <code>{r.templateName}</code> to{' '}
+                    <code>{renameMap.get(r.templateName)}</code>
+                  </p>
+                ) : null}
+                {isIdCol ? (
+                  <ConflictBox
+                    title="Round-trip collision (same id)"
+                    options={[
+                      { value: 'replace', label: 'Replace existing' },
+                      { value: 'keepBoth', label: 'Keep both (new id)' },
+                      { value: 'skip', label: 'Skip' },
+                    ]}
+                    selected={resolution ?? 'replace'}
+                    onSelect={(v) =>
+                      setRuleResolution((prev) =>
+                        new Map(prev).set(r.id, v as 'replace' | 'skip' | 'keepBoth'),
+                      )
+                    }
+                    confirmRequired={resolution === 'replace'}
+                    confirmed={replaceConfirmed.has(r.id)}
+                    onToggleConfirm={() =>
+                      setReplaceConfirmed((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(r.id)) next.delete(r.id);
+                        else next.add(r.id);
+                        return next;
+                      })
+                    }
+                  />
+                ) : null}
+              </div>
             </div>
           );
         })}
       </section>
 
-      <section aria-label="Templates">
-        <h3>Templates ({props.bundle.templates.length})</h3>
-        {props.bundle.templates.map((t) => {
+      <section class="pj-review-section" aria-label="Templates">
+        <h3>Templates ({visibleTemplates.length})</h3>
+        {visibleTemplates.map((t) => {
           const col = report.templateCollisions.find((c) => c.name === t.name);
           const res = templateResolution.get(t.name);
+          const skipped = skipTemplates.has(t.name);
+          const confirmKey = `t:${t.name}`;
           return (
-            <div key={t.name} class="pj-review-row">
-              <label>
+            <div
+              key={t.name}
+              class={`pj-review-row${skipped ? ' pj-review-row--skipped' : ''}`}
+            >
+              <label class="pj-review-row-include" title="Include in import">
                 <input
                   type="checkbox"
-                  checked={!skipTemplates.has(t.name)}
+                  checked={!skipped}
                   onChange={() => toggleSkipTemplate(t.name)}
                 />
-                {t.name}
               </label>
-              {col ? (
-                <div class="pj-collision">
-                  <strong>⚠ Name already exists.</strong>
-                  <label>
-                    <input
-                      type="radio"
-                      name={`tmpl-res-${t.name}`}
-                      checked={res === 'rename'}
-                      onChange={() =>
-                        setTemplateResolution((prev) =>
-                          new Map(prev).set(t.name, 'rename'),
-                        )
-                      }
-                    />
-                    Rename to {col.proposedRename}
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      name={`tmpl-res-${t.name}`}
-                      checked={res === 'replace'}
-                      onChange={() =>
-                        setTemplateResolution((prev) =>
-                          new Map(prev).set(t.name, 'replace'),
-                        )
-                      }
-                    />
-                    Replace existing
-                  </label>
-                  {res === 'replace' ? (
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={replaceConfirmed.has(`t:${t.name}`)}
-                        onChange={() =>
-                          setReplaceConfirmed((prev) => {
-                            const next = new Set(prev);
-                            const key = `t:${t.name}`;
-                            if (next.has(key)) next.delete(key);
-                            else next.add(key);
-                            return next;
-                          })
-                        }
+              <div class="pj-review-row-body">
+                <div class="pj-review-template-row">
+                  <TemplatePill name={t.name} />
+                  {col ? (
+                    <span class="pj-review-rename-preview">
+                      →{' '}
+                      <TemplatePill
+                        name={res === 'rename' ? col.proposedRename : t.name}
                       />
-                      Confirm replace
-                    </label>
+                      {res === 'replace' ? (
+                        <span class="pj-review-replace-note"> (replacing existing)</span>
+                      ) : null}
+                      {res === 'skip' ? (
+                        <span class="pj-review-skip-note"> (skipped)</span>
+                      ) : null}
+                    </span>
                   ) : null}
-                  <label>
-                    <input
-                      type="radio"
-                      name={`tmpl-res-${t.name}`}
-                      checked={res === 'skip'}
-                      onChange={() =>
-                        setTemplateResolution((prev) =>
-                          new Map(prev).set(t.name, 'skip'),
-                        )
-                      }
-                    />
-                    Skip
-                  </label>
                 </div>
-              ) : null}
+                {col ? (
+                  <ConflictBox
+                    title="Name already exists"
+                    options={[
+                      { value: 'rename', label: `Rename to ${col.proposedRename}` },
+                      { value: 'replace', label: 'Replace existing' },
+                      { value: 'skip', label: 'Skip' },
+                    ]}
+                    selected={res ?? 'rename'}
+                    onSelect={(v) =>
+                      setTemplateResolution((prev) =>
+                        new Map(prev).set(t.name, v as 'rename' | 'replace' | 'skip'),
+                      )
+                    }
+                    confirmRequired={res === 'replace'}
+                    confirmed={replaceConfirmed.has(confirmKey)}
+                    onToggleConfirm={() =>
+                      setReplaceConfirmed((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(confirmKey)) next.delete(confirmKey);
+                        else next.add(confirmKey);
+                        return next;
+                      })
+                    }
+                  />
+                ) : null}
+              </div>
             </div>
           );
         })}
       </section>
 
-      <p class="pj-note">
-        Imported rules start <strong>INACTIVE</strong> — toggle on per rule after import.
-      </p>
+      <footer class="pj-dialog-footer">
+        <span class="pj-review-hint">
+          {includedCount} item(s) will be imported · rules start <strong>INACTIVE</strong> —
+          toggle on after import.
+        </span>
+        <div class="pj-dialog-footer-actions">
+          <button type="button" class="pj-btn" onClick={props.onBack}>
+            Back
+          </button>
+          <button
+            type="button"
+            class="pj-btn"
+            data-variant="primary"
+            onClick={handleCommit}
+            disabled={includedCount === 0}
+          >
+            Import
+          </button>
+        </div>
+      </footer>
+    </div>
+  );
+}
 
-      <div class="pj-dialog-footer">
-        <button type="button" class="pj-btn" onClick={props.onBack}>
-          Back
-        </button>
-        <button type="button" class="pj-btn" data-variant="primary" onClick={handleCommit}>
-          Import
-        </button>
+interface ConflictBoxProps {
+  title: string;
+  options: Array<{ value: string; label: string }>;
+  selected: string;
+  onSelect: (v: string) => void;
+  confirmRequired: boolean;
+  confirmed: boolean;
+  onToggleConfirm: () => void;
+}
+
+function ConflictBox(props: ConflictBoxProps): JSX.Element {
+  const groupName = `conflict-${Math.random().toString(36).slice(2, 9)}`;
+  return (
+    <div class="pj-conflict-box" role="group" aria-label={props.title}>
+      <div class="pj-conflict-box-head">
+        <span class="pj-conflict-box-icon" aria-hidden="true">⚠</span>
+        <strong>{props.title}</strong>
       </div>
+      <div class="pj-conflict-box-options">
+        {props.options.map((opt) => (
+          <label key={opt.value} class="pj-conflict-option">
+            <input
+              type="radio"
+              name={groupName}
+              checked={props.selected === opt.value}
+              onChange={() => props.onSelect(opt.value)}
+            />
+            <span>{opt.label}</span>
+          </label>
+        ))}
+      </div>
+      {props.confirmRequired ? (
+        <label class="pj-conflict-confirm">
+          <input
+            type="checkbox"
+            checked={props.confirmed}
+            onChange={props.onToggleConfirm}
+          />
+          Confirm replace (overwrites existing)
+        </label>
+      ) : null}
     </div>
   );
 }

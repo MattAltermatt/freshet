@@ -1,9 +1,19 @@
 import type { JSX } from 'preact';
-import type { Rule } from '../../shared/types';
 import { TemplatePill } from '../../ui/components/TemplatePill';
 
+/**
+ * Just the fields RuleIdentity actually reads. Accepts both `Rule` (full
+ * stored rule) and `BundleRule` (import/export DTO) without casting.
+ */
+export interface RuleIdentityShape {
+  name?: string;
+  hostPattern: string;
+  pathPattern: string;
+  templateName: string;
+}
+
 export interface RuleIdentityProps {
-  rule: Rule;
+  rule: RuleIdentityShape;
   /** `'card'` gives more vertical breathing room; `'row'` tightens for list use. */
   density?: 'card' | 'row';
 }
