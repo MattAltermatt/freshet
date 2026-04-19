@@ -69,4 +69,14 @@ describe('<RuleCard>', () => {
     const { container } = renderCard({ rule: { ...rule, enabled: false } });
     expect(container.querySelector('.pj-rule-card--disabled')).toBeTruthy();
   });
+
+  it('renders a Starter pill when rule.isStarter=true', () => {
+    renderCard({ rule: { ...rule, isStarter: true } });
+    expect(screen.getByText('Starter')).toBeInTheDocument();
+  });
+
+  it('does not render a Starter pill on user-created rules', () => {
+    renderCard();
+    expect(screen.queryByText('Starter')).not.toBeInTheDocument();
+  });
 });

@@ -37,6 +37,11 @@ export function RuleCard({
         <span class="pj-rule-template" title={`Template: ${rule.templateName}`}>
           {rule.templateName}
         </span>
+        {rule.isStarter ? (
+          <span class="pj-starter-pill" title="Bundled with Freshet">
+            Starter
+          </span>
+        ) : null}
         {varCount > 0 ? (
           <span class="pj-rule-vars" title={`${varCount} variables`}>
             {varCount} {varCount === 1 ? 'var' : 'vars'}

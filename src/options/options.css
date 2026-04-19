@@ -244,6 +244,19 @@ input:focus, select:focus, textarea:focus {
   font-size: var(--pj-font-size-sm);
   color: var(--pj-fg-muted);
 }
+.pj-starter-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--pj-space-2);
+  border-radius: 10px;
+  background: var(--pj-bg-subtle);
+  color: var(--pj-fg-subtle);
+  border: 1px solid var(--pj-border);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
 
 .pj-rule-controls {
   display: flex;
