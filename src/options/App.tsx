@@ -12,8 +12,12 @@ import { Header } from './Header';
 import { RulesTab } from './rules/RulesTab';
 import { TemplatesTab } from './templates/TemplatesTab';
 import { ShortcutsFooter } from './ShortcutsFooter';
+import { ExportDialog } from './export/ExportDialog';
 import { promoteStorageToLocal } from '../storage/promoteStorageToLocal';
 import { parseDirective, type OptionsDirective } from './directives';
+import pkg from '../../package.json';
+
+const APP_VERSION = pkg.version;
 
 type Tab = 'rules' | 'templates';
 
@@ -53,6 +57,10 @@ export function App(): JSX.Element {
   const [rules, writeRules] = useStorage<'rules', Rule[]>('rules', []);
   const [templates, writeTemplates] = useStorage<'templates', Templates>(
     'templates',
+    {},
+  );
+  const [sampleJson] = useStorage<'pj_sample_json', Record<string, string>>(
+    'pj_sample_json',
     {},
   );
   const toast = useToast();
@@ -157,7 +165,15 @@ export function App(): JSX.Element {
         onExport={() => setExportOpen(true)}
         onImport={() => setImportOpen(true)}
       />
-      {exportOpen ? <div data-test="export-open-marker" hidden /> : null}
+      {exportOpen ? (
+        <ExportDialog
+          rules={rules}
+          templates={templates}
+          sampleJson={sampleJson}
+          appVersion={APP_VERSION}
+          onClose={() => setExportOpen(false)}
+        />
+      ) : null}
       {importOpen ? <div data-test="import-open-marker" hidden /> : null}
       <ToastHost />
     </div>
