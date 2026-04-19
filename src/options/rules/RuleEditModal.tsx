@@ -79,7 +79,11 @@ export function RuleEditModal({
   const selectOptions = templateNames.includes(rule.templateName) || !rule.templateName
     ? templateNames
     : [rule.templateName, ...templateNames];
-  const title = initial ? `Edit rule · ${initial.id}` : 'New rule';
+  // Header label prefers the user-facing name, falls back to the host pattern,
+  // and drops the internal seed id (e.g. `starter-service-health-0`) entirely —
+  // the id is an implementation detail that leaked into the UI.
+  const headerLabel = initial ? (initial.name || initial.hostPattern).trim() : '';
+  const title = initial ? (headerLabel ? `Edit rule · ${headerLabel}` : 'Edit rule') : 'New rule';
 
   const handleCreateTemplate = (): void => {
     const defaultName = uniqueTemplateName(
