@@ -6,9 +6,10 @@ body {
 }
 
 .pj-app {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .pj-header {
@@ -103,11 +104,12 @@ body {
 }
 
 .pj-main {
-  flex: 1;
+  flex: 1 1 auto;
   padding: var(--pj-space-4);
   display: flex;
   flex-direction: column;
   min-height: 0;
+  overflow-y: auto;
 }
 
 .pj-placeholder {
@@ -555,6 +557,28 @@ input:focus, select:focus, textarea:focus {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+}
+.pj-modal-close {
+  position: absolute;
+  top: var(--pj-space-2);
+  right: var(--pj-space-2);
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: 0;
+  color: var(--pj-fg-muted);
+  font-size: 18px;
+  line-height: 1;
+  border-radius: var(--pj-radius);
+  cursor: pointer;
+  z-index: 1;
+}
+.pj-modal-close:hover {
+  background: var(--pj-accent-wash);
+  color: var(--pj-fg);
+}
+.pj-modal {
+  position: relative;  /* anchor for the close button */
 }
 
 /* ── Dialog shared chrome ── */
@@ -1295,6 +1319,7 @@ button.pj-templates-label:focus-visible .pj-disclosure-arrow {
 
 /* ───── Keyboard shortcuts footer ───── */
 .pj-shortcuts {
+  flex: 0 0 auto;
   padding: var(--pj-space-3) var(--pj-space-4);
   border-top: 1px solid var(--pj-border);
   background: var(--pj-bg-elevated);

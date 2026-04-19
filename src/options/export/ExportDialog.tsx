@@ -1,5 +1,5 @@
 import type { JSX } from 'preact';
-import { useMemo, useState } from 'preact/hooks';
+import { useEffect, useMemo, useState } from 'preact/hooks';
 import type { Rule, Templates } from '../../shared/types';
 import { ExportPicker } from './ExportPicker';
 import { ExportScrub } from './ExportScrub';
@@ -59,9 +59,33 @@ export function ExportDialog(props: ExportDialogProps): JSX.Element {
     ],
   );
 
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent): void => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        props.onClose();
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [props.onClose]);
+
   return (
-    <div class="pj-modal-backdrop" role="dialog" aria-modal="true">
-      <div class="pj-modal pj-modal--export">
+    <div
+      class="pj-modal-backdrop"
+      role="dialog"
+      aria-modal="true"
+      onClick={props.onClose}
+    >
+      <div class="pj-modal pj-modal--export" onClick={(e) => e.stopPropagation()}>
+        <button
+          type="button"
+          class="pj-modal-close"
+          aria-label="Close export dialog"
+          onClick={props.onClose}
+        >
+          ✕
+        </button>
         {step === 'pick' ? (
           <ExportPicker
             rules={props.rules}

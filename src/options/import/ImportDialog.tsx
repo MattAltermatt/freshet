@@ -1,5 +1,5 @@
 import type { JSX } from 'preact';
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import type { FreshetBundle } from '../../bundle/schema';
 import type { Rule, Templates } from '../../shared/types';
 import { ImportInput } from './ImportInput';
@@ -37,9 +37,33 @@ export function ImportDialog(props: ImportDialogProps): JSX.Element {
     setStep('mode');
   }
 
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent): void => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        props.onClose();
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [props.onClose]);
+
   return (
-    <div class="pj-modal-backdrop" role="dialog" aria-modal="true">
-      <div class="pj-modal pj-modal--import">
+    <div
+      class="pj-modal-backdrop"
+      role="dialog"
+      aria-modal="true"
+      onClick={props.onClose}
+    >
+      <div class="pj-modal pj-modal--import" onClick={(e) => e.stopPropagation()}>
+        <button
+          type="button"
+          class="pj-modal-close"
+          aria-label="Close import dialog"
+          onClick={props.onClose}
+        >
+          ✕
+        </button>
         {step === 'input' ? (
           <ImportInput onCancel={props.onClose} onParsed={handleParsed} />
         ) : null}

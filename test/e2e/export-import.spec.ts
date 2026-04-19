@@ -237,6 +237,152 @@ test.describe('Export / Import', () => {
     }
   });
 
+  test('options footer stays pinned at the bottom of the viewport when main scrolls', async () => {
+    const { ctx, extId } = await launch();
+    try {
+      // Seed lots of rules so the main area needs to scroll
+      const many = Array.from({ length: 30 }).map((_, i) => ({
+        id: `r-${i}`,
+        name: `rule ${i}`,
+        hostPattern: `host${i}.example.com`,
+        pathPattern: '/**',
+        templateName: 't',
+        variables: {},
+        active: true,
+      }));
+      await seedStorage(ctx, {
+        templates: { t: '<div/>' },
+        pj_sample_json: {},
+        rules: many,
+        schemaVersion: 2,
+      });
+      const page = await openOptions(ctx, extId);
+
+      const footerBox = await page.locator('.pj-shortcuts').boundingBox();
+      const viewport = page.viewportSize();
+      expect(footerBox, 'footer should be present').not.toBeNull();
+      expect(viewport).not.toBeNull();
+      // Footer bottom edge is within a few pixels of the viewport bottom
+      const gap = viewport!.height - (footerBox!.y + footerBox!.height);
+      expect(gap).toBeLessThan(4);
+
+      // Scroll the main area and recheck the footer position
+      await page.locator('.pj-main').evaluate((el) => {
+        el.scrollTop = 400;
+      });
+      const footerAfter = await page.locator('.pj-shortcuts').boundingBox();
+      const gapAfter = viewport!.height - (footerAfter!.y + footerAfter!.height);
+      expect(gapAfter).toBeLessThan(4);
+    } finally {
+      await ctx.close();
+    }
+  });
+
+  test('Review import dialog scrolls when content overflows', async () => {
+    const { ctx, extId } = await launch();
+    try {
+      // Empty recipient; bundle below carries many items to force overflow
+      await seedStorage(ctx, { templates: {}, pj_sample_json: {}, rules: [], schemaVersion: 2 });
+      const page = await openOptions(ctx, extId);
+
+      const bigBundle = JSON.stringify({
+        bundleSchemaVersion: 1,
+        exportedAt: 'x',
+        appVersion: '1.0.0',
+        templates: Array.from({ length: 12 }).map((_, i) => ({
+          name: `tmpl-${i}`,
+          source: '<div>{{x}}</div>',
+        })),
+        rules: Array.from({ length: 12 }).map((_, i) => ({
+          id: `r-${i}`,
+          name: `rule ${i}`,
+          hostPattern: `host${i}.example.com`,
+          pathPattern: '/**',
+          templateName: `tmpl-${i}`,
+          active: true,
+        })),
+      });
+
+      await page.getByRole('button', { name: /^Import$/ }).click();
+      await page.getByPlaceholder(/paste bundle json/i).fill(bigBundle);
+      await page.getByRole('button', { name: /next: review/i }).click();
+      await page.getByRole('button', { name: /review & pick/i }).click();
+
+      const scroll = page.locator('.pj-dialog-scroll').first();
+      const { scrollHeight, clientHeight } = await scroll.evaluate((el) => ({
+        scrollHeight: el.scrollHeight,
+        clientHeight: el.clientHeight,
+      }));
+      expect(scrollHeight, 'content must be taller than viewport').toBeGreaterThan(clientHeight);
+
+      // And the dialog's footer is reachable: scroll to bottom, footer's Import button visible
+      await scroll.evaluate((el) => {
+        el.scrollTop = el.scrollHeight;
+      });
+      await expect(page.getByRole('button', { name: /^Import$/ }).last()).toBeVisible();
+    } finally {
+      await ctx.close();
+    }
+  });
+
+  test('Escape closes the Import dialog', async () => {
+    const { ctx, extId } = await launch();
+    try {
+      await seedStorage(ctx, { templates: {}, rules: [], schemaVersion: 2 });
+      const page = await openOptions(ctx, extId);
+      await page.getByRole('button', { name: /^Import$/ }).click();
+      await expect(page.getByRole('heading', { name: /import a bundle/i })).toBeVisible();
+      await page.keyboard.press('Escape');
+      await expect(page.getByRole('heading', { name: /import a bundle/i })).toBeHidden();
+    } finally {
+      await ctx.close();
+    }
+  });
+
+  test('backdrop click closes the Export dialog; inner click does not', async () => {
+    const { ctx, extId } = await launch();
+    try {
+      await seedStorage(ctx, {
+        templates: { t: '<div/>' },
+        rules: [
+          { id: 'r1', name: 'demo', hostPattern: 'a', pathPattern: 'b', templateName: 't', variables: {}, active: true },
+        ],
+        schemaVersion: 2,
+      });
+      const page = await openOptions(ctx, extId);
+      await page.getByRole('button', { name: /^Export$/ }).click();
+      await expect(page.getByRole('heading', { name: /pick what to export/i })).toBeVisible();
+      // Clicking inside the modal does NOT close it
+      await page.getByRole('heading', { name: /pick what to export/i }).click();
+      await expect(page.getByRole('heading', { name: /pick what to export/i })).toBeVisible();
+      // Click on the backdrop (outside the modal) closes it
+      await page.locator('.pj-modal-backdrop').click({ position: { x: 5, y: 5 } });
+      await expect(page.getByRole('heading', { name: /pick what to export/i })).toBeHidden();
+    } finally {
+      await ctx.close();
+    }
+  });
+
+  test('✕ close button in dialog header closes the Export dialog', async () => {
+    const { ctx, extId } = await launch();
+    try {
+      await seedStorage(ctx, {
+        templates: { t: '<div/>' },
+        rules: [
+          { id: 'r1', name: 'demo', hostPattern: 'a', pathPattern: 'b', templateName: 't', variables: {}, active: true },
+        ],
+        schemaVersion: 2,
+      });
+      const page = await openOptions(ctx, extId);
+      await page.getByRole('button', { name: /^Export$/ }).click();
+      await expect(page.getByRole('heading', { name: /pick what to export/i })).toBeVisible();
+      await page.getByRole('button', { name: /close export dialog/i }).click();
+      await expect(page.getByRole('heading', { name: /pick what to export/i })).toBeHidden();
+    } finally {
+      await ctx.close();
+    }
+  });
+
   test('file picker path opens review on valid file', async () => {
     const { ctx, extId } = await launch();
     try {
