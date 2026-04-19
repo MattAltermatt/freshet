@@ -39,7 +39,7 @@ describe('storage', () => {
       pathPattern: '/**',
       templateName: 't1',
       variables: {},
-      enabled: true,
+      active: true,
     };
     await storage.setRules([r]);
     expect(await storage.getRules()).toEqual([r]);
@@ -61,7 +61,7 @@ describe('storage', () => {
   });
   it('reads from local area when sentinel is set', async () => {
     await api.local.set({ pj_storage_area: 'local' });
-    await api.local.set({ rules: [{ id: 'r1', hostPattern: '*', pathPattern: '*', templateName: 't', variables: {}, enabled: true }] });
+    await api.local.set({ rules: [{ id: 'r1', hostPattern: '*', pathPattern: '*', templateName: 't', variables: {}, active: true }] });
     const s = await createStorage(api as unknown as typeof chrome.storage);
     const rules = await s.getRules();
     expect(rules).toHaveLength(1);

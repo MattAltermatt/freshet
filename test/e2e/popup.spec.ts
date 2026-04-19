@@ -30,7 +30,7 @@ test('popup shows matched-rule chip for a seeded rule', async () => {
         pathPattern: '/**',
         templateName: 'Example',
         variables: {},
-        enabled: true,
+        active: true,
       }],
       templates: { Example: '<h1>x</h1>' },
       hostSkipList: [],

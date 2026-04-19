@@ -9,7 +9,7 @@ const rule: Rule = {
   pathPattern: '/users/**',
   templateName: 'user-details',
   variables: { env: 'prod', region: 'us' },
-  enabled: true,
+  active: true,
 };
 
 function renderCard(overrides: Partial<Parameters<typeof RuleCard>[0]> = {}) {
@@ -65,9 +65,9 @@ describe('<RuleCard>', () => {
     expect(onEdit).not.toHaveBeenCalled();
   });
 
-  it('renders a disabled-state class when rule.enabled=false', () => {
-    const { container } = renderCard({ rule: { ...rule, enabled: false } });
-    expect(container.querySelector('.pj-rule-card--disabled')).toBeTruthy();
+  it('renders an inactive-state class when rule.active=false', () => {
+    const { container } = renderCard({ rule: { ...rule, active: false } });
+    expect(container.querySelector('.pj-rule-card--inactive')).toBeTruthy();
   });
 
   it('renders an Example pill when rule.isExample=true', () => {

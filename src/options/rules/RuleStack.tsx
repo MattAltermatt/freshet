@@ -56,7 +56,7 @@ export function RuleStack({
               rule={r}
               index={i}
               total={rules.length}
-              onToggle={(en) => patch(i, { enabled: en })}
+              onToggle={(a) => patch(i, { active: a })}
               onEdit={() => onEdit(i)}
               onMoveUp={() => swap(i, i - 1)}
               onMoveDown={() => swap(i, i + 1)}

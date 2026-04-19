@@ -54,8 +54,8 @@ test.describe('Options page CRUD', () => {
       await seedStorage(ctx, {
         templates: { tpl: '<pre>{{ id }}</pre>' },
         rules: [
-          { id: 'a', hostPattern: '*.api.com', pathPattern: '/**', templateName: 'tpl', variables: {}, enabled: true },
-          { id: 'b', hostPattern: '*.api.com', pathPattern: '/**', templateName: 'tpl', variables: {}, enabled: true },
+          { id: 'a', hostPattern: '*.api.com', pathPattern: '/**', templateName: 'tpl', variables: {}, active: true },
+          { id: 'b', hostPattern: '*.api.com', pathPattern: '/**', templateName: 'tpl', variables: {}, active: true },
         ],
         schemaVersion: 2,
       });
@@ -109,7 +109,7 @@ test.describe('Options page CRUD', () => {
       await seedStorage(ctx, {
         templates: { tpl: '<x>{{ id }}</x>' },
         rules: [
-          { id: 'r1', hostPattern: 'a.com', pathPattern: '/', templateName: 'tpl', variables: {}, enabled: true },
+          { id: 'r1', hostPattern: 'a.com', pathPattern: '/', templateName: 'tpl', variables: {}, active: true },
         ],
         schemaVersion: 2,
       });
@@ -127,13 +127,13 @@ test.describe('Options page CRUD', () => {
     }
   });
 
-  test('template delete with referencing rule disables that rule', async () => {
+  test('template delete with referencing rule deactivates that rule', async () => {
     const { ctx, extId } = await launch();
     try {
       await seedStorage(ctx, {
         templates: { alpha: '<h1>{{ id }}</h1>', beta: '<p>{{ id }}</p>' },
         rules: [
-          { id: 'r1', hostPattern: 'x.com', pathPattern: '/', templateName: 'alpha', variables: {}, enabled: true },
+          { id: 'r1', hostPattern: 'x.com', pathPattern: '/', templateName: 'alpha', variables: {}, active: true },
         ],
         schemaVersion: 2,
       });
@@ -146,14 +146,14 @@ test.describe('Options page CRUD', () => {
       const dialog = page.getByRole('dialog', { name: /delete template/i });
       await expect(dialog).toBeVisible();
       await expect(dialog).toContainText('rule');
-      await dialog.getByRole('button', { name: /delete \+ disable/i }).click();
+      await dialog.getByRole('button', { name: /delete \+ deactivate/i }).click();
 
       // Template gone
       const templates = await readStorage<Record<string, string>>(ctx, 'templates');
       expect(Object.keys(templates ?? {})).toEqual(['beta']);
-      // Rule flipped to disabled
-      const rules = await readStorage<Array<{ enabled: boolean }>>(ctx, 'rules');
-      expect(rules![0]!.enabled).toBe(false);
+      // Rule flipped to inactive
+      const rules = await readStorage<Array<{ active: boolean }>>(ctx, 'rules');
+      expect(rules![0]!.active).toBe(false);
     } finally {
       await ctx.close();
     }

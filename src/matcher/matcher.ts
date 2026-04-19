@@ -19,10 +19,10 @@ export function matchesPath(path: string, pattern: string): boolean {
   }
 }
 
-/** First enabled rule whose host+path patterns both match the URL's host/path. */
+/** First active rule whose host+path patterns both match the URL's host/path. */
 export function findMatchingRule(host: string, path: string, rules: Rule[]): Rule | null {
   for (const rule of rules) {
-    if (!rule.enabled) continue;
+    if (!rule.active) continue;
     if (matchesHost(host, rule.hostPattern) && matchesPath(path, rule.pathPattern)) {
       return rule;
     }

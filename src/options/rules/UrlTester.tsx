@@ -15,7 +15,7 @@ type RowState =
   | 'shadowed'
   | 'miss-host'
   | 'miss-path'
-  | 'disabled';
+  | 'inactive';
 
 const ICONS: Record<RowState, string> = {
   idle: '·',
@@ -24,7 +24,7 @@ const ICONS: Record<RowState, string> = {
   shadowed: '⚠',
   'miss-host': '—',
   'miss-path': '—',
-  disabled: '○',
+  inactive: '○',
 };
 
 const REASONS: Record<RowState, string> = {
@@ -34,7 +34,7 @@ const REASONS: Record<RowState, string> = {
   shadowed: 'shadowed by an earlier rule',
   'miss-host': "host doesn't match",
   'miss-path': "path doesn't match",
-  disabled: 'disabled',
+  inactive: 'inactive',
 };
 
 const CHIPS: string[] = [
@@ -66,7 +66,7 @@ export function UrlTester({ rules, initialUrl }: UrlTesterProps): JSX.Element {
     if (!url.trim()) return rules.map((rule) => ({ rule, state: 'idle' as RowState }));
     if (!parsed) return rules.map((rule) => ({ rule, state: 'invalid' as RowState }));
     return rules.map((rule) => {
-      if (!rule.enabled) return { rule, state: 'disabled' as RowState };
+      if (!rule.active) return { rule, state: 'inactive' as RowState };
       const hostOk = matchesHost(parsed.hostname, rule.hostPattern);
       const pathOk = matchesPath(parsed.pathname, rule.pathPattern);
       if (rule === winner) return { rule, state: 'match' as RowState };
@@ -130,7 +130,7 @@ export function UrlTester({ rules, initialUrl }: UrlTesterProps): JSX.Element {
         <span><span class="pj-url-icon" aria-hidden="true">✅</span> match</span>
         <span><span class="pj-url-icon" aria-hidden="true">—</span> miss</span>
         <span><span class="pj-url-icon" aria-hidden="true">⚠</span> shadowed</span>
-        <span><span class="pj-url-icon" aria-hidden="true">○</span> disabled</span>
+        <span><span class="pj-url-icon" aria-hidden="true">○</span> inactive</span>
       </p>
       {rules.length === 0 ? (
         <p class="pj-url-empty">No rules to test against. Add one on the left.</p>

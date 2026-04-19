@@ -202,7 +202,7 @@ input:focus, select:focus, textarea:focus {
   position: relative;
 }
 .pj-rule-card--active { border-left-color: var(--pj-accent); }
-.pj-rule-card--disabled { opacity: 0.65; border-left-color: var(--pj-border); }
+.pj-rule-card--inactive { opacity: 0.65; border-left-color: var(--pj-border); }
 
 .pj-rule-num {
   font: 600 var(--pj-font-size-md) var(--pj-font-mono);
@@ -278,7 +278,7 @@ input:focus, select:focus, textarea:focus {
   align-items: center;
   gap: 2px;
 }
-/* Visually drop the Enabled/Disabled text in the card row — the toggle
+/* Visually drop the Active/Inactive text in the card row — the toggle
    itself + the card's greyed-out state convey the same information, and
    the visible label doubles the footprint of every card. Accessible name
    remains on the Toggle's role=switch button. */
@@ -401,7 +401,7 @@ input:focus, select:focus, textarea:focus {
   background: color-mix(in srgb, var(--pj-accent) 10%, transparent);
   color: var(--pj-fg-muted);
 }
-.pj-url-result[data-state="disabled"] { opacity: 0.5; }
+.pj-url-result[data-state="inactive"] { opacity: 0.5; }
 .pj-url-result[data-state="miss-host"],
 .pj-url-result[data-state="miss-path"] { color: var(--pj-fg-subtle); }
 .pj-url-icon { font-family: var(--pj-font-mono); }

@@ -38,7 +38,7 @@ test('renders JSON via the bundled starter template', async () => {
             pathPattern: '/internal/user/*',
             templateName: 'internal-user',
             variables: vars,
-            enabled: true,
+            active: true,
           },
         ],
       });

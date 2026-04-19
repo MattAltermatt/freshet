@@ -65,8 +65,8 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
     padding:3px 8px;
     border-radius:999px;
   }
-  .try-demo__tag--enabled  { background:rgba(26,127,55,.12);  color:#1a7f37; }
-  .try-demo__tag--disabled { background:rgba(101,109,118,.12); color:#656d76; }
+  .try-demo__tag--active   { background:rgba(26,127,55,.12);  color:#1a7f37; }
+  .try-demo__tag--inactive { background:rgba(101,109,118,.12); color:#656d76; }
   .try-demo__body { padding:16px 18px; }
   .try-demo__cols {
     display:grid;
@@ -243,12 +243,12 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
   <br><a class="try-install-link" href="https://github.com/MattAltermatt/freshet#install">Install Freshet (from source) →</a>
 </aside>
 
-<!-- ─── Service Health (self-hosted, enabled by default) ─── -->
+<!-- ─── Service Health (self-hosted, active by default) ─── -->
 <article class="try-demo" id="service-health">
   <div class="try-demo__head">
     <h2 class="try-demo__name">Service Health</h2>
     <code class="try-demo__pattern">mattaltermatt.github.io/freshet/examples/services/*</code>
-    <span class="try-demo__tag try-demo__tag--enabled">Enabled out of the box</span>
+    <span class="try-demo__tag try-demo__tag--active">Active out of the box</span>
   </div>
   <div class="try-demo__equation">
     Template <code>service-health.html</code>
@@ -292,12 +292,12 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
   </div>
 </article>
 
-<!-- ─── Incident Detail (self-hosted, enabled by default) ─── -->
+<!-- ─── Incident Detail (self-hosted, active by default) ─── -->
 <article class="try-demo" id="incident-detail">
   <div class="try-demo__head">
     <h2 class="try-demo__name">Incident Detail</h2>
     <code class="try-demo__pattern">mattaltermatt.github.io/freshet/examples/incidents/*</code>
-    <span class="try-demo__tag try-demo__tag--enabled">Enabled out of the box</span>
+    <span class="try-demo__tag try-demo__tag--active">Active out of the box</span>
   </div>
   <div class="try-demo__equation">
     Template <code>incident-detail.html</code>
@@ -340,12 +340,12 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
   </div>
 </article>
 
-<!-- ─── GitHub Repo (real API, disabled by default) ─── -->
+<!-- ─── GitHub Repo (real API, inactive by default) ─── -->
 <article class="try-demo" id="github-repo">
   <div class="try-demo__head">
     <h2 class="try-demo__name">GitHub Repo</h2>
     <code class="try-demo__pattern">api.github.com/repos/*/*</code>
-    <span class="try-demo__tag try-demo__tag--disabled">Disabled by default</span>
+    <span class="try-demo__tag try-demo__tag--inactive">Inactive by default</span>
   </div>
   <div class="try-demo__equation">
     Template <code>github-repo.html</code>
@@ -382,7 +382,7 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
   <div class="try-demo__cta">
     <a class="try-link" href="https://api.github.com/repos/facebook/react">Try it live →</a>
     <details>
-      <summary>How to enable</summary>
+      <summary>How to activate</summary>
       <ol>
         <li>Open Freshet → <strong>Options</strong> → <strong>Rules</strong> tab.</li>
         <li>Find <code>api.github.com</code> / <code>/repos/*/*</code> in the list (it has an "Example" pill).</li>
@@ -392,12 +392,12 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
   </div>
 </article>
 
-<!-- ─── Pokémon (real API, disabled by default) ─── -->
+<!-- ─── Pokémon (real API, inactive by default) ─── -->
 <article class="try-demo" id="pokemon">
   <div class="try-demo__head">
     <h2 class="try-demo__name">Pokémon (PokéAPI)</h2>
     <code class="try-demo__pattern">pokeapi.co/api/v2/pokemon/*</code>
-    <span class="try-demo__tag try-demo__tag--disabled">Disabled by default</span>
+    <span class="try-demo__tag try-demo__tag--inactive">Inactive by default</span>
   </div>
   <div class="try-demo__equation">
     Template <code>pokemon.html</code>
@@ -437,7 +437,7 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
   <div class="try-demo__cta">
     <a class="try-link" href="https://pokeapi.co/api/v2/pokemon/pikachu">Try it live →</a>
     <details>
-      <summary>How to enable</summary>
+      <summary>How to activate</summary>
       <ol>
         <li>Open Freshet → <strong>Options</strong> → <strong>Rules</strong> tab.</li>
         <li>Find <code>pokeapi.co</code> / <code>/api/v2/pokemon/*</code> in the list (it has an "Example" pill).</li>
@@ -447,12 +447,12 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
   </div>
 </article>
 
-<!-- ─── REST Countries (real API, disabled by default) ─── -->
+<!-- ─── REST Countries (real API, inactive by default) ─── -->
 <article class="try-demo" id="country">
   <div class="try-demo__head">
     <h2 class="try-demo__name">Countries (REST Countries)</h2>
     <code class="try-demo__pattern">restcountries.com/v3.1/name/*</code>
-    <span class="try-demo__tag try-demo__tag--disabled">Disabled by default</span>
+    <span class="try-demo__tag try-demo__tag--inactive">Inactive by default</span>
   </div>
   <div class="try-demo__equation">
     Template <code>country.html</code>
@@ -489,7 +489,7 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
   <div class="try-demo__cta">
     <a class="try-link" href="https://restcountries.com/v3.1/name/japan">Try it live →</a>
     <details>
-      <summary>How to enable</summary>
+      <summary>How to activate</summary>
       <ol>
         <li>Open Freshet → <strong>Options</strong> → <strong>Rules</strong> tab.</li>
         <li>Find <code>restcountries.com</code> / <code>/v3.1/name/*</code> in the list (it has an "Example" pill).</li>

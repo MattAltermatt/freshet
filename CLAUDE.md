@@ -84,11 +84,11 @@ Content script is declared **statically** in the manifest (`content_scripts: [{ 
 
 ## `Rule` schema
 
-`Rule` (`src/shared/types.ts`) carries the user-set fields (`hostPattern`, `pathPattern`, `templateName`, `variables`, `enabled`) plus two optional starter-only fields:
+`Rule` (`src/shared/types.ts`) carries the user-set fields (`hostPattern`, `pathPattern`, `templateName`, `variables`, `active`) plus two optional starter-only fields. The `active` field was renamed from `enabled` (2026-04-18); a one-time migration in `background.ts → migrateRulesEnabledToActive` converts old rules on next install/update.
 
 | Field | Type | Set by | Purpose |
 |---|---|---|---|
-| `isExample` | `boolean?` | seeder | Marks the rule as bundled with Freshet → renders the grey "Example ↗" pill on the rule card. Persists across enable/disable so users always see the provenance. |
+| `isExample` | `boolean?` | seeder | Marks the rule as bundled with Freshet → renders the grey "Example ↗" pill on the rule card. Persists across activate/deactivate so users always see the provenance. |
 | `exampleUrl` | `string?` | seeder | Canonical demo URL the Example pill links to (opens in new tab). Defined per starter in `STARTERS` in `src/background/background.ts`. |
 
 User-created rules don't set either field; they fall through the `RuleCard` pill check and render without the pill.

@@ -31,7 +31,7 @@ test('top-strip mounts in a shadow root on a rendered JSON page (no CSP violatio
         pathPattern: '/**',
         templateName: 'Smoke',
         variables: {},
-        enabled: true,
+        active: true,
       }],
       templates: { Smoke: '<h1 id="pj-smoke-rendered">hi</h1>' },
       hostSkipList: [],

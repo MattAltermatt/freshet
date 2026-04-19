@@ -8,7 +8,7 @@ const baseRule = (over: Partial<Rule> = {}): Rule => ({
   pathPattern: '**',
   templateName: 't',
   variables: {},
-  enabled: true,
+  active: true,
   ...over,
 });
 
@@ -32,10 +32,10 @@ describe('match', () => {
     expect(match('https://example.com/user/1?a=1&b=2', rules)).not.toBeNull();
   });
 
-  it('skips disabled rules', () => {
+  it('skips inactive rules', () => {
     const rules: Rule[] = [
-      baseRule({ id: 'a', enabled: false }),
-      baseRule({ id: 'b', enabled: true }),
+      baseRule({ id: 'a', active: false }),
+      baseRule({ id: 'b', active: true }),
     ];
     expect(match('https://example.com/x', rules)?.id).toBe('b');
   });

@@ -50,15 +50,15 @@ Paste a JSON URL into Chrome, get a table instead of a `<pre>`. Works against an
 
 ## Demos
 
-Freshet ships with five starter rules + templates so a fresh install is never a blank slate. Two render against self-hosted JSON we control (enabled out of the box, won't surprise anyone) and three target popular public APIs (disabled by default — flip the toggle to try them on real responses):
+Freshet ships with five starter rules + templates so a fresh install is never a blank slate. Two render against self-hosted JSON we control (active out of the box, won't surprise anyone) and three target popular public APIs (inactive by default — flip the toggle to try them on real responses):
 
 | Starter | Endpoint | Default | Try it |
 |---|---|---|---|
-| **Service Health** | `mattaltermatt.github.io/freshet/examples/services/*` | enabled | [payments.json →](https://mattaltermatt.github.io/freshet/examples/services/payments.json) |
-| **Incident Detail** | `mattaltermatt.github.io/freshet/examples/incidents/*` | enabled | [INC-2026-001 →](https://mattaltermatt.github.io/freshet/examples/incidents/INC-2026-001.json) |
-| **GitHub Repo** | `api.github.com/repos/*/*` | disabled | [facebook/react →](https://api.github.com/repos/facebook/react) |
-| **Pokémon** | `pokeapi.co/api/v2/pokemon/*` | disabled | [pikachu →](https://pokeapi.co/api/v2/pokemon/pikachu) |
-| **Countries** | `restcountries.com/v3.1/name/*` | disabled | [japan →](https://restcountries.com/v3.1/name/japan) |
+| **Service Health** | `mattaltermatt.github.io/freshet/examples/services/*` | active | [payments.json →](https://mattaltermatt.github.io/freshet/examples/services/payments.json) |
+| **Incident Detail** | `mattaltermatt.github.io/freshet/examples/incidents/*` | active | [INC-2026-001 →](https://mattaltermatt.github.io/freshet/examples/incidents/INC-2026-001.json) |
+| **GitHub Repo** | `api.github.com/repos/*/*` | inactive | [facebook/react →](https://api.github.com/repos/facebook/react) |
+| **Pokémon** | `pokeapi.co/api/v2/pokemon/*` | inactive | [pikachu →](https://pokeapi.co/api/v2/pokemon/pikachu) |
+| **Countries** | `restcountries.com/v3.1/name/*` | inactive | [japan →](https://restcountries.com/v3.1/name/japan) |
 
 The full marketing page with raw-JSON-vs-rendered side-by-sides lives at [**mattaltermatt.github.io/freshet/try/**](https://mattaltermatt.github.io/freshet/try/).
 
@@ -95,7 +95,7 @@ The fastest way is to click any "Try it live" link from the [Demos](#demos) sect
    - Path pattern: `/internal/user/*`
    - Template: pick from the seeded list, or your own
    - Variables: `env=prod`, `adminHost=admin.example.com`, etc. — accessible as `{{ vars.env }}` in the template
-   - Enabled ✓
+   - Active ✓
 4. Click **Save** in the dialog (autosaves to `chrome.storage`).
 5. Navigate to a matching URL. The JSON response is replaced with rendered HTML and a top control strip (env chip, raw/rendered toggle, copy URL).
 

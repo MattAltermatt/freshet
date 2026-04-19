@@ -32,7 +32,7 @@ test('liquidjs renders in an MV3 content script without CSP errors', async () =>
             pathPattern: '/internal/user/*',
             templateName: 'smoke',
             variables: { env: 'qa' },
-            enabled: true,
+            active: true,
           },
         ],
         templates: {

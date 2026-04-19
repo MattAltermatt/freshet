@@ -70,7 +70,7 @@ describe('<TemplatesTab> disclosures', () => {
         templates={{ 'internal-user': '<div>hi</div>' }}
         onTemplatesChange={() => {}}
         rules={[]}
-        onDisableRules={() => {}}
+        onDeactivateRules={() => {}}
       />,
     );
     // Wait for initial load (collapse state async)
@@ -121,7 +121,7 @@ describe('<TemplatesTab> disclosures', () => {
         templates={{ 'internal-user': '<div>hi</div>' }}
         onTemplatesChange={() => {}}
         rules={[]}
-        onDisableRules={() => {}}
+        onDeactivateRules={() => {}}
       />,
     );
     await waitFor(() => expect(container.querySelector('[data-area="template"]')).toBeTruthy());
@@ -147,7 +147,7 @@ describe('<TemplatesTab> disclosures', () => {
         templates={{ 'internal-user': '<div>hi</div>' }}
         onTemplatesChange={() => {}}
         rules={[]}
-        onDisableRules={() => {}}
+        onDeactivateRules={() => {}}
       />,
     );
     await waitFor(() => expect(container.querySelector('[data-area="template"]')).toBeTruthy());
@@ -174,7 +174,7 @@ describe('<TemplatesTab> disclosures', () => {
         templates={{ 'internal-user': '<div>hi</div>' }}
         onTemplatesChange={() => {}}
         rules={[]}
-        onDisableRules={() => {}}
+        onDeactivateRules={() => {}}
       />,
     );
     await waitFor(() => expect(container.querySelector('[data-area="template"]')).toBeTruthy());
@@ -204,7 +204,7 @@ describe('<TemplatesTab> disclosures', () => {
         templates={{ 'internal-user': '<div>hi</div>' }}
         onTemplatesChange={() => {}}
         rules={[]}
-        onDisableRules={() => {}}
+        onDeactivateRules={() => {}}
       />,
     );
     await waitFor(() => expect(container.querySelector('.pj-split-divider')).toBeTruthy());

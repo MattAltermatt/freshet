@@ -3,8 +3,8 @@ import { render, screen, fireEvent, within } from '@testing-library/preact';
 import type { Rule } from '../../shared/types';
 import { UrlTester } from './UrlTester';
 
-function r(id: string, host: string, path = '/**', enabled = true): Rule {
-  return { id, hostPattern: host, pathPattern: path, templateName: 't', variables: {}, enabled };
+function r(id: string, host: string, path = '/**', active = true): Rule {
+  return { id, hostPattern: host, pathPattern: path, templateName: 't', variables: {}, active };
 }
 
 function typeUrl(url: string): void {
@@ -27,11 +27,11 @@ describe('<UrlTester>', () => {
     expect(screen.getByText(/host doesn't match/i)).toBeInTheDocument();
   });
 
-  it('treats disabled rules as disabled, not miss', () => {
+  it('treats inactive rules as inactive, not miss', () => {
     render(<UrlTester rules={[r('a', '*.api.com', '/**', false)]} />);
     typeUrl('https://foo.api.com/');
     const results = screen.getAllByRole('listitem');
-    expect(within(results[0]!).getByText(/^disabled$/i)).toBeInTheDocument();
+    expect(within(results[0]!).getByText(/^inactive$/i)).toBeInTheDocument();
   });
 
   it('idle with no URL input', () => {

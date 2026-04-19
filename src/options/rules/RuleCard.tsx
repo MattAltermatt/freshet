@@ -6,7 +6,7 @@ export interface RuleCardProps {
   rule: Rule;
   index: number;
   total: number;
-  onToggle: (enabled: boolean) => void;
+  onToggle: (active: boolean) => void;
   onEdit: () => void;
   onMoveUp: () => void;
   onMoveDown: () => void;
@@ -26,7 +26,7 @@ export function RuleCard({
   const varCount = Object.keys(rule.variables).length;
   return (
     <article
-      class={`pj-rule-card${rule.enabled ? ' pj-rule-card--active' : ' pj-rule-card--disabled'}`}
+      class={`pj-rule-card${rule.active ? ' pj-rule-card--active' : ' pj-rule-card--inactive'}`}
     >
       <div class="pj-rule-num" aria-label={`Rule ${index + 1}`}>{index + 1}</div>
       <button type="button" class="pj-rule-body" onClick={onEdit}>
@@ -62,7 +62,7 @@ export function RuleCard({
         ) : null}
       </button>
       <div class="pj-rule-controls" onClick={(e) => e.stopPropagation()}>
-        <Toggle label="Enabled" checked={rule.enabled} onChange={onToggle} />
+        <Toggle label="Active" checked={rule.active} onChange={onToggle} />
         <button
           type="button"
           class="pj-rule-iconbtn"

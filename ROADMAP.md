@@ -27,7 +27,7 @@ Spec: `docs/superpowers/specs/2026-04-18-phase3-real-world-examples-design.md`. 
 - ✅ Content-script + PreviewIframe write `data-theme` so demo templates honor the user's Freshet theme on real pages AND in the editor preview (commit `04e03c4`).
 - ✅ URL-from-ID convention: starter JSONs carry only IDs / slugs / handles; templates build canonical URLs in-template (commit `c910c57`).
 - ✅ First-run popup banner — dismiss-once via `pj_first_run_dismissed`, auto-hides once user creates their own rule, opens docs `/try/` page (commit `5d19ec7`).
-- ✅ Docs `/try/` marketing page at `docs/try/index.md` — 5 demo blocks with raw JSON + try-live links + how-to-enable for disabled starters (commit `4e29b54`).
+- ✅ Docs `/try/` marketing page at `docs/try/index.md` — 5 demo blocks with raw JSON + try-live links + how-to-activate for inactive starters (commit `4e29b54`).
 
 **Remaining before FF-merge:**
 - README + ROADMAP + CLAUDE.md updates (this commit).

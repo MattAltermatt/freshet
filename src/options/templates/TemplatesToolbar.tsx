@@ -9,7 +9,7 @@ export interface TemplatesToolbarProps {
   rules: Rule[];
   onSelect: (name: string) => void;
   onChange: (next: Templates) => void;
-  onDisableRules: (ruleIds: string[]) => void;
+  onDeactivateRules: (ruleIds: string[]) => void;
 }
 
 function promptUnique(
@@ -34,7 +34,7 @@ export function TemplatesToolbar({
   rules,
   onSelect,
   onChange,
-  onDisableRules,
+  onDeactivateRules,
 }: TemplatesToolbarProps): JSX.Element {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const confirmDialogRef = useRef<HTMLDivElement>(null);
@@ -83,7 +83,7 @@ export function TemplatesToolbar({
     delete next[confirmDelete];
     onChange(next);
     if (affectedRules.length > 0) {
-      onDisableRules(affectedRules.map((r) => r.id));
+      onDeactivateRules(affectedRules.map((r) => r.id));
     }
     const remaining = Object.keys(next);
     onSelect(remaining[0] ?? '');
@@ -153,7 +153,7 @@ export function TemplatesToolbar({
                   <p>
                     <strong>{affectedRules.length}</strong>{' '}
                     rule{affectedRules.length === 1 ? '' : 's'} use this template. Deleting
-                    will <strong>disable</strong> {affectedRules.length === 1 ? 'it' : 'them'}:
+                    will <strong>deactivate</strong> {affectedRules.length === 1 ? 'it' : 'them'}:
                   </p>
                   <ul class="pj-affected-rules">
                     {affectedRules.map((r) => (
@@ -175,7 +175,7 @@ export function TemplatesToolbar({
               </Button>
               <Button variant="danger" onClick={confirmDeleteCommit}>
                 {affectedRules.length > 0
-                  ? `Delete + disable ${affectedRules.length} rule${affectedRules.length === 1 ? '' : 's'}`
+                  ? `Delete + deactivate ${affectedRules.length} rule${affectedRules.length === 1 ? '' : 's'}`
                   : 'Delete'}
               </Button>
             </footer>

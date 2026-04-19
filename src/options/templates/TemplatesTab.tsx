@@ -13,7 +13,7 @@ export interface TemplatesTabProps {
   templates: Templates;
   onTemplatesChange: (next: Templates) => void;
   rules: Rule[];
-  onDisableRules: (ruleIds: string[]) => void;
+  onDeactivateRules: (ruleIds: string[]) => void;
   directive?: OptionsDirective | null;
   onDirectiveHandled?: () => void;
 }
@@ -72,7 +72,7 @@ export function TemplatesTab({
   templates,
   onTemplatesChange,
   rules,
-  onDisableRules,
+  onDeactivateRules,
   directive,
   onDirectiveHandled,
 }: TemplatesTabProps): JSX.Element {
@@ -191,7 +191,7 @@ export function TemplatesTab({
         rules={rules}
         onSelect={(name) => setCurrent(name || null)}
         onChange={onTemplatesChange}
-        onDisableRules={onDisableRules}
+        onDeactivateRules={onDeactivateRules}
       />
       {active === null ? (
         <div class="pj-empty">

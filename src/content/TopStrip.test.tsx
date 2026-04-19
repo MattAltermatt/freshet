@@ -41,7 +41,7 @@ function baseProps() {
       pathPattern: '/**',
       templateName: 'internal-user',
       variables: {} as Record<string, string>,
-      enabled: true,
+      active: true,
     },
     renderedHtml: '<h1>hi</h1>',
     rawJsonText: '{"a":1}',

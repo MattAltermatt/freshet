@@ -21,6 +21,7 @@ import { appearanceFor, type BadgeSignal } from './badge';
 async function main(): Promise<void> {
   await maybeStorageAreaMigration();
   await maybeSchemaMigration();
+  await migrateRulesEnabledToActive();
   await seedStartersIfEmpty();
 }
 
@@ -41,7 +42,7 @@ const STARTERS: Starter[] = [
       pathPattern: '/freshet/examples/services/*',
       templateName: 'service-health',
       variables: { env: 'production' },
-      enabled: true,
+      active: true,
       exampleUrl: 'https://mattaltermatt.github.io/freshet/examples/services/payments.json',
     },
   },
@@ -54,7 +55,7 @@ const STARTERS: Starter[] = [
       pathPattern: '/freshet/examples/incidents/*',
       templateName: 'incident-detail',
       variables: {},
-      enabled: true,
+      active: true,
       exampleUrl: 'https://mattaltermatt.github.io/freshet/examples/incidents/INC-2026-001.json',
     },
   },
@@ -67,7 +68,7 @@ const STARTERS: Starter[] = [
       pathPattern: '/repos/*/*',
       templateName: 'github-repo',
       variables: {},
-      enabled: false,
+      active: false,
       exampleUrl: 'https://api.github.com/repos/facebook/react',
     },
   },
@@ -80,7 +81,7 @@ const STARTERS: Starter[] = [
       pathPattern: '/api/v2/pokemon/*',
       templateName: 'pokemon',
       variables: {},
-      enabled: false,
+      active: false,
       exampleUrl: 'https://pokeapi.co/api/v2/pokemon/pikachu',
     },
   },
@@ -93,7 +94,7 @@ const STARTERS: Starter[] = [
       pathPattern: '/v3.1/name/*',
       templateName: 'country',
       variables: {},
-      enabled: false,
+      active: false,
       exampleUrl: 'https://restcountries.com/v3.1/name/japan',
     },
   },
@@ -132,6 +133,25 @@ async function seedStartersIfEmpty(): Promise<void> {
     })),
   );
   await localStorage.setSchemaVersion(2);
+}
+
+async function migrateRulesEnabledToActive(): Promise<void> {
+  try {
+    const { rules } = await chrome.storage.local.get('rules');
+    if (!Array.isArray(rules)) return;
+    let changed = false;
+    const next = rules.map((r) => {
+      if (r && typeof r === 'object' && 'enabled' in r && !('active' in r)) {
+        changed = true;
+        const { enabled, ...rest } = r as { enabled: boolean } & Record<string, unknown>;
+        return { ...rest, active: enabled };
+      }
+      return r;
+    });
+    if (changed) await chrome.storage.local.set({ rules: next });
+  } catch (err) {
+    console.warn('[freshet] rules enabled→active migration skipped:', err);
+  }
 }
 
 async function maybeStorageAreaMigration(): Promise<void> {

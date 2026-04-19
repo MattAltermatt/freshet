@@ -96,14 +96,14 @@ export function App(): JSX.Element {
     });
   };
 
-  const handleDisableRules = (ruleIds: string[]): void => {
+  const handleDeactivateRules = (ruleIds: string[]): void => {
     const idSet = new Set(ruleIds);
     const snapshot = [...rules];
-    const next = rules.map((r) => (idSet.has(r.id) ? { ...r, enabled: false } : r));
+    const next = rules.map((r) => (idSet.has(r.id) ? { ...r, active: false } : r));
     void writeRules(next);
     toast.push({
       variant: 'info',
-      message: `Disabled ${ruleIds.length} rule${ruleIds.length === 1 ? '' : 's'}`,
+      message: `Deactivated ${ruleIds.length} rule${ruleIds.length === 1 ? '' : 's'}`,
       ttlMs: 8000,
       action: {
         label: 'Undo',
@@ -145,7 +145,7 @@ export function App(): JSX.Element {
             templates={templates}
             onTemplatesChange={(next) => void writeTemplates(next)}
             rules={rules}
-            onDisableRules={handleDisableRules}
+            onDeactivateRules={handleDeactivateRules}
             directive={directive}
             onDirectiveHandled={() => setDirective(null)}
           />

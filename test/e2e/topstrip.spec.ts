@@ -31,7 +31,7 @@ test('top-strip renders with rule name + env chip + toggle-group + menu on a mat
         pathPattern: '/**',
         templateName: 'Example',
         variables: { env: 'staging' },
-        enabled: true,
+        active: true,
       }],
       templates: { Example: '<h1 id="pj-rendered">rendered</h1>' },
       hostSkipList: [],
@@ -75,7 +75,7 @@ test('toggle-raw message flips the strip into raw mode', async () => {
       pj_storage_area: 'local',
       rules: [{
         id: 'r-k', hostPattern: '127.0.0.1', pathPattern: '/**',
-        templateName: 'K', variables: {}, enabled: true,
+        templateName: 'K', variables: {}, active: true,
       }],
       templates: { K: '<h1 id="pj-rendered">rendered</h1>' },
       hostSkipList: [],
@@ -116,7 +116,7 @@ test('skip this host adds hostname to hostSkipList', async () => {
       pj_storage_area: 'local',
       rules: [{
         id: 'r-s', hostPattern: '127.0.0.1', pathPattern: '/**',
-        templateName: 'S', variables: {}, enabled: true,
+        templateName: 'S', variables: {}, active: true,
       }],
       templates: { S: '<h1 id="pj-rendered">rendered</h1>' },
       hostSkipList: [],

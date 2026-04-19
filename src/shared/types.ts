@@ -6,7 +6,7 @@ export interface Rule {
   pathPattern: string;
   templateName: string;
   variables: Variables;
-  enabled: boolean;
+  active: boolean;
   /** True if this rule was bundled by the install seed; informational only. */
   isExample?: boolean;
   /** Canonical demo URL for an example rule — opened when the user clicks the Example pill. */

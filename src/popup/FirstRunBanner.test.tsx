@@ -55,7 +55,7 @@ const exampleRule: Rule = {
   pathPattern: '/',
   templateName: 't',
   variables: {},
-  enabled: true,
+  active: true,
   isExample: true,
 };
 const userRule: Rule = { ...exampleRule, id: 'user-y', isExample: false };

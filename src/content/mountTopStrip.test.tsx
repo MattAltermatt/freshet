@@ -38,7 +38,7 @@ const baseRule = {
   pathPattern: '/**',
   templateName: 'x',
   variables: {},
-  enabled: true,
+  active: true,
 };
 
 test('mounts a host element prepended to document.body by default', () => {

@@ -32,7 +32,7 @@ function blankRule(templates: Templates, host?: string, path?: string): Rule {
     pathPattern: path && path.length > 0 ? path : '/',
     templateName: Object.keys(templates)[0] ?? '',
     variables: {},
-    enabled: true,
+    active: true,
   };
 }
 
@@ -145,9 +145,9 @@ export function RuleEditModal({
         <header class="pj-modal-header">
           <h3>{title}</h3>
           <Toggle
-            label={rule.enabled ? 'Enabled' : 'Disabled'}
-            checked={rule.enabled}
-            onChange={(en) => setRule({ ...rule, enabled: en })}
+            label={rule.active ? 'Active' : 'Inactive'}
+            checked={rule.active}
+            onChange={(a) => setRule({ ...rule, active: a })}
           />
         </header>
 

@@ -29,7 +29,7 @@ for (const theme of ['light', 'dark'] as const) {
         pj_storage_area: 'local',
         rules: [{
           id: 'r-a11y', hostPattern: '127.0.0.1', pathPattern: '/**',
-          templateName: 'A', variables: { env: 'staging' }, enabled: true,
+          templateName: 'A', variables: { env: 'staging' }, active: true,
         }],
         templates: { A: '<h1>a</h1>' },
         hostSkipList: [],
