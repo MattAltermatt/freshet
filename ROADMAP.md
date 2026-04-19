@@ -4,14 +4,14 @@
 
 Phases 1–3 shipped (MV3 scaffold + pure cores, UX polish across options/popup/top-strip, real-world starter examples + `/try/` marketing page). The extension is feature-complete for v1.
 
-Submission punch list, in order:
+Submission punch list:
 
-1. **Screenshots (1280×800)** — options page (Rules + Templates, light + dark), popup (matched + unmatched), rendered page with top-strip. Capture against real bundled starters so they match the live experience.
-2. **Store listing copy** — short description (≤132 chars), detailed description, single-purpose statement, permission justifications for `<all_urls>`, `storage`, `tabs`.
-3. **Public support contact** — GitHub Issues as the public support URL.
-4. **Version bump** — `0.1.0` → `1.0.0` in `vite.config.ts` manifest + `package.json`.
-5. **Build + zip `dist/`** — `pnpm build && zip -r freshet-v1.0.0.zip dist`.
-6. **Submit for review** — typical turnaround 1–5 business days.
+1. ✅ **Version bump** — `0.1.0` → `1.0.0` in `vite.config.ts` manifest + `package.json`.
+2. ✅ **Build + zip `dist/`** — `pnpm build && zip -r freshet-v1.0.0.zip dist` (196 KB).
+3. ✅ **Screenshots (1280×800)** — 5 shots at `docs/assets/cws-screenshots/`. Hero is a two-Chrome-frame before/after composite (raw JSON → rendered); the other 4 are options page (Rules + Templates) and rendered pages (incident-detail + github-repo). Regenerate with `node scripts/cws-screenshots.mjs`.
+4. ✅ **Store listing copy** — drafted in `docs/superpowers/cws-listing.md` (detailed description, single-purpose statement, permission justifications for `storage`, `tabs`, `<all_urls>`, privacy disclosures, category).
+5. ✅ **Public support contact** — GitHub Issues (`https://github.com/MattAltermatt/freshet/issues`).
+6. ⏳ **Submit for review** — paste copy into CWS dashboard, upload zip + screenshots, submit. Typical turnaround 1–5 business days.
 
 Pre-publication hardening already in place: minimal-permission set (`scripting` already dropped), regex escape guard on the matcher, 16/48/128 icons in `public/`, privacy policy at `mattaltermatt.github.io/freshet/privacy/`, Web Store developer account registered.
 
