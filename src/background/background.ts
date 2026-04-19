@@ -46,7 +46,7 @@ async function maybeStorageAreaMigration(): Promise<void> {
       await migrateSyncToLocal(chrome.storage);
     }
   } catch (err) {
-    console.warn('[present-json] storage-area migration skipped:', err);
+    console.warn('[freshet] storage-area migration skipped:', err);
   }
 }
 
@@ -58,12 +58,12 @@ async function maybeSchemaMigration(): Promise<void> {
     const result = await migrateTemplatesToV2(storage);
     if (!result.ok) {
       console.warn(
-        '[present-json] template migration rolled back; failing template IDs:',
+        '[freshet] template migration rolled back; failing template IDs:',
         result.failed,
       );
     }
   } catch (err) {
-    console.warn('[present-json] schema migration skipped:', err);
+    console.warn('[freshet] schema migration skipped:', err);
   }
 }
 

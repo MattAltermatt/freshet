@@ -41,7 +41,7 @@ export function Header({ tab, onTab, themePref, onThemePref }: HeaderProps): JSX
           <span class="pj-logo-brace">{'{'}</span>
           <span class="pj-logo-bracket">{'>'}</span>
         </span>
-        <h1>Present-JSON</h1>
+        <h1>Freshet</h1>
       </div>
       <nav class="pj-tabs">
         <button

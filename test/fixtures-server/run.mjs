@@ -31,8 +31,8 @@ const server = http.createServer((req, res) => {
   }
   if (pathname === '/') {
     res.writeHead(200, { 'Content-Type': 'text/html' });
-    res.end(`<!doctype html><meta charset=utf-8><title>Present-JSON fixtures</title>
-<h1>Present-JSON fixture server</h1>
+    res.end(`<!doctype html><meta charset=utf-8><title>Freshet fixtures</title>
+<h1>Freshet fixture server</h1>
 <p>Try these URLs:</p>
 <ul>
 ${Object.keys(DB).map((p) => `<li><a href="${p}">${p}</a></li>`).join('\n')}

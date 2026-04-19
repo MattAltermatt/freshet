@@ -1,7 +1,7 @@
 {
-  "name": "present-json",
+  "name": "freshet",
   "version": "0.1.0",
-  "description": "Chrome extension that renders JSON responses as user-templated HTML.",
+  "description": "Chrome extension that renders API responses as user-templated HTML, with Liquid.",
   "private": true,
   "type": "module",
   "license": "MIT",
@@ -10,13 +10,13 @@
     "email": "1435066+MattAltermatt@users.noreply.github.com",
     "url": "https://github.com/MattAltermatt"
   },
-  "homepage": "https://github.com/MattAltermatt/present-json#readme",
+  "homepage": "https://github.com/MattAltermatt/freshet#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MattAltermatt/present-json.git"
+    "url": "git+https://github.com/MattAltermatt/freshet.git"
   },
   "bugs": {
-    "url": "https://github.com/MattAltermatt/present-json/issues"
+    "url": "https://github.com/MattAltermatt/freshet/issues"
   },
   "keywords": [
     "chrome-extension",

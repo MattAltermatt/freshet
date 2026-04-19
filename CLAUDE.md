@@ -1,6 +1,6 @@
-# Present-JSON
+# Freshet
 
-Chrome MV3 extension that renders JSON responses as user-templated HTML.
+Chrome MV3 extension that renders API responses as user-templated HTML, with Liquid. Previously "Present-JSON"; renamed 2026-04-18.
 
 ## Commands
 
@@ -44,7 +44,7 @@ Content script is declared **statically** in the manifest (`content_scripts: [{ 
 
 ## Gotchas
 
-- **Reload the extension after every build.** `pnpm build` writes to `dist/` but Chrome caches the loaded extension. Go to `chrome://extensions/`, find Present-JSON, click the circular reload arrow. Service worker + content script + options / popup all refresh. Any "my change isn't showing up" is almost always this.
+- **Reload the extension after every build.** `pnpm build` writes to `dist/` but Chrome caches the loaded extension. Go to `chrome://extensions/`, find Freshet, click the circular reload arrow. Service worker + content script + options / popup all refresh. Any "my change isn't showing up" is almost always this.
 - **Security hook blocks DOM-injection patterns** in Write/Edit tool params. When creating or modifying a file that contains `el.inner` + `HTML = ...`, use a Bash heredoc (`cat > path << 'EOF'`) instead — the hook inspects tool params, not file state.
 - **TZ=UTC** is prefixed on the `test` and `test:watch` scripts so `formatDate` custom formats match fixture expectations on any machine.
 - **Template engine is LiquidJS** (Phase 2 Plan 2, 2026-04-18). Runtime interpreter — no codegen, no runtime JS-eval. This matters for MV3: the extension CSP disallows `'unsafe-eval'`, which blocks Handlebars-style compile-to-function engines (a Handlebars attempt hit this blocker). The `test/e2e/csp-smoke.spec.ts` test guards against CSP regressions on the render path.

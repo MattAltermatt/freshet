@@ -3,13 +3,13 @@ title: Privacy Policy
 permalink: /privacy/
 ---
 
-# Present-JSON Privacy Policy
+# Freshet Privacy Policy
 
 **Last updated: 2026-04-17**
 
 ## Summary
 
-Present-JSON is a Chrome extension that renders JSON responses as user-templated HTML, locally, in your browser. It does not collect, transmit, or share any personal information.
+Freshet is a Chrome extension that renders JSON responses as user-templated HTML, locally, in your browser. It does not collect, transmit, or share any personal information.
 
 ## Data the extension stores
 
@@ -56,11 +56,11 @@ There are no third-party services, analytics, advertising, or telemetry provider
 
 ## Changes to this policy
 
-If this policy materially changes, the "Last updated" date at the top of this page will be revised, and the changes will be summarized in the [project changelog](https://github.com/MattAltermatt/present-json/releases).
+If this policy materially changes, the "Last updated" date at the top of this page will be revised, and the changes will be summarized in the [project changelog](https://github.com/MattAltermatt/freshet/releases).
 
 ## Contact
 
 Questions, concerns, or reports of policy violations:
 
-- **GitHub Issues** (preferred): [github.com/MattAltermatt/present-json/issues](https://github.com/MattAltermatt/present-json/issues)
+- **GitHub Issues** (preferred): [github.com/MattAltermatt/freshet/issues](https://github.com/MattAltermatt/freshet/issues)
 - **Email** (for private or security matters only): altermatt@gmail.com

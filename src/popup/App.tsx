@@ -87,7 +87,7 @@ export function App(): JSX.Element {
           <span class="pj-logo-brace">{'{'}</span>
           <span class="pj-logo-bracket">{'>'}</span>
         </span>
-        <h1>Present-JSON</h1>
+        <h1>Freshet</h1>
       </header>
       <section class="pj-popup-url" aria-label="Active tab URL">
         <span class="pj-popup-label">Tab URL</span>
@@ -139,7 +139,7 @@ export function App(): JSX.Element {
           disabled={!tab.host}
           label={
             tab.host
-              ? `Skip Present-JSON on ${tab.host}`
+              ? `Skip Freshet on ${tab.host}`
               : 'Skip toggle unavailable on this page'
           }
         />

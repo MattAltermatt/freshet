@@ -4,9 +4,9 @@ import { crx, defineManifest } from '@crxjs/vite-plugin';
 
 const manifest = defineManifest({
   manifest_version: 3,
-  name: 'Present-JSON',
+  name: 'Freshet',
   version: '0.1.0',
-  description: 'Render JSON responses as user-templated HTML.',
+  description: 'Render API responses as the UI you wish they shipped with — Liquid templates, per-URL rules.',
   action: {
     default_popup: 'src/popup/popup.html',
     default_icon: {

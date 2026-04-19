@@ -89,8 +89,8 @@ try {
       </style></head><body>
         <div class="mark">${bigSvg}</div>
         <div class="words">
-          <h1>Present-JSON</h1>
-          <p>Render JSON responses as user-templated HTML.</p>
+          <h1>Freshet</h1>
+          <p>Render API responses as the UI you wish they shipped with.</p>
         </div>
       </body></html>`,
       { waitUntil: 'load' },

@@ -60,15 +60,15 @@ export function ShortcutsFooter(): JSX.Element {
         </button>
         <nav class="pj-shortcuts-links" aria-label="Project links">
           <a
-            href="https://mattaltermatt.github.io/present-json/"
+            href="https://mattaltermatt.github.io/freshet/"
             target="_blank"
             rel="noopener noreferrer"
           >
-            Present-JSON site
+            Freshet site
             <span class="pj-ext-arrow" aria-hidden="true">↗</span>
           </a>
           <a
-            href="https://github.com/MattAltermatt/present-json"
+            href="https://github.com/MattAltermatt/freshet"
             target="_blank"
             rel="noopener noreferrer"
           >

@@ -38,7 +38,7 @@ const REASONS: Record<RowState, string> = {
 };
 
 const CHIPS: string[] = [
-  'https://api.github.com/repos/MattAltermatt/present-json',
+  'https://api.github.com/repos/MattAltermatt/freshet',
   'http://127.0.0.1:4391/internal/user/1234',
 ];
 

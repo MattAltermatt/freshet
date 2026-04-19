@@ -1,4 +1,4 @@
-# Present-JSON brand mark
+# Freshet brand mark
 
 ## Concept
 

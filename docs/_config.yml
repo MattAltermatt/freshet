@@ -1,8 +1,8 @@
-title: Present-JSON
-description: A Chrome extension that renders JSON responses as user-templated HTML.
+title: Freshet
+description: Render API responses as the UI you wish they shipped with — Liquid templates, per-URL rules.
 theme: jekyll-theme-minimal
 logo: /assets/logo.png
 url: https://mattaltermatt.github.io
-baseurl: /present-json
+baseurl: /freshet
 exclude:
   - superpowers/

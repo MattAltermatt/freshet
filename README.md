@@ -1,12 +1,12 @@
 <p align="center">
-  <a href="https://mattaltermatt.github.io/present-json/">
-    <img src="docs/assets/logo.png" alt="Present-JSON logo" width="128" height="128">
+  <a href="https://mattaltermatt.github.io/freshet/">
+    <img src="docs/assets/logo.png" alt="Freshet logo" width="128" height="128">
   </a>
 </p>
 
-# Present-JSON
+# Freshet
 
-> A Chrome extension that renders JSON API responses as readable, user-templated HTML — so the internal admin URL you keep squinting at becomes a proper dashboard.
+> A Chrome extension that renders API responses as the UI you wish they shipped with — Liquid templates, per-URL rules. Turn the internal admin JSON URL you keep squinting at into a proper dashboard.
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Manifest V3](https://img.shields.io/badge/Chrome-MV3-brightgreen.svg)
@@ -51,8 +51,8 @@ Paste a JSON URL into Chrome, get a table instead of a `<pre>`. Works against an
 
 1. Clone the repo and build:
    ```bash
-   git clone https://github.com/MattAltermatt/present-json.git
-   cd present-json
+   git clone https://github.com/MattAltermatt/freshet.git
+   cd freshet
    pnpm install
    pnpm build
    ```
@@ -124,7 +124,7 @@ This extension requests these permissions and nothing else:
 | `tabs` | The popup reads the active tab's URL to show match status and host-skip state. |
 | `<all_urls>` host permission | The content script is statically registered against all pages so it can check user-configured rules. |
 
-**Privacy:** no network requests are made by the extension itself. No analytics, no telemetry, no external hosts contacted. All data lives in your `chrome.storage` (synced across your own Chrome signed-in devices, or local-only if you exceed the 90 KB sync budget). No data leaves your browser. Full policy: [mattaltermatt.github.io/present-json/privacy/](https://mattaltermatt.github.io/present-json/privacy/).
+**Privacy:** no network requests are made by the extension itself. No analytics, no telemetry, no external hosts contacted. All data lives in your `chrome.storage` (synced across your own Chrome signed-in devices, or local-only if you exceed the 90 KB sync budget). No data leaves your browser. Full policy: [mattaltermatt.github.io/freshet/privacy/](https://mattaltermatt.github.io/freshet/privacy/).
 
 ## Development
 
@@ -201,7 +201,7 @@ The cores (`engine/` + `matcher/`) are deliberately free of `chrome.*` calls —
 
 ## Contributing
 
-Issues and PRs welcome at [github.com/MattAltermatt/present-json](https://github.com/MattAltermatt/present-json/issues).
+Issues and PRs welcome at [github.com/MattAltermatt/freshet](https://github.com/MattAltermatt/freshet/issues).
 
 Before opening a PR:
 

@@ -7,7 +7,7 @@ describe('truncateUrlMiddle', () => {
   });
 
   it('truncates the middle with an ellipsis when too long', () => {
-    const url = 'https://api.github.com/repos/MattAltermatt/present-json/issues/123';
+    const url = 'https://api.github.com/repos/MattAltermatt/freshet/issues/123';
     const out = truncateUrlMiddle(url, 40);
     expect(out.length).toBeLessThanOrEqual(40);
     expect(out).toContain('…');

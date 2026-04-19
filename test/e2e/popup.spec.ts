@@ -78,7 +78,7 @@ test('popup skip toggle updates hostSkipList', async () => {
   await popup.goto(`chrome-extension://${extId}/src/popup/popup.html`);
 
   await popup
-    .getByRole('switch', { name: /Skip Present-JSON on example\.com/ })
+    .getByRole('switch', { name: /Skip Freshet on example\.com/ })
     .click();
 
   const stored = await worker.evaluate(
