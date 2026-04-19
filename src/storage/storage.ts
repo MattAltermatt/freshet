@@ -6,6 +6,24 @@ const K_SKIP = 'hostSkipList';
 const K_AREA = 'pj_storage_area';
 const K_SCHEMA = 'schemaVersion';
 const K_MIGRATED = 'pj_migrated_v2';
+const K_SAMPLE = 'pj_sample_json';
+const K_FLAGS = 'pj_import_flags';
+
+export type SampleJsonMap = Record<string, string>;
+
+export interface ImportFlag {
+  field: string;
+  pattern: string;
+  matchedText: string;
+}
+
+export interface ImportFlagEntry {
+  source: 'import' | 'append';
+  importedAt: string;
+  flags: ImportFlag[];
+}
+
+export type ImportFlagMap = Record<string, ImportFlagEntry>;
 
 export interface Storage {
   getRules(): Promise<Rule[]>;
@@ -17,6 +35,10 @@ export interface Storage {
   getSchemaVersion(): Promise<number | undefined>;
   setSchemaVersion(version: number): Promise<void>;
   setMigratedList(names: string[]): Promise<void>;
+  getSampleJsonMap(): Promise<SampleJsonMap>;
+  setSampleJsonMap(map: SampleJsonMap): Promise<void>;
+  getImportFlags(): Promise<ImportFlagMap>;
+  setImportFlags(map: ImportFlagMap): Promise<void>;
 }
 
 export async function createStorage(api: typeof chrome.storage): Promise<Storage> {
@@ -40,5 +62,9 @@ export async function createStorage(api: typeof chrome.storage): Promise<Storage
     },
     setSchemaVersion: (version) => area.set({ [K_SCHEMA]: version }),
     setMigratedList: (names) => area.set({ [K_MIGRATED]: names }),
+    getSampleJsonMap: () => getOne<SampleJsonMap>(K_SAMPLE, {}),
+    setSampleJsonMap: (map) => area.set({ [K_SAMPLE]: map }),
+    getImportFlags: () => getOne<ImportFlagMap>(K_FLAGS, {}),
+    setImportFlags: (map) => area.set({ [K_FLAGS]: map }),
   };
 }

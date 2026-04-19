@@ -67,4 +67,26 @@ describe('storage', () => {
     expect(rules).toHaveLength(1);
     expect(rules[0]!.id).toBe('r1');
   });
+
+  it('returns empty sample JSON map by default', async () => {
+    expect(await storage.getSampleJsonMap()).toEqual({});
+  });
+  it('round-trips the sample JSON map', async () => {
+    await storage.setSampleJsonMap({ foo: '{"a":1}' });
+    expect(await storage.getSampleJsonMap()).toEqual({ foo: '{"a":1}' });
+  });
+  it('returns empty import flags by default', async () => {
+    expect(await storage.getImportFlags()).toEqual({});
+  });
+  it('round-trips import flags', async () => {
+    const entry = {
+      source: 'append' as const,
+      importedAt: '2026-04-19T00:00:00Z',
+      flags: [
+        { field: 'variables.auth', pattern: '/token/i', matchedText: 'abc' },
+      ],
+    };
+    await storage.setImportFlags({ 'some-template': entry });
+    expect(await storage.getImportFlags()).toEqual({ 'some-template': entry });
+  });
 });
