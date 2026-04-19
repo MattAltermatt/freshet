@@ -83,19 +83,11 @@ export function App(): JSX.Element {
   return (
     <div class="pj-popup">
       <header class="pj-popup-header">
-        <a
-          class="pj-popup-brand"
-          href="https://mattaltermatt.github.io/present-json/"
-          target="_blank"
-          rel="noopener noreferrer"
-          title="Open the Present-JSON site"
-        >
-          <span class="pj-logo" aria-hidden="true">
-            <span class="pj-logo-brace">{'{'}</span>
-            <span class="pj-logo-bracket">{'>'}</span>
-          </span>
-          <h1>Present-JSON</h1>
-        </a>
+        <span class="pj-logo" aria-hidden="true">
+          <span class="pj-logo-brace">{'{'}</span>
+          <span class="pj-logo-bracket">{'>'}</span>
+        </span>
+        <h1>Present-JSON</h1>
       </header>
       <section class="pj-popup-url" aria-label="Active tab URL">
         <span class="pj-popup-label">Tab URL</span>

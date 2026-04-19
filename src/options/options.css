@@ -20,19 +20,7 @@ body {
   background: var(--pj-bg-elevated);
 }
 
-.pj-brand {
-  display: flex;
-  align-items: center;
-  gap: var(--pj-space-2);
-  color: inherit;
-  text-decoration: none;
-  border-radius: var(--pj-radius);
-}
-a.pj-brand:hover { opacity: 0.8; }
-a.pj-brand:focus-visible {
-  outline: 2px solid var(--pj-accent);
-  outline-offset: 2px;
-}
+.pj-brand { display: flex; align-items: center; gap: var(--pj-space-2); }
 .pj-logo {
   display: inline-flex;
   font: 600 18px/1 var(--pj-font-mono);
@@ -770,6 +758,27 @@ button.pj-templates-label:focus-visible .pj-disclosure-arrow {
   font-size: var(--pj-font-size-sm);
   color: var(--pj-fg-muted);
 }
+.pj-shortcuts-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pj-space-3);
+  flex-wrap: wrap;
+}
+.pj-shortcuts-links {
+  display: inline-flex;
+  gap: var(--pj-space-3);
+  align-items: center;
+}
+.pj-shortcuts-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--pj-accent-strong);
+  text-decoration: none;
+}
+.pj-shortcuts-links a:hover { text-decoration: underline; }
+.pj-shortcuts-links .pj-ext-arrow { font-size: 11px; opacity: 0.75; }
 .pj-shortcuts-toggle {
   background: transparent;
   border: 0;
