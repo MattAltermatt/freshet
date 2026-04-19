@@ -1,4 +1,5 @@
 import type { JSX } from 'preact';
+import { useEffect, useState } from 'preact/hooks';
 import { useStorage } from '../ui/hooks/useStorage';
 import type { Rule } from '../shared/types';
 
@@ -16,13 +17,24 @@ export interface FirstRunBannerProps {
  * We deliberately suppress the banner the moment the user has any non-example
  * rule — that signals they're past the first-run "what is this?" moment, so
  * the welcome nudge would be noise.
+ *
+ * The `loaded` gate keeps the banner from flashing on every popup open for
+ * dismissed users: useStorage initializes synchronously with the fallback
+ * `false`, then the chrome.storage.local.get callback resolves async — without
+ * this gate, the banner renders for one frame before the read returns and
+ * hides it. Wait for the read to complete before deciding whether to render.
  */
 export function FirstRunBanner({ rules }: FirstRunBannerProps): JSX.Element | null {
   const [dismissed, setDismissed] = useStorage<'pj_first_run_dismissed', boolean>(
     'pj_first_run_dismissed',
     false,
   );
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => {
+    chrome.storage.local.get('pj_first_run_dismissed', () => setLoaded(true));
+  }, []);
 
+  if (!loaded) return null;
   const hasUserRules = rules.some((r) => !r.isExample);
   if (dismissed || hasUserRules) return null;
 

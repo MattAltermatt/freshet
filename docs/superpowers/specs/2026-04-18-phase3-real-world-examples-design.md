@@ -1,5 +1,7 @@
 # Phase 3 — Real-world example JSONs (Freshet)
 
+> **Mid-implementation rename (2026-04-18, commit `ce5a8d5`):** the `Rule.isStarter` field and the "Starter" pill referenced throughout this spec were renamed to `Rule.isExample` and "Example ↗" (a clickable link to a per-rule `exampleUrl`). The change preserves intent — provenance signal that a rule was bundled — and adds a clickable demo URL alongside. CLAUDE.md and the code are the source of truth; this spec is preserved as a historical record.
+
 ## Context
 
 Freshet is pre-Chrome-Web-Store. Phase 1 + 2 are shipped (manifest, engine, matcher, options/popup/top-strip rewrites, brand). The store submission is paused until we have **screenshot-worthy demo content** and a believable first-run "this works on real sites" story.

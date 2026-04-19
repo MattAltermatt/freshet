@@ -96,6 +96,20 @@ describe('<FirstRunBanner>', () => {
     expect(screen.queryByText('Welcome to Freshet')).not.toBeInTheDocument();
   });
 
+  it('does not render until the dismissed-flag storage read has resolved (no flash)', async () => {
+    // Replace the storage.local.get stub with one that NEVER calls back, so
+    // the `loaded` gate stays false. The banner must render nothing — not even
+    // the welcome card — until the storage read returns. Without the gate
+    // useStorage's fallback (`false`) would briefly produce a "not dismissed"
+    // banner flash on every popup open for already-dismissed users.
+    globalThis.chrome.storage.local.get = ((_k: string, _cb: (rec: Record<string, unknown>) => void) => {
+      // intentionally never calls _cb
+    }) as unknown as typeof chrome.storage.local.get;
+    const { container } = render(<FirstRunBanner rules={[exampleRule]} />);
+    await flush();
+    expect(container.textContent ?? '').not.toContain('Welcome to Freshet');
+  });
+
   it('opens the docs /try/ page and dismisses when the CTA is clicked', async () => {
     // window.close throws in jsdom — stub it for the test.
     const closeSpy = vi.spyOn(window, 'close').mockImplementation(() => {});

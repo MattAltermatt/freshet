@@ -101,8 +101,15 @@ const STARTERS: Starter[] = [
 
 async function seedStartersIfEmpty(): Promise<void> {
   const storage = await createStorage(chrome.storage);
-  const templates = await storage.getTemplates();
-  if (Object.keys(templates).length > 0) return;
+  const [templates, rules] = await Promise.all([
+    storage.getTemplates(),
+    storage.getRules(),
+  ]);
+  // Phase 3 added rule seeding — guard against the corruption case where
+  // templates got cleared but the user's rules survived (manual nuke, partial
+  // restore, etc.). Either side being non-empty means this isn't a fresh
+  // install, so we leave existing user state alone.
+  if (Object.keys(templates).length > 0 || rules.length > 0) return;
   // Combined starter bodies exceed the 8 KB per-item quota on chrome.storage.sync
   // once JSON-encoded. Commit this install to local up-front so the seed write
   // lands in an area without that limit.
