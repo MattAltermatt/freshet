@@ -1,0 +1,31 @@
+{
+  "id": "INC-2026-000",
+  "title": "Stripe webhook delivery latency spike",
+  "severity": "sev-3",
+  "status": "resolved",
+  "openedAt": "2026-04-11T09:08:00Z",
+  "resolvedAt": "2026-04-11T10:42:00Z",
+  "service": {
+    "name": "Payments",
+    "slug": "payments"
+  },
+  "oncall": {
+    "name": "Marco Alvarez",
+    "handle": "@marco"
+  },
+  "summary": "Stripe-side webhook delivery to /webhooks/stripe slowed from ~120ms p95 to ~6.4s p95 between 09:08 and 09:51 UTC. Backlog drained after Stripe rolled back a delivery-pipeline deploy on their side. No retries required — Stripe redelivered automatically.",
+  "impact": "Webhook events for ~38k charges arrived 5–9s late during the window. Downstream reconciliation jobs ran on schedule; no customer-visible impact.",
+  "timeline": [
+    { "at": "2026-04-11T09:08:00Z", "author": "alertmanager", "kind": "alert",   "message": "webhook-delivery-latency alert fired on payments-api (threshold p95 1s, observed p95 6.4s)." },
+    { "at": "2026-04-11T09:11:20Z", "author": "@marco",       "kind": "ack",     "message": "Acknowledged. Endpoint is healthy on our side (response p95 14ms). Suspect upstream." },
+    { "at": "2026-04-11T09:18:00Z", "author": "@marco",       "kind": "update",  "message": "Stripe status page updated: 'Investigating elevated webhook delivery latency.' Standing by — nothing to fix on our end." },
+    { "at": "2026-04-11T09:51:30Z", "author": "@marco",       "kind": "update",  "message": "Stripe deployed a fix; webhook delivery p95 back to ~140ms. Backlog clearing." },
+    { "at": "2026-04-11T10:42:00Z", "author": "@marco",       "kind": "resolve", "message": "Backlog drained. Recon jobs verified zero gap. Marking resolved." }
+  ],
+  "relatedIncidents": [
+    {
+      "id": "INC-2026-001",
+      "title": "Elevated 5xx on /charge — Redis rate-limiter saturating"
+    }
+  ]
+}
