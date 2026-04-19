@@ -36,13 +36,19 @@ export function Header({ tab, onTab, themePref, onThemePref }: HeaderProps): JSX
 
   return (
     <header class="pj-header">
-      <div class="pj-brand">
+      <a
+        class="pj-brand"
+        href="https://mattaltermatt.github.io/present-json/"
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Open the Present-JSON site"
+      >
         <span class="pj-logo" aria-hidden="true">
           <span class="pj-logo-brace">{'{'}</span>
           <span class="pj-logo-bracket">{'>'}</span>
         </span>
         <h1>Present-JSON</h1>
-      </div>
+      </a>
       <nav class="pj-tabs">
         <button
           class={`pj-tab${tab === 'rules' ? ' pj-tab--active' : ''}`}

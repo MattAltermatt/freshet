@@ -1,3 +1,9 @@
+<p align="center">
+  <a href="https://mattaltermatt.github.io/present-json/">
+    <img src="docs/assets/logo.png" alt="Present-JSON logo" width="128" height="128">
+  </a>
+</p>
+
 # Present-JSON
 
 > A Chrome extension that renders JSON API responses as readable, user-templated HTML — so the internal admin URL you keep squinting at becomes a proper dashboard.

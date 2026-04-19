@@ -14,6 +14,19 @@ body {
   align-items: center;
   gap: 8px;
 }
+.pj-popup-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: inherit;
+  text-decoration: none;
+  border-radius: var(--pj-radius);
+}
+.pj-popup-brand:hover { opacity: 0.8; }
+.pj-popup-brand:focus-visible {
+  outline: 2px solid var(--pj-accent);
+  outline-offset: 2px;
+}
 .pj-popup-header h1 {
   font-size: 13px;
   font-weight: 600;

@@ -1,6 +1,11 @@
 ---
 title: Present-JSON
+description: A Chrome extension that renders JSON API responses as readable, user-templated HTML.
 ---
+
+<p align="center">
+  <img src="{{ '/assets/logo.png' | relative_url }}" alt="Present-JSON logo" width="128" height="128">
+</p>
 
 # Present-JSON
 
