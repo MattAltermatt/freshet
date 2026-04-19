@@ -1,4 +1,4 @@
-export type BadgeSignal = 'pj:rendered' | 'pj:render-error';
+export type BadgeSignal = 'pj:rendered' | 'pj:render-error' | 'pj:conflict';
 
 export interface BadgeAppearance {
   text: string;
@@ -9,6 +9,9 @@ export interface BadgeAppearance {
 // Kept outside theme.css because badges don't inherit page CSS.
 const SUCCESS_COLOR = '#16a34a';
 const ERROR_COLOR = '#dc2626';
+// --pj-accent-strong — warm/attentional, not error-red. Signals "Freshet
+// chose not to act here," not "something broke."
+const CONFLICT_COLOR = '#c2410c';
 
 /**
  * Pure lookup from message kind to the badge appearance the background SW
@@ -16,5 +19,6 @@ const ERROR_COLOR = '#dc2626';
  */
 export function appearanceFor(signal: BadgeSignal): BadgeAppearance {
   if (signal === 'pj:rendered') return { text: '✓', color: SUCCESS_COLOR };
+  if (signal === 'pj:conflict') return { text: '⚠', color: CONFLICT_COLOR };
   return { text: '!', color: ERROR_COLOR };
 }

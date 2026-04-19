@@ -9,4 +9,8 @@ describe('appearanceFor', () => {
   it('renders a red bang for template render errors', () => {
     expect(appearanceFor('pj:render-error')).toEqual({ text: '!', color: '#dc2626' });
   });
+
+  it('renders a warning-orange bang for detected viewer conflicts', () => {
+    expect(appearanceFor('pj:conflict')).toEqual({ text: '⚠', color: '#c2410c' });
+  });
 });
