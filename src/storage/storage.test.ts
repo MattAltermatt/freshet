@@ -89,4 +89,30 @@ describe('storage', () => {
     await storage.setImportFlags({ 'some-template': entry });
     expect(await storage.getImportFlags()).toEqual({ 'some-template': entry });
   });
+
+  it('returns empty conflicts map by default', async () => {
+    expect(await storage.getConflicts()).toEqual({});
+  });
+  it('round-trips the conflicts map', async () => {
+    const entry = {
+      viewer: 'jsonview' as const,
+      displayName: 'JSONView',
+      extensionId: 'gmegofmjomhknnokphhckolhcffdaihd',
+      detectedAt: '2026-04-19T00:00:00Z',
+    };
+    await storage.setConflicts({ 'api.github.com': entry });
+    expect(await storage.getConflicts()).toEqual({ 'api.github.com': entry });
+  });
+  it('clearConflict removes only the keyed host', async () => {
+    const a = {
+      viewer: 'jsonview' as const,
+      displayName: 'JSONView',
+      extensionId: 'x',
+      detectedAt: '2026-04-19T00:00:00Z',
+    };
+    const b = { ...a, displayName: 'JSONView (b)' };
+    await storage.setConflicts({ 'a.example.com': a, 'b.example.com': b });
+    await storage.clearConflict('a.example.com');
+    expect(await storage.getConflicts()).toEqual({ 'b.example.com': b });
+  });
 });

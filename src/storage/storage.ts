@@ -1,4 +1,4 @@
-import type { Rule, Templates, HostSkipList } from '../shared/types';
+import type { Rule, Templates, HostSkipList, ConflictMap } from '../shared/types';
 
 const K_RULES = 'rules';
 const K_TEMPLATES = 'templates';
@@ -8,6 +8,7 @@ const K_SCHEMA = 'schemaVersion';
 const K_MIGRATED = 'pj_migrated_v2';
 const K_SAMPLE = 'pj_sample_json';
 const K_FLAGS = 'pj_import_flags';
+const K_CONFLICTS = 'pj_conflicts';
 
 export type SampleJsonMap = Record<string, string>;
 
@@ -39,6 +40,9 @@ export interface Storage {
   setSampleJsonMap(map: SampleJsonMap): Promise<void>;
   getImportFlags(): Promise<ImportFlagMap>;
   setImportFlags(map: ImportFlagMap): Promise<void>;
+  getConflicts(): Promise<ConflictMap>;
+  setConflicts(map: ConflictMap): Promise<void>;
+  clearConflict(host: string): Promise<void>;
 }
 
 export async function createStorage(api: typeof chrome.storage): Promise<Storage> {
@@ -66,5 +70,14 @@ export async function createStorage(api: typeof chrome.storage): Promise<Storage
     setSampleJsonMap: (map) => area.set({ [K_SAMPLE]: map }),
     getImportFlags: () => getOne<ImportFlagMap>(K_FLAGS, {}),
     setImportFlags: (map) => area.set({ [K_FLAGS]: map }),
+    getConflicts: () => getOne<ConflictMap>(K_CONFLICTS, {}),
+    setConflicts: (map) => area.set({ [K_CONFLICTS]: map }),
+    clearConflict: async (host) => {
+      const current = await getOne<ConflictMap>(K_CONFLICTS, {});
+      if (!(host in current)) return;
+      const next = { ...current };
+      delete next[host];
+      await area.set({ [K_CONFLICTS]: next });
+    },
   };
 }
