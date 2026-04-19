@@ -61,6 +61,10 @@ function signal(kind: 'pj:rendered' | 'pj:render-error'): void {
 }
 
 function renderSuccess(html: string, raw: string, rule: Rule, theme: 'light' | 'dark'): void {
+  if (!(document.documentElement instanceof HTMLElement)) {
+    renderError('Unsupported document type — cannot render.');
+    return;
+  }
   const titleEsc = escHtml(window.location.href);
   document.documentElement.innerHTML =
     '<head><meta charset="utf-8"><title>' + titleEsc + '</title></head><body></body>';
@@ -99,4 +103,6 @@ function escHtml(s: string): string {
   return s.replace(/[&<>"']/g, (c) => '&#' + c.charCodeAt(0) + ';');
 }
 
-void main();
+void main().catch((err) => {
+  console.warn('[freshet] content script crashed:', err);
+});

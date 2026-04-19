@@ -32,6 +32,46 @@ export interface MigrateResult {
   failed: string[];
 }
 
+/**
+ * Convert any saved rule with `{ enabled: boolean }` to `{ active: boolean }`.
+ * Idempotent: rules that already have `active` are left untouched. Runs against
+ * both `.sync` and `.local` because at the time of release a user's rules may
+ * still be in `.sync` (the storage-area migration only fires past 90 KB).
+ *
+ * Returns the per-area count of rewritten rules (mostly for test assertions).
+ */
+export async function migrateRulesEnabledToActive(
+  api: typeof chrome.storage,
+): Promise<{ syncMigrated: number; localMigrated: number }> {
+  const result = { syncMigrated: 0, localMigrated: 0 };
+  for (const areaName of ['sync', 'local'] as const) {
+    const area = api[areaName];
+    let bag: { rules?: unknown };
+    try {
+      bag = await area.get('rules');
+    } catch {
+      continue;
+    }
+    const rules = bag.rules;
+    if (!Array.isArray(rules)) continue;
+    let count = 0;
+    const next = rules.map((r) => {
+      if (r && typeof r === 'object' && 'enabled' in r && !('active' in r)) {
+        count += 1;
+        const { enabled, ...rest } = r as { enabled: boolean } & Record<string, unknown>;
+        return { ...rest, active: enabled };
+      }
+      return r;
+    });
+    if (count > 0) {
+      await area.set({ rules: next });
+      if (areaName === 'sync') result.syncMigrated = count;
+      else result.localMigrated = count;
+    }
+  }
+  return result;
+}
+
 export async function migrateTemplatesToV2(storage: MigrateTemplatesStorage): Promise<MigrateResult> {
   const before = await storage.getTemplates();
   const validator = new Liquid();

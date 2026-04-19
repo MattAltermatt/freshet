@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { estimateBytes, migrateTemplatesToV2, needsMigration, SYNC_SOFT_LIMIT } from './migration';
+import {
+  estimateBytes,
+  migrateRulesEnabledToActive,
+  migrateTemplatesToV2,
+  needsMigration,
+  SYNC_SOFT_LIMIT,
+} from './migration';
 
 describe('storage migration', () => {
   it('estimates byte size', () => {
@@ -68,5 +74,78 @@ describe('migrateTemplatesToV2', () => {
     expect(result.ok).toBe(true);
     expect(result.migrated).toEqual([]);
     expect(storage.state.schemaVersion).toBe(2);
+  });
+});
+
+describe('migrateRulesEnabledToActive', () => {
+  function makeAreaStub(initial: Record<string, unknown> = {}) {
+    const state: Record<string, unknown> = { ...initial };
+    return {
+      state,
+      async get(key: string) { return key in state ? { [key]: state[key] } : {}; },
+      async set(patch: Record<string, unknown>) { Object.assign(state, patch); },
+    };
+  }
+  function makeApi(syncInit: Record<string, unknown> = {}, localInit: Record<string, unknown> = {}) {
+    return { sync: makeAreaStub(syncInit), local: makeAreaStub(localInit) };
+  }
+
+  it('migrates rules in sync storage', async () => {
+    const api = makeApi(
+      { rules: [{ id: 'r1', hostPattern: '*', pathPattern: '/', templateName: 't', variables: {}, enabled: true }] },
+      {},
+    );
+    const result = await migrateRulesEnabledToActive(api as unknown as typeof chrome.storage);
+    expect(result.syncMigrated).toBe(1);
+    expect(result.localMigrated).toBe(0);
+    const rules = (api.sync.state.rules as Array<Record<string, unknown>>);
+    expect(rules[0]).toMatchObject({ id: 'r1', active: true });
+    expect('enabled' in rules[0]!).toBe(false);
+  });
+
+  it('migrates rules in local storage', async () => {
+    const api = makeApi(
+      {},
+      { rules: [{ id: 'r1', hostPattern: '*', pathPattern: '/', templateName: 't', variables: {}, enabled: false }] },
+    );
+    const result = await migrateRulesEnabledToActive(api as unknown as typeof chrome.storage);
+    expect(result.localMigrated).toBe(1);
+    const rules = (api.local.state.rules as Array<Record<string, unknown>>);
+    expect(rules[0]).toMatchObject({ active: false });
+  });
+
+  it('is idempotent on already-migrated rules', async () => {
+    const api = makeApi(
+      {},
+      { rules: [{ id: 'r1', hostPattern: '*', pathPattern: '/', templateName: 't', variables: {}, active: true }] },
+    );
+    const result = await migrateRulesEnabledToActive(api as unknown as typeof chrome.storage);
+    expect(result.localMigrated).toBe(0);
+    const rules = (api.local.state.rules as Array<Record<string, unknown>>);
+    expect(rules[0]).toMatchObject({ active: true });
+  });
+
+  it('handles a mixed array (some migrated, some not)', async () => {
+    const api = makeApi(
+      {},
+      {
+        rules: [
+          { id: 'old', enabled: true },
+          { id: 'new', active: false },
+        ],
+      },
+    );
+    const result = await migrateRulesEnabledToActive(api as unknown as typeof chrome.storage);
+    expect(result.localMigrated).toBe(1);
+    const rules = (api.local.state.rules as Array<Record<string, unknown>>);
+    expect(rules[0]).toMatchObject({ id: 'old', active: true });
+    expect('enabled' in rules[0]!).toBe(false);
+    expect(rules[1]).toMatchObject({ id: 'new', active: false });
+  });
+
+  it('no-ops when neither area has rules', async () => {
+    const api = makeApi();
+    const result = await migrateRulesEnabledToActive(api as unknown as typeof chrome.storage);
+    expect(result).toEqual({ syncMigrated: 0, localMigrated: 0 });
   });
 });

@@ -37,6 +37,12 @@ describe('sanitize', () => {
     expect(sanitize('<a href="javascript:bad()">x</a>')).toBe('<a href="about:blank">x</a>');
     expect(sanitize('<a href="JavaScript:bad()">x</a>')).toBe('<a href="about:blank">x</a>');
   });
+  it('neutralizes javascript: URLs in formaction (form-submit XSS vector)', () => {
+    expect(sanitize('<button formaction="javascript:bad()">x</button>'))
+      .toBe('<button formaction="about:blank">x</button>');
+    expect(sanitize("<input type='submit' formaction='javascript:bad()'>"))
+      .toBe('<input type=\'submit\' formaction="about:blank">');
+  });
   it('leaves safe HTML alone', () => {
     const safe = '<div class="row"><a href="https://x.com/?q=1">link</a></div>';
     expect(sanitize(safe)).toBe(safe);

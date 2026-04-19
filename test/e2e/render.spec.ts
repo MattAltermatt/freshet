@@ -30,17 +30,22 @@ test('renders JSON via the bundled starter template', async () => {
   if (!serviceWorker) serviceWorker = await context.waitForEvent('serviceworker');
   await serviceWorker.evaluate(
     async (vars) => {
-      await chrome.storage.sync.set({
+      await chrome.storage.local.set({
+        pj_storage_area: 'local',
         rules: [
           {
             id: 'r1',
             hostPattern: '127.0.0.1',
             pathPattern: '/internal/user/*',
-            templateName: 'internal-user',
+            templateName: 'render-spec',
             variables: vars,
             active: true,
           },
         ],
+        templates: {
+          'render-spec':
+            '<div id="pj-content"><span class="pj-down">{{ status | upcase }}</span> · id={{ id }} · env={{ vars.env }}</div>',
+        },
       });
     },
     { adminHost: 'qa-admin.server.com', env: 'qa' },
