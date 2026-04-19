@@ -81,18 +81,12 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
   }
   .try-demo__shot {
     background:#f6f8fa;
-    border:1px dashed #d0d7de;
+    border:1px solid #d0d7de;
     border-radius:6px;
-    min-height:280px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:#656d76;
-    font-size:13px;
-    text-align:center;
-    padding:18px;
+    overflow:hidden;
+    line-height:0;
   }
-  .try-demo__shot img { max-width:100%; height:auto; border-radius:4px; }
+  .try-demo__shot img { display:block; width:100%; height:auto; }
   .try-demo__cta {
     margin-top:14px;
     padding:14px 18px;
@@ -127,10 +121,6 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
   <p>Five live demos — fields surfaced, statuses colored, IDs turned into clickable links. <strong>JSON in. Page out.</strong></p>
 </section>
 
-<div class="try-note">
-  <strong>Heads up:</strong> screenshots are still being captured. For now, click any "Try it live" link below to see Freshet render the response in your own browser. (You'll need <a href="https://github.com/MattAltermatt/freshet">Freshet installed</a>.)
-</div>
-
 <!-- ─── Service Health (self-hosted, enabled by default) ─── -->
 <article class="try-demo" id="service-health">
   <header class="try-demo__head">
@@ -163,7 +153,7 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
       </div>
       <div class="try-demo__col">
         <h3>Freshet output</h3>
-        <div class="try-demo__shot">Screenshot landing soon — click "Try it live" to see it in your browser.</div>
+        <div class="try-demo__shot"><img src="{{ '/assets/try/service-health.png' | relative_url }}" alt="Service Health card rendered by Freshet — Payments service with PRODUCTION env chip, status pills, dependencies grid, and recent incidents"></div>
       </div>
     </div>
   </div>
@@ -204,7 +194,7 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
       </div>
       <div class="try-demo__col">
         <h3>Freshet output</h3>
-        <div class="try-demo__shot">Screenshot landing soon — click "Try it live" to see it in your browser.</div>
+        <div class="try-demo__shot"><img src="{{ '/assets/try/incident-detail.png' | relative_url }}" alt="Incident detail page rendered by Freshet — INC-2026-001 with severity + status chips, summary + impact cards, and a kind-coded timeline rail"></div>
       </div>
     </div>
   </div>
@@ -242,7 +232,7 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
       </div>
       <div class="try-demo__col">
         <h3>Freshet output</h3>
-        <div class="try-demo__shot">Screenshot landing soon — enable the rule and click "Try it live".</div>
+        <div class="try-demo__shot"><img src="{{ '/assets/try/github-repo.png' | relative_url }}" alt="GitHub repo card rendered by Freshet — facebook/react with Active pulse, JavaScript language chip, stat tiles, topic chips, and Issues/PRs/Releases footer"></div>
       </div>
     </div>
   </div>
@@ -290,7 +280,7 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
       </div>
       <div class="try-demo__col">
         <h3>Freshet output</h3>
-        <div class="try-demo__shot">Screenshot landing soon — enable the rule and click "Try it live".</div>
+        <div class="try-demo__shot"><img src="{{ '/assets/try/pokemon.png' | relative_url }}" alt="Pokémon card rendered by Freshet — Pikachu with official artwork, electric type chip, color-coded stat bars, and abilities list"></div>
       </div>
     </div>
   </div>
@@ -335,7 +325,7 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
       </div>
       <div class="try-demo__col">
         <h3>Freshet output</h3>
-        <div class="try-demo__shot">Screenshot landing soon — enable the rule and click "Try it live".</div>
+        <div class="try-demo__shot"><img src="{{ '/assets/try/country.png' | relative_url }}" alt="Country card rendered by Freshet — Japan with flag emoji + SVG, native name, capital/population/area metrics, and language/currency chips"></div>
       </div>
     </div>
   </div>
