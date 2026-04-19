@@ -50,6 +50,8 @@ Freshet makes a few deliberate choices about how it treats you and your data:
 - **Plain formats.** Bundles are plain JSON you can open, diff, and audit in any text editor. No binary blobs, no base64 obfuscation, no custom encoding.
 - **No telemetry.** No analytics, no error reporting, no phone-home.
 
+Full reference on the bundle format, secret-sniff patterns, and collision resolution: [**Sharing rules and templates →**](https://mattaltermatt.github.io/freshet/sharing/)
+
 ## Demos
 
 Freshet ships with five starter rules + templates so a fresh install is never a blank slate. Two render against self-hosted JSON we control (active out of the box, won't surprise anyone) and three target popular public APIs (inactive by default — flip the toggle to try them on real responses):
