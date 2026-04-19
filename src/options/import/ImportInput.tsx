@@ -110,6 +110,14 @@ export function ImportInput(props: ImportInputProps): JSX.Element {
             : 'No input yet.'}
         </span>
         <div class="pj-dialog-footer-actions">
+          <a
+            class="pj-link-btn"
+            href="https://mattaltermatt.github.io/freshet/sharing/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Sharing docs ↗
+          </a>
           <button type="button" class="pj-btn" onClick={props.onCancel}>
             Cancel
           </button>

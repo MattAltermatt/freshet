@@ -243,6 +243,14 @@ export function ExportPicker(props: ExportPickerProps): JSX.Element {
             : `${pickedRules.size} rule(s) + ${pickedTemplates.size + autoPulledTemplates.size} template(s) selected`}
         </span>
         <div class="pj-dialog-footer-actions">
+          <a
+            class="pj-link-btn"
+            href="https://mattaltermatt.github.io/freshet/sharing/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Sharing docs ↗
+          </a>
           <button type="button" class="pj-btn" onClick={props.onCancel}>
             Cancel
           </button>
