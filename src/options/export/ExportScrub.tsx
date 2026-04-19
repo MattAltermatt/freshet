@@ -132,6 +132,7 @@ export function ExportScrub(props: ExportScrubProps): JSX.Element {
         <h2>Scrub before share</h2>
       </header>
 
+      <div class="pj-dialog-scroll">
       <aside class="pj-warn-banner" role="note">
         <span class="pj-warn-banner-icon" aria-hidden="true">⚠</span>
         <span>
@@ -207,6 +208,7 @@ export function ExportScrub(props: ExportScrubProps): JSX.Element {
           );
         })}
       </section>
+      </div>
 
       <footer class="pj-dialog-footer">
         <span class="pj-scrub-size" aria-live="polite">

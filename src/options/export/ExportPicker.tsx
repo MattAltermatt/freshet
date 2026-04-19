@@ -141,6 +141,7 @@ export function ExportPicker(props: ExportPickerProps): JSX.Element {
         </p>
       </header>
 
+      <div class="pj-dialog-scroll">
       <div class="pj-picker-toolbar">
         <input
           type="search"
@@ -232,6 +233,7 @@ export function ExportPicker(props: ExportPickerProps): JSX.Element {
             </ul>
           )}
         </section>
+      </div>
       </div>
 
       <footer class="pj-dialog-footer">

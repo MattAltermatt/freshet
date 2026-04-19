@@ -56,28 +56,30 @@ export function ImportDialog(props: ImportDialogProps): JSX.Element {
               </p>
             </header>
 
-            {hits.length > 0 ? (
-              <aside class="pj-warn-banner" role="note">
-                <span class="pj-warn-banner-icon" aria-hidden="true">⚠</span>
-                <span>
-                  <strong>{hits.length} secret-sniff flag{hits.length === 1 ? '' : 's'}.</strong>{' '}
-                  Review the details below, then choose a mode.
-                </span>
-              </aside>
-            ) : null}
+            <div class="pj-dialog-scroll">
+              {hits.length > 0 ? (
+                <aside class="pj-warn-banner" role="note">
+                  <span class="pj-warn-banner-icon" aria-hidden="true">⚠</span>
+                  <span>
+                    <strong>{hits.length} secret-sniff flag{hits.length === 1 ? '' : 's'}.</strong>{' '}
+                    Review the details below, then choose a mode.
+                  </span>
+                </aside>
+              ) : null}
 
-            {hits.length > 0 ? (
-              <section class="pj-import-mode-flags" aria-label="Flags">
-                <ul>
-                  {hits.map((h) => (
-                    <li key={h.field + h.patternId}>
-                      🚩 Matched <code>{h.patternRegex}</code> on <code>{h.field}</code>.
-                      Matched text: <code>{h.matchedText}</code>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            ) : null}
+              {hits.length > 0 ? (
+                <section class="pj-import-mode-flags" aria-label="Flags">
+                  <ul>
+                    {hits.map((h) => (
+                      <li key={h.field + h.patternId}>
+                        🚩 Matched <code>{h.patternRegex}</code> on <code>{h.field}</code>.
+                        Matched text: <code>{h.matchedText}</code>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ) : null}
+            </div>
 
             <footer class="pj-dialog-footer">
               <span class="pj-import-mode-hint">

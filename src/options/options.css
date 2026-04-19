@@ -535,6 +535,28 @@ input:focus, select:focus, textarea:focus {
   max-width: 900px;
 }
 
+/* Every dialog root under pj-modal becomes a flex column that fills the modal
+   height and lets ONE inner region scroll. Without this, modals silently
+   overflow the viewport. */
+.pj-export-picker,
+.pj-export-scrub,
+.pj-import-input,
+.pj-import-mode,
+.pj-import-review {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+.pj-dialog-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
 /* ── Dialog shared chrome ── */
 .pj-dialog-header {
   padding: var(--pj-space-3) var(--pj-space-4);
@@ -724,6 +746,8 @@ input:focus, select:focus, textarea:focus {
   flex-direction: column;
   gap: var(--pj-space-3);
   overflow-y: auto;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 .pj-drop-zone {
   display: flex;

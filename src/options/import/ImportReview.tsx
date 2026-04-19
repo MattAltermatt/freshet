@@ -96,17 +96,18 @@ export function ImportReview(props: ImportReviewProps): JSX.Element {
         </p>
       </header>
 
-      <div class="pj-review-toolbar">
-        <input
-          type="search"
-          class="pj-picker-filter"
-          placeholder="filter by name, host, path, template…"
-          value={query}
-          onInput={(e) => setQuery((e.target as HTMLInputElement).value)}
-        />
-      </div>
+      <div class="pj-dialog-scroll">
+        <div class="pj-review-toolbar">
+          <input
+            type="search"
+            class="pj-picker-filter"
+            placeholder="filter by name, host, path, template…"
+            value={query}
+            onInput={(e) => setQuery((e.target as HTMLInputElement).value)}
+          />
+        </div>
 
-      <section class="pj-review-section" aria-label="Rules">
+        <section class="pj-review-section" aria-label="Rules">
         <h3>Rules ({visibleRules.length})</h3>
         {visibleRules.map((r) => {
           const isIdCol = report.ruleIdCollisions.some((c) => c.id === r.id);
@@ -238,6 +239,7 @@ export function ImportReview(props: ImportReviewProps): JSX.Element {
           );
         })}
       </section>
+      </div>
 
       <footer class="pj-dialog-footer">
         <span class="pj-review-hint">
