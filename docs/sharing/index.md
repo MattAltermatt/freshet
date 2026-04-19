@@ -4,6 +4,7 @@ description: The .freshet.json bundle format, secret-sniff patterns, collision r
 permalink: /sharing/
 ---
 
+{% raw %}
 # Sharing rules and templates
 
 Freshet exports and imports rules + templates as a single plain-JSON file with the extension `.freshet.json`. Everything is human-readable — you can open a bundle in any editor, diff it, and audit it before importing. This page is the reference.
@@ -155,3 +156,4 @@ The bundle format contains **only** the fields listed under [Bundle format](#bun
 - **Starter-only rule fields** — `isExample` and `exampleUrl` are set by the installer for the five bundled demo rules. Exports strip both so re-imports don't masquerade as starters.
 
 If you want to share UI preferences or skip lists, do it out-of-band. Bundles are for rules and templates.
+{% endraw %}
