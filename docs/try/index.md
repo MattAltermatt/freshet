@@ -12,7 +12,8 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
      widen the wrapper. The install banner below already carries the brand. */
   body { padding: 24px !important; }
   .wrapper { width: auto !important; max-width: 1100px !important; margin: 0 auto !important; padding: 0 !important; }
-  .wrapper > header { display: none !important; }
+  .wrapper > header,
+  .wrapper > footer { display: none !important; }
   .wrapper > section { width: auto !important; max-width: none !important; float: none !important; padding-bottom: 32px !important; }
 
   .try-hero { text-align:center; padding:24px 0 8px; max-width:880px; margin:0 auto; }
