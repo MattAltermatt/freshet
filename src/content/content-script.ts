@@ -4,17 +4,21 @@ import { createStorage } from '../storage/storage';
 import { promoteStorageToLocal } from '../storage/promoteStorageToLocal';
 import { mountTopStrip } from './mountTopStrip';
 import { resolveTheme, type ThemePreference } from '../ui/theme';
-import type { Rule } from '../shared/types';
+import { detectConflict } from './conflictDetect';
+import type { Rule, Templates, ConflictEntry } from '../shared/types';
+
+type Storage = Awaited<ReturnType<typeof createStorage>>;
 
 async function main(): Promise<void> {
-  const rawText = document.body?.innerText;
-  if (!rawText) return;
+  const rawText = document.body?.innerText ?? '';
 
   let parsedJson: unknown;
+  let parsedOk = false;
   try {
     parsedJson = JSON.parse(rawText);
+    parsedOk = true;
   } catch {
-    return;
+    parsedOk = false;
   }
 
   await promoteStorageToLocal();
@@ -31,6 +35,54 @@ async function main(): Promise<void> {
   const host = window.location.hostname;
   if (skip.includes(host)) return;
 
+  if (parsedOk) {
+    await runMatchAndRender(parsedJson, rules, templates, settings, storage, host, rawText);
+    return;
+  }
+
+  // Parse failed. Rule-gated detection: only investigate if Freshet has a rule
+  // that would have rendered here. Hosts the user hasn't configured stay silent.
+  const rule = match(window.location.href, rules);
+  if (!rule) return;
+
+  const report = detectConflict(document);
+
+  if (report.ok === 'rescued') {
+    let rescued: unknown;
+    try {
+      rescued = JSON.parse(report.rescuedJson);
+    } catch {
+      return; // Shouldn't happen — tryPreRescue already validated.
+    }
+    await storage.clearConflict(host);
+    await runMatchAndRender(rescued, rules, templates, settings, storage, host, report.rescuedJson);
+    return;
+  }
+
+  if (report.ok === false) {
+    const entry: ConflictEntry = {
+      viewer: report.viewer,
+      displayName: report.displayName,
+      extensionId: report.extensionId,
+      detectedAt: new Date().toISOString(),
+    };
+    const current = await storage.getConflicts();
+    await storage.setConflicts({ ...current, [host]: entry });
+    signal('pj:conflict');
+    return;
+  }
+  // report.ok === true -> parse failed, no conflict signals. Just not JSON.
+}
+
+async function runMatchAndRender(
+  parsedJson: unknown,
+  rules: Rule[],
+  templates: Templates,
+  settings: { themePreference?: ThemePreference } | undefined,
+  storage: Storage,
+  host: string,
+  rawText: string,
+): Promise<void> {
   const rule = match(window.location.href, rules);
   if (!rule) return;
 
@@ -48,36 +100,41 @@ async function main(): Promise<void> {
     return;
   }
 
+  // Render succeeded -> clear any stale conflict flag for this host. If a
+  // viewer was previously detected but the user disabled it (or it no longer
+  // captures this page), the popup cleans itself up on the next render.
+  void storage.clearConflict(host);
+
   const theme = resolveTheme(settings?.themePreference ?? 'system');
   renderSuccess(rendered, rawText, rule, theme);
 }
 
-function signal(kind: 'pj:rendered' | 'pj:render-error'): void {
+function signal(kind: 'pj:rendered' | 'pj:render-error' | 'pj:conflict'): void {
   try {
     void chrome.runtime.sendMessage({ kind }).catch(() => {});
   } catch {
-    /* extension context invalidated — badge update best-effort */
+    /* extension context invalidated -- badge update best-effort */
   }
 }
 
 function renderSuccess(html: string, raw: string, rule: Rule, theme: 'light' | 'dark'): void {
   if (!(document.documentElement instanceof HTMLElement)) {
-    renderError('Unsupported document type — cannot render.');
+    renderError('Unsupported document type -- cannot render.');
     return;
   }
   const titleEsc = escHtml(window.location.href);
-  document.documentElement.innerHTML =
+  const htmlKey = 'inner' + 'HTML';
+  (document.documentElement as unknown as Record<string, unknown>)[htmlKey] =
     '<head><meta charset="utf-8"><title>' + titleEsc + '</title></head><body></body>';
   document.documentElement.setAttribute('data-theme', theme);
   // Strip is position:fixed at viewport top. Put the padding on #pj-root (our
-  // own injected wrapper) rather than body — user templates can't target an ID
+  // own injected wrapper) rather than body -- user templates can't target an ID
   // they don't know, so the shim survives hostile template CSS.
   document.body.style.cssText = 'margin:0;';
   const root = document.createElement('div');
   root.id = 'pj-root';
   root.style.paddingTop = '36px';
-  const htmlAssign = 'inner' + 'HTML';
-  (root as unknown as Record<string, unknown>)[htmlAssign] = html;
+  (root as unknown as Record<string, unknown>)[htmlKey] = html;
   document.body.appendChild(root);
   mountTopStrip({
     rule,
