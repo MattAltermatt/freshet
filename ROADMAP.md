@@ -2,48 +2,36 @@
 
 ## Now — Awaiting Chrome Web Store review
 
-Freshet **v1.0.0 was submitted to the Chrome Web Store on 2026-04-19** (commit `738b383` on `main`; artifact `freshet-v1.0.0.zip`, 196 KB; 5 listing screenshots at `docs/assets/cws-screenshots/`). CWS flagged the `<all_urls>` host permission for in-depth review; realistic turnaround is 1–4 weeks.
+v1.0.0 submitted on 2026-04-19. CWS flagged `<all_urls>` for in-depth review; realistic turnaround 1–4 weeks.
 
-While we wait:
+- **Don't upload another zip until v1.0.0 is resolved** — a new upload restarts the clock. Stack further work locally for v1.1.0.
+- **Don't edit listing fields during review** (description, screenshots, promo tiles, permission justifications). All listing changes wait until the version is live.
+- If bounced: read the reviewer note, fix surgically, bump to v1.0.1 in `vite.config.ts` + `package.json`, rebuild + re-zip, resubmit.
+- If approved: replace the *"Submission in progress"* line in `README.md` with the live CWS URL and announce.
 
-- **Don't upload another zip until v1.0.0 is resolved** — a new upload replaces the in-review version and restarts the clock. Any further improvements stack locally for v1.1.0.
-- The "Item review completed" CWS notification is enabled, so `altermatt@gmail.com` gets the outcome email.
-- If bounced: read the reviewer note, address surgically, re-upload as v1.0.1 (bump via `vite.config.ts` + `package.json`, rebuild, re-zip).
-- If approved: replace the *"Submission in progress"* line in `README.md` with the live Chrome Web Store URL and announce.
-
-Submission artifacts of record:
-
-- `freshet-v1.0.0.zip` — uploaded to CWS (gitignored; regenerate with `pnpm build && zip -r freshet-v1.0.0.zip dist`)
-- `docs/assets/cws-screenshots/*.png` — 5 shots, regenerate with `node scripts/cws-screenshots.mjs`
-- `docs/superpowers/cws-listing.md` — store listing copy of record (description, permission justifications, privacy disclosures)
+Artifacts: `freshet-v1.0.0.zip` (gitignored; rebuild with `pnpm build && zip -r freshet-v1.0.0.zip dist`) · `docs/assets/cws-screenshots/*.png` · `docs/superpowers/cws-listing.md`.
 
 ---
 
 ## Post-launch backlog
 
-Ordered by expected impact. Fair game to work on during review (so long as no new CWS upload happens).
+### P0 — Next up
 
-### Extension-conflict handling
+**Template export / import.** Export/import templates (with their per-template sample JSON) as a single bundle. Include a scrub-before-share dialog with an explicit leakage warning — sample JSON often holds real response payloads (tokens, emails, internal IDs).
 
-Detect when another JSON viewer (JSONView, JSON Formatter, etc.) already mutated `document.body` before our content script ran. Hook + degraded UI branch already reserved in `src/content/conflictDetect.ts` and `TopStrip` — this phase fills in the detection logic. Show a clear in-popup warning ("disable JSONView on this host"). Do **not** try to programmatically take over the page.
+### P1 — High value
 
-### Expanded test coverage
+**Extension-conflict detection.** Detect when another JSON viewer (JSONView, JSON Formatter, etc.) already mutated `document.body` before our content script ran. Hook + degraded UI branch already reserved in `src/content/conflictDetect.ts` and `TopStrip`; this phase fills in the detection. Show an in-popup warning; do not try to programmatically take over.
 
-- Visual-regression baselines via Playwright screenshots in `test/e2e/__screenshots__/`; failures break CI.
-- Storage-quota overflow E2E (90 KB sync → local migration) covering the real fallback.
+**Templates UX convergence with LiquidJS playground.** The [official playground](https://liquidjs.com/playground.html) is the canonical reference: template / JSON / rendered panels, shareable URL-encoded sessions. Converge our Templates tab on those proportions + share-via-URL.
 
-### Templates UX convergence with LiquidJS playground
+**Small promo tile (440×280).** Generate once v1.0.0 is live — the only CWS listing asset Google uses on homepage/category/search tiles. Skipping it weakens browse-surface discoverability. Regenerate via the same `scripts/cws-screenshots.mjs` Chromium-composite approach.
 
-The [official playground](https://liquidjs.com/playground.html) is the canonical reference: template / JSON / rendered output panels, shareable URL-encoded sessions. Converge our Templates tab on those proportions + the share-via-URL idea.
+### P2 — Polish & nice-to-haves
 
-### Template export / import
-
-Export / import templates (with their per-template sample JSON) as a single bundle. Include a scrub-before-share dialog with an explicit leakage warning — sample JSON often holds real response payloads (tokens, emails, internal IDs). Useful once multiple installs or team-sharing starts.
-
-### Nice-to-haves
-
-- Form-based template editor (for non-coder users).
-- Shared template registry (community templates).
-- Non-JSON content support (HTML / CSV / XML content-type routing).
-- Small promo tile (440×280) for the CWS carousel + marquee promo (1400×560) for featured placements.
-- Google Search Console verification of `mattaltermatt.github.io/freshet/` so the CWS listing can list an Official URL (currently left blank).
+- **Expanded test coverage** — visual-regression baselines via Playwright screenshots (`test/e2e/__screenshots__/`, CI-breaking); storage-quota overflow E2E covering the 90 KB sync → local fallback.
+- **Form-based template editor** for non-coder users.
+- **Shared template registry** (community templates).
+- **Non-JSON content support** — HTML / CSV / XML content-type routing.
+- **Marquee promo image (1400×560)** — only surfaces if Google picks us for the homepage carousel. Skippable.
+- **Official URL via GSC verification** — verify `mattaltermatt.github.io/freshet/` in Search Console so the CWS listing can show an Official URL (add `google-site-verification` meta via `docs/_config.yml`).
