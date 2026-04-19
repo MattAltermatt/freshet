@@ -20,6 +20,7 @@ Paste a JSON URL into Chrome, get a table instead of a `<pre>`. Works against an
 ## Table of contents
 
 - [Features](#features)
+- [Principles](#principles)
 - [Demos](#demos)
 - [Install](#install)
 - [Quick start](#quick-start)
@@ -36,6 +37,17 @@ Paste a JSON URL into Chrome, get a table instead of a `<pre>`. Works against an
 - 🔀 **Controls on every matched page** — a minimal top strip with env chip, Rendered / Raw toggle (⌘⇧J), Copy URL, Edit rule, and Skip this host. Isolated in a shadow DOM so it can't collide with the page.
 - 🧯 **Safe + private by default** — auto-escaped output (explicit `| raw` to bypass), a sanitizer that strips `<script>` / `<iframe>` / inline handlers / `javascript:` URLs, sandboxed previews, and zero network calls from the extension itself. All data stays in your `chrome.storage`.
 - 🎨 **Dark mode, WCAG 2.1 AA** — auto-follows your OS or choose manually. Both themes pass axe-core sweeps on options, popup, and the top strip.
+- 📦 **Export / import** — share rules and templates with teammates as a single `.freshet.json` bundle. Imports are always reviewed; imported rules start disabled; secrets in shared payloads are flagged, never hidden.
+
+## Principles
+
+Freshet makes a few deliberate choices about how it treats you and your data:
+
+- **Warn, don't block.** When Freshet detects something worth pointing out (a possible secret in a shared bundle, a naming collision, a sample payload that looks like it holds real tokens) it tells you and steps out of the way. You decide.
+- **No hiding.** Every flag shows the exact pattern or condition that matched — literal regex, literal matched text. If we can't explain why we flagged something, we don't flag it.
+- **Local-first, always.** Rules, templates, and sample JSON live in your browser's `chrome.storage`. Nothing is sent to a server. There is no server.
+- **Plain formats.** Bundles are plain JSON you can open, diff, and audit in any text editor. No binary blobs, no base64 obfuscation, no custom encoding.
+- **No telemetry.** No analytics, no error reporting, no phone-home.
 
 ## Demos
 

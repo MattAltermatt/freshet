@@ -15,13 +15,15 @@ Artifacts: `freshet-v1.0.0.zip` (gitignored; rebuild with `pnpm build && zip -r 
 
 ## Post-launch backlog
 
+### ✅ Shipped (2026-04-19)
+
+**Template + rule export / import.** Unified `.freshet.json` bundle format, workspace-level picker → scrub → output flow with download + clipboard, import review with per-item collision resolution or "just append all" mode, literal-regex secret-sniff warnings on both sides (never hidden, never redacted), persistent "needs attention" badge on rule + template cards, atomic-batch commit with rollback. Principles section added to README. Spec: `docs/superpowers/specs/2026-04-19-export-import-design.md`. Plan: `docs/superpowers/plans/2026-04-19-export-import.md`.
+
 ### P0 — Next up
 
-**Template export / import.** Export/import templates (with their per-template sample JSON) as a single bundle. Include a scrub-before-share dialog with an explicit leakage warning — sample JSON often holds real response payloads (tokens, emails, internal IDs).
+**Extension-conflict detection.** Detect when another JSON viewer (JSONView, JSON Formatter, etc.) already mutated `document.body` before our content script ran. Hook + degraded UI branch already reserved in `src/content/conflictDetect.ts` and `TopStrip`; this phase fills in the detection. Show an in-popup warning; do not try to programmatically take over.
 
 ### P1 — High value
-
-**Extension-conflict detection.** Detect when another JSON viewer (JSONView, JSON Formatter, etc.) already mutated `document.body` before our content script ran. Hook + degraded UI branch already reserved in `src/content/conflictDetect.ts` and `TopStrip`; this phase fills in the detection. Show an in-popup warning; do not try to programmatically take over.
 
 **Templates UX convergence with LiquidJS playground.** The [official playground](https://liquidjs.com/playground.html) is the canonical reference: template / JSON / rendered panels, shareable URL-encoded sessions. Converge our Templates tab on those proportions + share-via-URL.
 

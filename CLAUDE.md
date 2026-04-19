@@ -20,16 +20,17 @@ pnpm icons          # rasterize design/icon-{16,48,128}.svg → public/icon-{16,
 
 ## Architecture
 
-Two pure cores (Node-tested, zero `chrome.*` calls):
+Three pure cores (Node-tested, zero `chrome.*` calls):
 
 ```bash
-# Purity invariant — must return nothing.
-rg 'chrome\.' src/engine src/matcher
+# Purity invariant — must return nothing (test files excluded).
+rg 'chrome\.' src/engine src/matcher src/bundle --glob '!*.test.ts'
 ```
 
 
 - `src/engine/` — template → HTML: `engine.ts` (thin LiquidJS wrapper; `outputEscape` auto-escapes non-raw output; sanitizer runs post-render), `helpers.ts` (`registerFilters` for `date`/`link`/`num`/`raw`), `lookup.ts` (dotted paths + `@var`, used by the `link` filter's inner-token substitution), `migrate.ts` (v1 → v2 syntax rewriter), `sanitize.ts` (final security pass)
 - `src/matcher/` — URL → rule: `glob.ts` (`**` = `.*`, `/.../` escape hatch), `matcher.ts`
+- `src/bundle/` — rule+template export/import bundle format: `schema.ts` (types + `validateBundle`), `parse.ts` (JSON-parse wrapper), `serialize.ts` (`buildBundle` for export), `sniff.ts` (literal-regex secret scanner), `collide.ts` (collision detection + `nextAvailableName`). Bundle format is a single JSON object with `bundleSchemaVersion: 1`.
 
 Chrome glue (imports the cores):
 - `src/content/content-script.ts` — parse JSON from `body.innerText`, match, render, replace `documentElement` HTML; hands off to `mountTopStrip` for the shadow-DOM strip. Sets `#pj-root` `padding-top: 36px` so rendered content clears the fixed-position strip.
@@ -38,7 +39,7 @@ Chrome glue (imports the cores):
 - `src/content/conflictDetect.ts` — Phase 2 stub; Phase 4 fills in the "another viewer handled this page first" heuristic.
 - `src/background/background.ts` — migration + starter seed on install; relays `chrome.commands.onCommand('toggle-raw')` → active tab (`pj:toggle-raw` message); relays `pj:open-options` messages from the content script to `chrome.tabs.create` (content scripts can't call `chrome.tabs.create` directly in MV3).
 - `src/ui/` — shared Preact component library: `Button`, `Toggle`, `Toast`, `ToastHost`, `Menu`, `KVEditor`, `Cheatsheet`, `CodeMirrorBox` + hooks `useTheme`, `useToast`, `useStorage`, `useDebounce`, `useAutosave` + `theme.css` design tokens (`--pj-*`) + `cmHighlight.ts` (CodeMirror syntax style driven by the same tokens)
-- `src/options/` — Preact SPA (`App.tsx`, `Header.tsx`, `ShortcutsFooter.tsx`, `directives.ts`); `rules/` has `RulesTab`, `RuleStack`, `RuleCard`, `UrlTester`, `PatternField`, `RuleEditModal`; `templates/` has `TemplatesTab`, `TemplatesToolbar`, `TemplateEditor` (CodeMirror 6 + Liquid grammar + autocomplete), `SampleJsonEditor`, `PreviewIframe`, `liquidMode.ts` (hand-rolled CM6 StreamParser), `liquidCompletions.ts`
+- `src/options/` — Preact SPA (`App.tsx`, `Header.tsx`, `ShortcutsFooter.tsx`, `directives.ts`); `rules/` has `RulesTab`, `RuleStack`, `RuleCard`, `UrlTester`, `PatternField`, `RuleEditModal`; `templates/` has `TemplatesTab`, `TemplatesToolbar`, `TemplateEditor` (CodeMirror 6 + Liquid grammar + autocomplete), `SampleJsonEditor`, `PreviewIframe`, `liquidMode.ts` (hand-rolled CM6 StreamParser), `liquidCompletions.ts`; `export/` has `ExportDialog` / `ExportPicker` / `ExportScrub` / `ExportOutput` (picker → scrub → download/clipboard); `import/` has `ImportDialog` / `ImportInput` / `ImportReview` / `ImportAppendModal` / `commit.ts` (three-way input → mode pick → review-or-append → atomic commit); `badges/NeedsAttention.tsx` (persistent flag shown on rule + template cards when `pj_import_flags` has an entry).
 - `src/popup/` — Preact SPA (`popup.tsx`, `App.tsx`, `FirstRunBanner.tsx`, `popup.css`). Owns boot + active-tab read; reads `rules` / `hostSkipList` / `settings` via `useStorage`; runs `promoteStorageToLocal()` on boot (same as options). Hands off to the options page via URL-hash directives (`#test-url=…`, `#new-rule:host=…`, `#edit-rule=…`). Popup writes only `hostSkipList` + `pj_first_run_dismissed`; rules + templates are read-only here. `FirstRunBanner` renders only when not dismissed AND user has no non-example rule.
 - `src/starter/` — bundled starter HTML + sample JSON (`?raw` imports). 5 starters seed on fresh install (Phase 3): `service-health`, `incident-detail`, `github-repo`, `pokemon`, `country`. Templates are dark-AND-light-themed via `[data-theme="dark"]` selectors; content-script writes the `data-theme` attribute. URL-from-id is the convention — JSONs carry only IDs/slugs/handles, templates construct canonical URLs via Liquid string interpolation in `href` attrs.
 - `src/storage/` — facade over `chrome.storage`; `createStorage` is async and picks `.sync` or `.local` by reading a `pj_storage_area` sentinel from `.local` (migration writes it at 90KB). `promoteStorageToLocal()` runs at boot on both options and popup to converge any legacy sync-area data into local, so the Preact `useStorage` hook (which talks to `.local` only) has authoritative data.
@@ -67,6 +68,10 @@ Content script is declared **statically** in the manifest (`content_scripts: [{ 
 - **Engine treats array-root JSON specially.** When `render(template, json, vars)` is called with `Array.isArray(json) === true` (e.g. REST Countries returns `[{...}]`), the engine exposes the array as `items` instead of spreading numeric keys. Templates start with `{% assign c = items[0] %}` for predictable handles. Object roots continue to spread directly. Tests in `src/engine/engine.test.ts` cover the array-root paths — preserve those if touching the engine.
 - **`docs/try/` is a ship dependency.** The marketing page at `docs/try/index.md` (rendered at `mattaltermatt.github.io/freshet/try/`) shows a raw-JSON-vs-rendered "before / after" for each starter, with "Try it live" links to the canonical demo URL. Anytime a starter changes (template structure, sample JSON shape, rule pattern, the `STARTERS` array in `src/background/background.ts`, or the user-facing pill text), update `/try/` in the same branch. Otherwise the page lies about what Freshet does and the popup first-run banner sends users to a stale page.
 - **CWS listing artifacts live in-repo.** `docs/assets/cws-screenshots/*.png` (5 shots, 1280×800) are the images paired with the Chrome Web Store listing; regenerate with `node scripts/cws-screenshots.mjs` (launches Chromium with `dist/` loaded, re-captures all shots including the hero two-browser before/after composite). Listing text of record lives in `docs/superpowers/cws-listing.md`. Both must be kept in sync with the submitted version — if a UI change lands on `main`, the screenshots are now stale and should be re-shot before the next CWS upload.
+- **Bundle schema version is strict.** `src/bundle/parse.ts` rejects any bundle with `bundleSchemaVersion !== 1`. When bumping the bundle schema, add a migration path — never loosen the version check.
+- **Sample JSON is carried as an opaque string on import writes.** `chrome.storage.local.pj_sample_json[name]` is written verbatim from the bundle by `src/options/import/commit.ts`; the importer never re-parses or re-serializes it. The sniff scanner parses a temporary copy to locate flags but never mutates the stored value. Preserve this invariant if you touch `src/bundle/` or the import commit path.
+- **`pj_import_flags` is keyed by rule `id` or template `name`.** Values are `ImportFlagEntry` records pointing at the specific `field` / `pattern` / `matchedText`. The `NeedsAttention` badge reads this key; dismissal removes the entry. Never auto-clear flags on edit — dismissal is explicit. When the `keepBoth` collision resolution renames a rule id to `${id}-imported`, the flag key must follow the renamed id or the badge orphans.
+- **Import commit is atomic via snapshot-and-rollback** (`src/options/import/commit.ts:commitImport`). All four writes (`templates`, `pj_sample_json`, `rules`, `pj_import_flags`) happen inside a `try` that restores the pre-commit snapshot of each key on any failure, matching the `engine/migrate.ts` pattern. If you add a fifth key to the import path, add it to both the snapshot and the rollback.
 ## Storage keys (`chrome.storage.local`)
 
 | Key | Type | Purpose |
@@ -82,6 +87,7 @@ Content script is declared **statically** in the manifest (`content_scripts: [{ 
 | `pj_ui_split_ratio` | `number` | 0–1 flex-grow share for the Template panel in the left-column split. |
 | `pj_storage_area` | `'local'` | Sentinel: once set, `useStorage` and facade both read `.local`. |
 | `pj_first_run_dismissed` | `boolean` | Sticky flag — once `true`, the popup welcome banner never reappears. |
+| `pj_import_flags` | `Record<string, ImportFlagEntry>` | Per-rule-id or per-template-name "needs attention" flags seeded by import sniff hits. Cleared on user dismiss. |
 
 ## `Rule` schema
 
