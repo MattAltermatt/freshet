@@ -38,28 +38,28 @@ describe('github-repo starter template', () => {
     expect(html).toContain('The library for web and native user interfaces.');
   });
 
-  it('compacts numeric stats via {{num}}', () => {
+  it('compacts numeric stats via num filter', () => {
     expect(html).toContain('235k');
     expect(html).toContain('48k');
     expect(html).toContain('6.7k');
     expect(html).toContain('825');
   });
 
-  it('formats ISO dates via {{date}}', () => {
+  it('formats ISO dates via date filter', () => {
     expect(html).toContain('2013-05-24');
     expect(html).toContain('2026-04-15');
   });
 
   it('renders nested license and owner fields', () => {
-    expect(html).toContain('MIT License');
+    expect(html).toContain('MIT');
     expect(html).toContain('facebook avatar');
     expect(html).toContain('avatars.githubusercontent.com');
   });
 
-  it('iterates topics via {{#each}}', () => {
-    expect(html).toContain('>react<');
-    expect(html).toContain('>javascript<');
-    expect(html).toContain('>ui<');
+  it('renders topic chips via {% for %}', () => {
+    expect(html).toContain('>react</span>');
+    expect(html).toContain('>javascript</span>');
+    expect(html).toContain('>ui</span>');
   });
 
   it('shows the homepage link when present', () => {
@@ -68,24 +68,44 @@ describe('github-repo starter template', () => {
 
   it('hides the homepage block when absent (empty string)', () => {
     const noHome = render(template, { ...sampleJson, homepage: '' }, {});
-    expect(noHome).not.toContain('<p class="pj-gh__home"');
+    expect(noHome).not.toContain('class="gh__home"');
   });
 
-  it('hides the license row when license.name is absent', () => {
+  it('hides the license chip when license.spdx_id is absent', () => {
     const noLicense = render(template, { ...sampleJson, license: { name: '', spdx_id: '' } }, {});
-    expect(noLicense).not.toContain('<dt>License</dt>');
+    expect(noLicense).not.toContain('gh__chip--meta">⚖');
   });
 
-  it('renders the Active status pill when archived is false', () => {
-    expect(html).toContain('pj-gh__status--active" role="status"');
-    expect(html).toContain('>Active</div>');
-    expect(html).not.toContain('pj-gh__status--archived" role="status"');
+  it('renders the Active chip with pulse when archived is false', () => {
+    // Look for the rendered markup, not bare class names — the inline <style>
+    // block mentions both --active and --archived in its rule definitions.
+    expect(html).toContain('class="gh__chip gh__chip--active"');
+    expect(html).toContain('gh__dot gh__dot--pulse');
+    expect(html).not.toContain('class="gh__chip gh__chip--archived"');
   });
 
-  it('renders the Archived status pill when archived is true', () => {
+  it('renders the Archived chip when archived is true', () => {
     const archived = render(template, { ...sampleJson, archived: true }, {});
-    expect(archived).toContain('pj-gh__status--archived" role="status"');
-    expect(archived).toContain('Archived — read-only');
-    expect(archived).not.toContain('pj-gh__status--active" role="status"');
+    expect(archived).toContain('class="gh__chip gh__chip--archived"');
+    expect(archived).toContain('>Archived</span>');
+    expect(archived).not.toContain('class="gh__chip gh__chip--active"');
+  });
+
+  it('renders a language chip with data-lang for color hooks', () => {
+    expect(html).toContain('data-lang="JavaScript"');
+    expect(html).toContain('class="gh__lang-dot"');
+    expect(html).toContain('>JavaScript</span>');
+  });
+
+  it('hides topics section when topics is empty', () => {
+    const noTopics = render(template, { ...sampleJson, topics: [] }, {});
+    expect(noTopics).not.toContain('>Topics<');
+  });
+
+  it('builds canonical issue/pulls/releases/discussions URLs from full_name (URL-from-id demo)', () => {
+    expect(html).toContain('href="https://github.com/facebook/react/issues"');
+    expect(html).toContain('href="https://github.com/facebook/react/pulls"');
+    expect(html).toContain('href="https://github.com/facebook/react/releases"');
+    expect(html).toContain('href="https://github.com/facebook/react/discussions"');
   });
 });

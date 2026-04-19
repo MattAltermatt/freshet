@@ -1,85 +1,167 @@
 {%- comment -%}
-  Freshet starter — "GitHub repo" summary card. Liquid syntax. Comments
-  below teach each construct in context; they're stripped at render time.
-  Point a rule at `api.github.com` / `/repos/*/*` and visit e.g.
-  https://api.github.com/repos/facebook/react to see it render.
+  Freshet starter — "GitHub repo" card. Liquid syntax.
+  Bundled rule: `api.github.com` / `/repos/*/*`  (disabled by default)
+  Try it: enable the rule in Rules tab, then visit
+  https://api.github.com/repos/facebook/react
 {%- endcomment -%}
-<div class="pj-gh">
-  <header class="pj-gh__header">
-    {%- comment -%} Nested field access uses dotted paths. `{{ x }}` is
-    HTML-escaped by default — no need to sanitize user content manually. {%- endcomment -%}
-    <img class="pj-gh__avatar" src="{{ owner.avatar_url }}" alt="{{ owner.login }} avatar" />
-    <div class="pj-gh__heading">
-      <h1 class="pj-gh__title"><a href="{{ html_url }}">{{ full_name }}</a></h1>
-      <p class="pj-gh__desc">{{ description }}</p>
-      {%- comment -%} `!= blank` is Liquid's idiom for "present and non-empty".
-      Nothing renders when the value is missing, null, or `""`. {%- endcomment -%}
-      {% if homepage != blank %}<p class="pj-gh__home">→ <a href="{{ homepage }}">{{ homepage }}</a></p>{% endif %}
+<div class="gh">
+  <header class="gh__head">
+    <img class="gh__avatar" src="{{ owner.avatar_url }}" alt="{{ owner.login }} avatar" />
+    <div class="gh__heading">
+      <h1 class="gh__title"><a href="{{ html_url }}">{{ full_name }}</a></h1>
+      {% if description != blank %}<p class="gh__desc">{{ description }}</p>{% endif %}
+      <div class="gh__chips">
+        {% if archived %}
+          <span class="gh__chip gh__chip--archived"><span class="gh__dot"></span>Archived</span>
+        {% else %}
+          <span class="gh__chip gh__chip--active"><span class="gh__dot gh__dot--pulse"></span>Active</span>
+        {% endif %}
+        {% if language != blank %}<span class="gh__chip gh__chip--lang" data-lang="{{ language }}"><span class="gh__lang-dot"></span>{{ language }}</span>{% endif %}
+        {% if license.spdx_id != blank %}<span class="gh__chip gh__chip--meta">⚖ {{ license.spdx_id }}</span>{% endif %}
+        <span class="gh__chip gh__chip--meta">⎇ {{ default_branch }}</span>
+      </div>
+      {% if homepage != blank %}<p class="gh__home">→ <a href="{{ homepage }}">{{ homepage }}</a></p>{% endif %}
     </div>
   </header>
 
-  {%- comment -%} `{% if %}` / `{% else %}` / `{% endif %}` for branching.
-  Swap the status pill based on a boolean on the payload. {%- endcomment -%}
-  {% if archived %}
-    <div class="pj-gh__status pj-gh__status--archived" role="status"><span class="pj-gh__dot"></span>Archived — read-only</div>
-  {% else %}
-    <div class="pj-gh__status pj-gh__status--active" role="status"><span class="pj-gh__dot"></span>Active</div>
-  {% endif %}
-
-  {%- comment -%} The `num` filter compacts large integers (234567 → 235k).
-  Useful for follower counts, issue counts, etc. {%- endcomment -%}
-  <section class="pj-gh__stats">
-    <div class="pj-gh__stat"><span class="pj-gh__icon">⭐</span><span class="pj-gh__num">{{ stargazers_count | num }}</span><span class="pj-gh__label">Stars</span></div>
-    <div class="pj-gh__stat"><span class="pj-gh__icon">🍴</span><span class="pj-gh__num">{{ forks_count | num }}</span><span class="pj-gh__label">Forks</span></div>
-    <div class="pj-gh__stat"><span class="pj-gh__icon">👁</span><span class="pj-gh__num">{{ subscribers_count | num }}</span><span class="pj-gh__label">Watchers</span></div>
-    <div class="pj-gh__stat"><span class="pj-gh__icon">🐛</span><span class="pj-gh__num">{{ open_issues_count | num }}</span><span class="pj-gh__label">Open Issues</span></div>
+  <section class="gh__stats">
+    <div class="gh__stat">
+      <span class="gh__stat-icon">⭐</span>
+      <span class="gh__stat-num">{{ stargazers_count | num }}</span>
+      <span class="gh__stat-label">Stars</span>
+    </div>
+    <div class="gh__stat">
+      <span class="gh__stat-icon">🍴</span>
+      <span class="gh__stat-num">{{ forks_count | num }}</span>
+      <span class="gh__stat-label">Forks</span>
+    </div>
+    <div class="gh__stat">
+      <span class="gh__stat-icon">👁</span>
+      <span class="gh__stat-num">{{ subscribers_count | num }}</span>
+      <span class="gh__stat-label">Watchers</span>
+    </div>
+    <div class="gh__stat">
+      <span class="gh__stat-icon">🐛</span>
+      <span class="gh__stat-num">{{ open_issues_count | num }}</span>
+      <span class="gh__stat-label">Open Issues</span>
+    </div>
   </section>
 
-  <section class="pj-gh__meta">
+  {% if topics.size > 0 %}
+  <section class="gh__topics">
+    <h2 class="gh__h2">Topics</h2>
+    <div class="gh__topic-list">
+      {% for topic in topics %}<span class="gh__topic">{{ topic }}</span>{% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="gh__dates">
     <dl>
-      {% if language != blank %}<dt>Language</dt><dd>{{ language }}</dd>{% endif %}
-      {% if license.name != blank %}<dt>License</dt><dd>{{ license.name }}</dd>{% endif %}
-      <dt>Default branch</dt><dd>{{ default_branch }}</dd>
-      {%- comment -%} The `date` filter accepts a format string. Supported
-      tokens: yyyy / MM / dd / HH / mm / ss. {%- endcomment -%}
       <dt>Created</dt><dd>{{ created_at | date: "yyyy-MM-dd" }}</dd>
-      <dt>Last push</dt><dd>{{ pushed_at | date: "yyyy-MM-dd" }}</dd>
+      <dt>Last push</dt><dd>{{ pushed_at | date: "yyyy-MM-dd HH:mm" }}</dd>
     </dl>
   </section>
 
-  {%- comment -%} `{% for item in list %}` iterates arrays. Inside the loop,
-  `item` is each element; use `forloop.first` / `forloop.last` / `forloop.index`
-  for positional logic. {%- endcomment -%}
-  <section class="pj-gh__topics">
-    {% for topic in topics %}<span class="pj-gh__chip">{{ topic }}</span>{% endfor %}
-  </section>
+  {%- comment -%} URL-FROM-ID demo: GitHub's API returns `full_name` like
+  "facebook/react". The footer below builds the canonical web-app URLs for
+  Issues/PRs/Releases/Discussions from that one field — no hunting bookmarks. {%- endcomment -%}
+  <footer class="gh__foot">
+    <a href="https://github.com/{{ full_name }}/issues">🐛 Issues</a>
+    <a href="https://github.com/{{ full_name }}/pulls">⇄ Pull requests</a>
+    <a href="https://github.com/{{ full_name }}/releases">🚀 Releases</a>
+    <a href="https://github.com/{{ full_name }}/discussions">💬 Discussions</a>
+  </footer>
 </div>
 
 <style>
-  body { background:#0d1117; margin:0; padding:24px; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif; color:#e6edf3; }
-  .pj-gh { max-width:720px; margin:0 auto; background:#161b22; border:1px solid #30363d; border-radius:8px; overflow:hidden; }
-  .pj-gh__header { display:flex; gap:16px; padding:24px; border-bottom:1px solid #30363d; }
-  .pj-gh__avatar { width:64px; height:64px; border-radius:50%; flex-shrink:0; }
-  .pj-gh__heading { min-width:0; flex:1; }
-  .pj-gh__title { margin:0 0 4px; font-size:20px; font-weight:600; }
-  .pj-gh__title a { color:#2f81f7; text-decoration:none; }
-  .pj-gh__title a:hover { text-decoration:underline; }
-  .pj-gh__desc { margin:0 0 8px; color:#8d96a0; font-size:14px; line-height:1.5; }
-  .pj-gh__home { margin:0; font-size:13px; }
-  .pj-gh__home a { color:#2f81f7; text-decoration:none; }
-  .pj-gh__status { display:flex; align-items:center; gap:8px; padding:10px 24px; font-size:12px; font-weight:600; letter-spacing:.3px; text-transform:uppercase; border-bottom:1px solid #30363d; }
-  .pj-gh__status--active { background:rgba(35,134,54,0.15); color:#3fb950; }
-  .pj-gh__status--archived { background:rgba(248,81,73,0.15); color:#f85149; }
-  .pj-gh__dot { width:8px; height:8px; border-radius:50%; background:currentColor; box-shadow:0 0 0 2px rgba(255,255,255,0.1); }
-  .pj-gh__stats { display:grid; grid-template-columns:repeat(4,1fr); padding:20px 24px; border-bottom:1px solid #30363d; }
-  .pj-gh__stat { display:flex; flex-direction:column; align-items:center; gap:4px; }
-  .pj-gh__icon { font-size:20px; }
-  .pj-gh__num { font-size:18px; font-weight:600; color:#e6edf3; }
-  .pj-gh__label { font-size:11px; color:#8d96a0; text-transform:uppercase; letter-spacing:.5px; }
-  .pj-gh__meta { padding:16px 24px; border-bottom:1px solid #30363d; }
-  .pj-gh__meta dl { display:grid; grid-template-columns:140px 1fr; gap:8px 16px; margin:0; font-size:13px; }
-  .pj-gh__meta dt { color:#8d96a0; font-weight:400; }
-  .pj-gh__meta dd { margin:0; color:#e6edf3; font-weight:500; }
-  .pj-gh__topics { padding:16px 24px; display:flex; flex-wrap:wrap; gap:6px; }
-  .pj-gh__chip { background:rgba(47,129,247,0.15); color:#2f81f7; font-size:12px; padding:3px 10px; border-radius:999px; }
+  /* Light theme (default) */
+  body { background:#f6f8fa; margin:0; padding:24px; font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif; color:#1f2328; }
+  .gh { max-width:760px; margin:0 auto; background:#ffffff; border:1px solid #d0d7de; border-radius:12px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,.04); }
+
+  .gh__head { display:grid; grid-template-columns:auto 1fr; gap:20px; padding:24px; border-bottom:1px solid #d0d7de; align-items:start; }
+  .gh__avatar { width:80px; height:80px; border-radius:50%; flex-shrink:0; border:1px solid #d0d7de; }
+  .gh__heading { min-width:0; }
+  .gh__title { margin:0 0 6px; font-size:22px; font-weight:600; line-height:1.2; }
+  .gh__title a { color:#0969da; text-decoration:none; }
+  .gh__title a:hover { text-decoration:underline; }
+  .gh__desc { margin:0 0 12px; color:#656d76; font-size:14px; line-height:1.5; }
+  .gh__chips { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
+  .gh__chip { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font:600 11px/1 ui-monospace,Menlo,monospace; text-transform:uppercase; letter-spacing:.04em; }
+  .gh__chip--active   { background:rgba(26,127,55,.12); color:#1a7f37; }
+  .gh__chip--archived { background:rgba(207,34,46,.12); color:#cf222e; }
+  .gh__chip--lang     { background:#f6f8fa; color:#1f2328; border:1px solid #d0d7de; text-transform:none; letter-spacing:0; }
+  .gh__chip--meta     { background:#f6f8fa; color:#656d76; border:1px solid #d0d7de; text-transform:none; letter-spacing:0; font-weight:500; }
+  .gh__dot { width:7px; height:7px; border-radius:50%; background:currentColor; }
+  .gh__dot--pulse { box-shadow:0 0 0 0 currentColor; animation:gh-pulse 1.8s ease-out infinite; }
+  @keyframes gh-pulse { 0% { box-shadow:0 0 0 0 currentColor; } 70% { box-shadow:0 0 0 6px rgba(0,0,0,0); } 100% { box-shadow:0 0 0 0 rgba(0,0,0,0); } }
+  .gh__lang-dot { width:10px; height:10px; border-radius:50%; background:#959da5; flex:none; }
+  .gh__chip--lang[data-lang="JavaScript"] .gh__lang-dot { background:#f1e05a; }
+  .gh__chip--lang[data-lang="TypeScript"] .gh__lang-dot { background:#3178c6; }
+  .gh__chip--lang[data-lang="Python"]     .gh__lang-dot { background:#3572a5; }
+  .gh__chip--lang[data-lang="Ruby"]       .gh__lang-dot { background:#701516; }
+  .gh__chip--lang[data-lang="Go"]         .gh__lang-dot { background:#00add8; }
+  .gh__chip--lang[data-lang="Rust"]       .gh__lang-dot { background:#dea584; }
+  .gh__chip--lang[data-lang="Java"]       .gh__lang-dot { background:#b07219; }
+  .gh__chip--lang[data-lang="C++"]        .gh__lang-dot { background:#f34b7d; }
+  .gh__chip--lang[data-lang="C"]          .gh__lang-dot { background:#555555; }
+  .gh__chip--lang[data-lang="C#"]         .gh__lang-dot { background:#178600; }
+  .gh__chip--lang[data-lang="Swift"]      .gh__lang-dot { background:#ffac45; }
+  .gh__chip--lang[data-lang="Kotlin"]     .gh__lang-dot { background:#a97bff; }
+  .gh__chip--lang[data-lang="PHP"]        .gh__lang-dot { background:#4f5d95; }
+  .gh__chip--lang[data-lang="HTML"]       .gh__lang-dot { background:#e34c26; }
+  .gh__chip--lang[data-lang="CSS"]        .gh__lang-dot { background:#563d7c; }
+  .gh__chip--lang[data-lang="Shell"]      .gh__lang-dot { background:#89e051; }
+  .gh__chip--lang[data-lang="Vue"]        .gh__lang-dot { background:#41b883; }
+  .gh__chip--lang[data-lang="Elixir"]     .gh__lang-dot { background:#6e4a7e; }
+  .gh__home { margin:6px 0 0; font-size:13px; }
+  .gh__home a { color:#0969da; text-decoration:none; }
+  .gh__home a:hover { text-decoration:underline; }
+
+  .gh__stats { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:#d0d7de; border-bottom:1px solid #d0d7de; }
+  .gh__stat { background:#ffffff; padding:18px 12px; display:flex; flex-direction:column; align-items:center; gap:4px; transition:background 120ms ease; }
+  .gh__stat:hover { background:#f6f8fa; }
+  .gh__stat-icon { font-size:20px; line-height:1; }
+  .gh__stat-num { font:600 22px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:#1f2328; font-variant-numeric:tabular-nums; }
+  .gh__stat-label { font:600 10px/1 ui-monospace,Menlo,monospace; color:#656d76; text-transform:uppercase; letter-spacing:.06em; }
+
+  .gh__h2 { margin:0 0 10px; font:600 11px/1 ui-monospace,Menlo,monospace; color:#656d76; text-transform:uppercase; letter-spacing:.06em; }
+  .gh__topics { padding:18px 24px; border-bottom:1px solid #d0d7de; }
+  .gh__topic-list { display:flex; flex-wrap:wrap; gap:6px; }
+  .gh__topic { background:rgba(9,105,218,.1); color:#0969da; font-size:12px; padding:4px 10px; border-radius:999px; }
+
+  .gh__dates { padding:14px 24px; border-bottom:1px solid #d0d7de; }
+  .gh__dates dl { display:grid; grid-template-columns:auto 1fr auto 1fr; gap:6px 16px; margin:0; font-size:13px; }
+  .gh__dates dt { color:#656d76; font-weight:500; }
+  .gh__dates dd { margin:0; color:#1f2328; font-family:ui-monospace,Menlo,monospace; font-size:12px; }
+
+  .gh__foot { display:flex; gap:18px; padding:14px 24px; background:#f6f8fa; flex-wrap:wrap; }
+  .gh__foot a { color:#0969da; text-decoration:none; font-size:13px; }
+  .gh__foot a:hover { text-decoration:underline; }
+
+  /* Dark theme — applied when Freshet sets data-theme="dark" on <html>. */
+  [data-theme="dark"] body { background:#0d1117; color:#e6edf3; }
+  [data-theme="dark"] .gh { background:#161b22; border-color:#30363d; box-shadow:none; }
+  [data-theme="dark"] .gh__head { border-bottom-color:#30363d; }
+  [data-theme="dark"] .gh__avatar { border-color:#30363d; }
+  [data-theme="dark"] .gh__title a { color:#2f81f7; }
+  [data-theme="dark"] .gh__desc { color:#8d96a0; }
+  [data-theme="dark"] .gh__chip--active   { background:rgba(35,134,54,.16); color:#3fb950; }
+  [data-theme="dark"] .gh__chip--archived { background:rgba(248,81,73,.18); color:#f85149; }
+  [data-theme="dark"] .gh__chip--lang     { background:#0d1117; color:#e6edf3; border-color:#30363d; }
+  [data-theme="dark"] .gh__chip--meta     { background:#0d1117; color:#8d96a0; border-color:#30363d; }
+  [data-theme="dark"] .gh__home a { color:#2f81f7; }
+  [data-theme="dark"] .gh__stats { background:#30363d; border-bottom-color:#30363d; }
+  [data-theme="dark"] .gh__stat { background:#161b22; }
+  [data-theme="dark"] .gh__stat:hover { background:#1c222b; }
+  [data-theme="dark"] .gh__stat-num { color:#e6edf3; }
+  [data-theme="dark"] .gh__stat-label { color:#8d96a0; }
+  [data-theme="dark"] .gh__h2 { color:#8d96a0; }
+  [data-theme="dark"] .gh__topics { border-bottom-color:#30363d; }
+  [data-theme="dark"] .gh__topic { background:rgba(47,129,247,.16); color:#2f81f7; }
+  [data-theme="dark"] .gh__dates { border-bottom-color:#30363d; }
+  [data-theme="dark"] .gh__dates dt { color:#8d96a0; }
+  [data-theme="dark"] .gh__dates dd { color:#e6edf3; }
+  [data-theme="dark"] .gh__foot { background:#0d1117; }
+  [data-theme="dark"] .gh__foot a { color:#2f81f7; }
 </style>
