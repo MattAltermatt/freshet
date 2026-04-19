@@ -166,11 +166,11 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
 
 <!-- ─── Service Health (self-hosted, enabled by default) ─── -->
 <article class="try-demo" id="service-health">
-  <header class="try-demo__head">
+  <div class="try-demo__head">
     <h2 class="try-demo__name">Service Health</h2>
     <code class="try-demo__pattern">mattaltermatt.github.io/freshet/examples/services/*</code>
     <span class="try-demo__tag try-demo__tag--enabled">Enabled out of the box</span>
-  </header>
+  </div>
   <div class="try-demo__body">
     <div class="try-demo__cols">
       <div class="try-demo__col">
@@ -208,11 +208,11 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
 
 <!-- ─── Incident Detail (self-hosted, enabled by default) ─── -->
 <article class="try-demo" id="incident-detail">
-  <header class="try-demo__head">
+  <div class="try-demo__head">
     <h2 class="try-demo__name">Incident Detail</h2>
     <code class="try-demo__pattern">mattaltermatt.github.io/freshet/examples/incidents/*</code>
     <span class="try-demo__tag try-demo__tag--enabled">Enabled out of the box</span>
-  </header>
+  </div>
   <div class="try-demo__body">
     <div class="try-demo__cols">
       <div class="try-demo__col">
@@ -249,11 +249,11 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
 
 <!-- ─── GitHub Repo (real API, disabled by default) ─── -->
 <article class="try-demo" id="github-repo">
-  <header class="try-demo__head">
+  <div class="try-demo__head">
     <h2 class="try-demo__name">GitHub Repo</h2>
     <code class="try-demo__pattern">api.github.com/repos/*/*</code>
     <span class="try-demo__tag try-demo__tag--disabled">Disabled by default</span>
-  </header>
+  </div>
   <div class="try-demo__body">
     <div class="try-demo__cols">
       <div class="try-demo__col">
@@ -294,11 +294,11 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
 
 <!-- ─── Pokémon (real API, disabled by default) ─── -->
 <article class="try-demo" id="pokemon">
-  <header class="try-demo__head">
+  <div class="try-demo__head">
     <h2 class="try-demo__name">Pokémon (PokéAPI)</h2>
     <code class="try-demo__pattern">pokeapi.co/api/v2/pokemon/*</code>
     <span class="try-demo__tag try-demo__tag--disabled">Disabled by default</span>
-  </header>
+  </div>
   <div class="try-demo__body">
     <div class="try-demo__cols">
       <div class="try-demo__col">
@@ -342,11 +342,11 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
 
 <!-- ─── REST Countries (real API, disabled by default) ─── -->
 <article class="try-demo" id="country">
-  <header class="try-demo__head">
+  <div class="try-demo__head">
     <h2 class="try-demo__name">Countries (REST Countries)</h2>
     <code class="try-demo__pattern">restcountries.com/v3.1/name/*</code>
     <span class="try-demo__tag try-demo__tag--disabled">Disabled by default</span>
-  </header>
+  </div>
   <div class="try-demo__body">
     <div class="try-demo__cols">
       <div class="try-demo__col">
