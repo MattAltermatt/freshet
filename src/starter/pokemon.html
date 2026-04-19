@@ -1,0 +1,148 @@
+{%- comment -%}
+  Freshet starter — PokéAPI card. Liquid syntax.
+  Bundled rule: `pokeapi.co` / `/api/v2/pokemon/*`  (disabled by default)
+  Try it: enable the rule in Rules tab, then visit
+  https://pokeapi.co/api/v2/pokemon/pikachu
+{%- endcomment -%}
+<div class="pk">
+  <header class="pk__head">
+    <span class="pk__id">#{{ id | prepend: "0000" | slice: -4, 4 }}</span>
+    <h1 class="pk__name">{{ name | capitalize }}</h1>
+    <ul class="pk__types">
+      {% for t in types %}
+      <li class="pk__type" data-type="{{ t.type.name }}">{{ t.type.name }}</li>
+      {% endfor %}
+    </ul>
+  </header>
+
+  <section class="pk__hero">
+    <img class="pk__art" src="{{ sprites.other['official-artwork'].front_default }}" alt="{{ name | capitalize }} official artwork" />
+    <dl class="pk__facts">
+      {%- comment -%} pokeapi returns height in decimetres + weight in hectograms.
+      Liquid arithmetic filters convert to m + kg in-template — JSON shapes you
+      didn't author still produce sensible UIs. {%- endcomment -%}
+      <dt>Height</dt><dd>{{ height | divided_by: 10.0 }} m</dd>
+      <dt>Weight</dt><dd>{{ weight | divided_by: 10.0 }} kg</dd>
+      <dt>Base XP</dt><dd>{{ base_experience }}</dd>
+    </dl>
+  </section>
+
+  <section class="pk__stats">
+    <h2 class="pk__h2">Base stats</h2>
+    <ul class="pk__stat-list">
+      {% for s in stats %}
+      <li class="pk__stat" data-stat="{{ s.stat.name }}">
+        <span class="pk__stat-name">{{ s.stat.name | replace: "-", " " | capitalize }}</span>
+        <span class="pk__stat-bar"><span class="pk__stat-fill" style="width: {{ s.base_stat }}%"></span></span>
+        <span class="pk__stat-num">{{ s.base_stat }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section class="pk__abilities">
+    <h2 class="pk__h2">Abilities</h2>
+    <ul class="pk__ability-list">
+      {% for a in abilities %}
+      <li class="pk__ability">
+        {{ a.ability.name | replace: "-", " " | capitalize }}
+        {% if a.is_hidden %}<span class="pk__hidden">hidden</span>{% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  {%- comment -%} URL-FROM-ID demo: PokéAPI gives you `name: "pikachu"` —
+  the template builds the canonical Bulbapedia article URL from it. Same
+  pattern as service-health: any ID/name field becomes a navigable link to
+  whatever knowledge surface your team agrees on. {%- endcomment -%}
+  <footer class="pk__foot">
+    <a href="https://bulbapedia.bulbagarden.net/wiki/{{ name | capitalize }}_(Pokémon)" rel="noopener noreferrer">📖 Bulbapedia</a>
+    <a href="https://pokeapi.co/api/v2/pokemon-species/{{ id }}/">🧬 Species data</a>
+  </footer>
+</div>
+
+<style>
+  /* Light theme (default) */
+  body { background:#f6f8fa; margin:0; padding:24px; font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif; color:#1f2328; }
+  .pk { max-width:760px; margin:0 auto; background:#ffffff; border:1px solid #d0d7de; border-radius:14px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,.04); }
+  .pk__head { padding:20px 24px 16px; display:flex; align-items:center; gap:12px; flex-wrap:wrap; border-bottom:1px solid #d0d7de; }
+  .pk__id { font:600 11px/1 ui-monospace,Menlo,monospace; padding:4px 8px; border-radius:4px; background:#f6f8fa; color:#656d76; border:1px solid #d0d7de; }
+  .pk__name { margin:0; font-size:24px; font-weight:700; flex:1 1 auto; letter-spacing:-.01em; }
+  .pk__types { list-style:none; margin:0; padding:0; display:flex; gap:6px; }
+  .pk__type { font:700 10px/1 ui-monospace,Menlo,monospace; text-transform:uppercase; letter-spacing:.08em; padding:6px 10px; border-radius:999px; color:#fff; background:#656d76; }
+  .pk__type[data-type="electric"] { background:#f7d02c; color:#3a2f00; }
+  .pk__type[data-type="fire"]     { background:#ee8130; }
+  .pk__type[data-type="water"]    { background:#6390f0; }
+  .pk__type[data-type="grass"]    { background:#7ac74c; }
+  .pk__type[data-type="normal"]   { background:#a8a77a; }
+  .pk__type[data-type="flying"]   { background:#a98ff3; }
+  .pk__type[data-type="psychic"]  { background:#f95587; }
+  .pk__type[data-type="ice"]      { background:#96d9d6; color:#1f3132; }
+  .pk__type[data-type="dragon"]   { background:#6f35fc; }
+  .pk__type[data-type="dark"]     { background:#705746; }
+  .pk__type[data-type="fairy"]    { background:#d685ad; }
+  .pk__type[data-type="ground"]   { background:#e2bf65; color:#3a2e00; }
+  .pk__type[data-type="rock"]     { background:#b6a136; }
+  .pk__type[data-type="bug"]      { background:#a6b91a; }
+  .pk__type[data-type="ghost"]    { background:#735797; }
+  .pk__type[data-type="steel"]    { background:#b7b7ce; color:#2c2c3a; }
+  .pk__type[data-type="poison"]   { background:#a33ea1; }
+  .pk__type[data-type="fighting"] { background:#c22e28; }
+
+  .pk__hero { display:grid; grid-template-columns:200px 1fr; gap:24px; padding:24px; align-items:center; border-bottom:1px solid #d0d7de; }
+  .pk__art { width:100%; height:auto; max-width:200px; }
+  .pk__facts { display:grid; grid-template-columns:auto 1fr; gap:6px 16px; margin:0; font-size:14px; }
+  .pk__facts dt { color:#656d76; font-weight:500; }
+  .pk__facts dd { margin:0; color:#1f2328; font-weight:600; }
+
+  .pk__h2 { margin:0 0 12px; font:600 11px/1 ui-monospace,Menlo,monospace; color:#656d76; text-transform:uppercase; letter-spacing:.06em; }
+
+  .pk__stats { padding:20px 24px; border-bottom:1px solid #d0d7de; }
+  .pk__stat-list { list-style:none; margin:0; padding:0; display:grid; gap:8px; }
+  .pk__stat { display:grid; grid-template-columns:130px 1fr 36px; align-items:center; gap:12px; font-size:13px; }
+  .pk__stat-name { color:#656d76; }
+  .pk__stat-bar { height:8px; background:#f6f8fa; border:1px solid #d0d7de; border-radius:999px; overflow:hidden; }
+  .pk__stat-fill { display:block; height:100%; background:#0969da; border-radius:999px; transition:width 200ms ease; }
+  .pk__stat[data-stat="hp"]              .pk__stat-fill { background:#1a7f37; }
+  .pk__stat[data-stat="attack"]          .pk__stat-fill { background:#cf222e; }
+  .pk__stat[data-stat="defense"]         .pk__stat-fill { background:#9a6700; }
+  .pk__stat[data-stat="special-attack"]  .pk__stat-fill { background:#8250df; }
+  .pk__stat[data-stat="special-defense"] .pk__stat-fill { background:#0969da; }
+  .pk__stat[data-stat="speed"]           .pk__stat-fill { background:#bf3989; }
+  .pk__stat-num { text-align:right; font:600 13px/1.2 ui-monospace,Menlo,monospace; color:#1f2328; }
+
+  .pk__abilities { padding:20px 24px; border-bottom:1px solid #d0d7de; }
+  .pk__ability-list { list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:8px; }
+  .pk__ability { background:#f6f8fa; border:1px solid #d0d7de; padding:6px 12px; border-radius:6px; font-size:13px; display:inline-flex; align-items:center; gap:6px; }
+  .pk__hidden { font:600 9px/1 ui-monospace,Menlo,monospace; text-transform:uppercase; letter-spacing:.06em; padding:2px 6px; background:#fff8c5; color:#9a6700; border-radius:3px; }
+
+  .pk__foot { display:flex; gap:18px; padding:14px 24px; background:#f6f8fa; }
+  .pk__foot a { color:#0969da; text-decoration:none; font-size:13px; }
+  .pk__foot a:hover { text-decoration:underline; }
+
+  /* Dark theme — applied when Freshet sets data-theme="dark" on <html>. */
+  [data-theme="dark"] body { background:#0d1117; color:#e6edf3; }
+  [data-theme="dark"] .pk { background:#161b22; border-color:#30363d; box-shadow:none; }
+  [data-theme="dark"] .pk__head { border-bottom-color:#30363d; }
+  [data-theme="dark"] .pk__id { background:#0d1117; color:#8d96a0; border-color:#30363d; }
+  [data-theme="dark"] .pk__hero { border-bottom-color:#30363d; }
+  [data-theme="dark"] .pk__facts dt { color:#8d96a0; }
+  [data-theme="dark"] .pk__facts dd { color:#e6edf3; }
+  [data-theme="dark"] .pk__h2 { color:#8d96a0; }
+  [data-theme="dark"] .pk__stats { border-bottom-color:#30363d; }
+  [data-theme="dark"] .pk__stat-name { color:#8d96a0; }
+  [data-theme="dark"] .pk__stat-bar { background:#0d1117; border-color:#30363d; }
+  [data-theme="dark"] .pk__stat-num { color:#e6edf3; }
+  [data-theme="dark"] .pk__stat[data-stat="hp"]              .pk__stat-fill { background:#3fb950; }
+  [data-theme="dark"] .pk__stat[data-stat="attack"]          .pk__stat-fill { background:#f85149; }
+  [data-theme="dark"] .pk__stat[data-stat="defense"]         .pk__stat-fill { background:#d29922; }
+  [data-theme="dark"] .pk__stat[data-stat="special-attack"]  .pk__stat-fill { background:#a371f7; }
+  [data-theme="dark"] .pk__stat[data-stat="special-defense"] .pk__stat-fill { background:#2f81f7; }
+  [data-theme="dark"] .pk__stat[data-stat="speed"]           .pk__stat-fill { background:#db61a2; }
+  [data-theme="dark"] .pk__abilities { border-bottom-color:#30363d; }
+  [data-theme="dark"] .pk__ability { background:#0d1117; border-color:#30363d; }
+  [data-theme="dark"] .pk__hidden { background:rgba(210,153,34,.18); color:#d29922; }
+  [data-theme="dark"] .pk__foot { background:#0d1117; }
+  [data-theme="dark"] .pk__foot a { color:#2f81f7; }
+</style>

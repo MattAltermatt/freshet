@@ -9,9 +9,13 @@ import type { Rule } from '../shared/types';
 import starterServiceHealth from '../starter/service-health.html?raw';
 import starterIncidentDetail from '../starter/incident-detail.html?raw';
 import starterGithubRepo from '../starter/github-repo.html?raw';
+import starterPokemon from '../starter/pokemon.html?raw';
+import starterCountry from '../starter/country.html?raw';
 import sampleServiceHealth from '../starter/service-health.sample.json?raw';
 import sampleIncidentDetail from '../starter/incident-detail.sample.json?raw';
 import sampleGithubRepo from '../starter/github-repo.sample.json?raw';
+import samplePokemon from '../starter/pokemon.sample.json?raw';
+import sampleCountry from '../starter/country.sample.json?raw';
 import { appearanceFor, type BadgeSignal } from './badge';
 
 async function main(): Promise<void> {
@@ -60,6 +64,30 @@ const STARTERS: Starter[] = [
       hostPattern: 'api.github.com',
       pathPattern: '/repos/*/*',
       templateName: 'github-repo',
+      variables: {},
+      enabled: false,
+    },
+  },
+  {
+    name: 'pokemon',
+    template: starterPokemon,
+    sample: samplePokemon,
+    rule: {
+      hostPattern: 'pokeapi.co',
+      pathPattern: '/api/v2/pokemon/*',
+      templateName: 'pokemon',
+      variables: {},
+      enabled: false,
+    },
+  },
+  {
+    name: 'country',
+    template: starterCountry,
+    sample: sampleCountry,
+    rule: {
+      hostPattern: 'restcountries.com',
+      pathPattern: '/v3.1/name/*',
+      templateName: 'country',
       variables: {},
       enabled: false,
     },

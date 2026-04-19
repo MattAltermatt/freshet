@@ -1,0 +1,134 @@
+{%- comment -%}
+  Freshet starter — REST Countries card. Liquid syntax.
+  Bundled rule: `restcountries.com` / `/v3.1/name/*`  (disabled by default)
+  Try it: enable the rule in Rules tab, then visit
+  https://restcountries.com/v3.1/name/japan
+
+  REST Countries always returns an ARRAY of matches. Freshet's engine exposes
+  array-root JSON as `items`, so the first line below grabs the first match
+  and aliases it as `c` for the rest of the template.
+{%- endcomment -%}
+{% assign c = items[0] %}
+<div class="ct">
+  <header class="ct__head">
+    <span class="ct__flag-emoji" aria-hidden="true">{{ c.flag }}</span>
+    <div class="ct__heading">
+      <h1 class="ct__name">{{ c.name.common }}</h1>
+      {% if c.name.official != c.name.common %}<p class="ct__official">{{ c.name.official }}</p>{% endif %}
+      {% for entry in c.name.nativeName %}
+        <p class="ct__native"><span class="ct__native-code">{{ entry[0] | upcase }}</span> {{ entry[1].common }}</p>
+      {% endfor %}
+    </div>
+    <img class="ct__flag-img" src="{{ c.flags.svg }}" alt="{{ c.flags.alt }}" />
+  </header>
+
+  <section class="ct__row">
+    <div class="ct__metric">
+      <span class="ct__metric-label">Capital</span>
+      <span class="ct__metric-value">{{ c.capital | first }}</span>
+    </div>
+    <div class="ct__metric">
+      <span class="ct__metric-label">Population</span>
+      <span class="ct__metric-value">{{ c.population | num }}</span>
+    </div>
+    <div class="ct__metric">
+      <span class="ct__metric-label">Area</span>
+      <span class="ct__metric-value">{{ c.area | num }} <span class="ct__metric-unit">km²</span></span>
+    </div>
+  </section>
+
+  <section class="ct__panel">
+    <h2 class="ct__h2">Region</h2>
+    <ul class="ct__chips">
+      <li class="ct__chip">{{ c.region }}</li>
+      {% if c.subregion != blank %}<li class="ct__chip ct__chip--muted">{{ c.subregion }}</li>{% endif %}
+      {% for cont in c.continents %}<li class="ct__chip ct__chip--muted">{{ cont }}</li>{% endfor %}
+    </ul>
+  </section>
+
+  <section class="ct__panel">
+    <h2 class="ct__h2">Languages</h2>
+    <ul class="ct__chips">
+      {% for lang in c.languages %}
+      <li class="ct__chip"><span class="ct__chip-key">{{ lang[0] | upcase }}</span> {{ lang[1] }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section class="ct__panel">
+    <h2 class="ct__h2">Currencies</h2>
+    <ul class="ct__chips">
+      {% for cur in c.currencies %}
+      <li class="ct__chip"><span class="ct__chip-key">{{ cur[0] }}</span> {{ cur[1].name }} ({{ cur[1].symbol }})</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section class="ct__panel">
+    <h2 class="ct__h2">Timezones</h2>
+    <ul class="ct__chips">
+      {% for tz in c.timezones %}<li class="ct__chip ct__chip--mono">{{ tz }}</li>{% endfor %}
+    </ul>
+  </section>
+
+  {%- comment -%} URL-FROM-ID demo: build the canonical Wikipedia article URL
+  from `c.name.common`. Same trick as the SRE templates and pokemon — random
+  API field becomes a navigable link. {%- endcomment -%}
+  <footer class="ct__foot">
+    <a href="https://en.wikipedia.org/wiki/{{ c.name.common | replace: ' ', '_' }}" rel="noopener noreferrer">📖 Wikipedia</a>
+    <a href="https://restcountries.com/v3.1/alpha/{{ c.cca3 }}">🌍 Full record (cca3 lookup)</a>
+  </footer>
+</div>
+
+<style>
+  /* Light theme (default) */
+  body { background:#f6f8fa; margin:0; padding:24px; font:14px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif; color:#1f2328; }
+  .ct { max-width:780px; margin:0 auto; background:#ffffff; border:1px solid #d0d7de; border-radius:12px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,.04); }
+  .ct__head { display:grid; grid-template-columns:auto 1fr auto; gap:20px; padding:24px; align-items:center; border-bottom:1px solid #d0d7de; }
+  .ct__flag-emoji { font-size:64px; line-height:1; }
+  .ct__heading { min-width:0; }
+  .ct__name { margin:0 0 4px; font-size:26px; font-weight:700; letter-spacing:-.01em; }
+  .ct__official { margin:0 0 4px; color:#656d76; font-size:13px; }
+  .ct__native { margin:2px 0; font-size:13px; color:#1f2328; }
+  .ct__native-code { display:inline-block; min-width:32px; font:600 10px/1 ui-monospace,Menlo,monospace; padding:2px 6px; border-radius:3px; background:#f6f8fa; color:#656d76; border:1px solid #d0d7de; margin-right:6px; }
+  .ct__flag-img { width:96px; height:auto; border:1px solid #d0d7de; border-radius:4px; }
+
+  .ct__row { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:#d0d7de; border-bottom:1px solid #d0d7de; }
+  .ct__metric { background:#ffffff; padding:16px 20px; display:flex; flex-direction:column; gap:4px; }
+  .ct__metric-label { font:600 10px/1 ui-monospace,Menlo,monospace; color:#656d76; text-transform:uppercase; letter-spacing:.06em; }
+  .ct__metric-value { font:600 20px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:#1f2328; }
+  .ct__metric-unit { font-size:13px; color:#656d76; font-weight:500; }
+
+  .ct__panel { padding:16px 24px; border-bottom:1px solid #d0d7de; }
+  .ct__h2 { margin:0 0 10px; font:600 11px/1 ui-monospace,Menlo,monospace; color:#656d76; text-transform:uppercase; letter-spacing:.06em; }
+  .ct__chips { list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:6px; }
+  .ct__chip { background:#f6f8fa; border:1px solid #d0d7de; padding:5px 10px; border-radius:999px; font-size:13px; display:inline-flex; align-items:center; gap:6px; }
+  .ct__chip--muted { color:#656d76; }
+  .ct__chip--mono { font-family:ui-monospace,Menlo,monospace; font-size:12px; }
+  .ct__chip-key { font:600 10px/1 ui-monospace,Menlo,monospace; padding:2px 6px; border-radius:3px; background:rgba(9,105,218,.08); color:#0969da; }
+
+  .ct__foot { display:flex; gap:18px; padding:14px 24px; background:#f6f8fa; }
+  .ct__foot a { color:#0969da; text-decoration:none; font-size:13px; }
+  .ct__foot a:hover { text-decoration:underline; }
+
+  /* Dark theme — applied when Freshet sets data-theme="dark" on <html>. */
+  [data-theme="dark"] body { background:#0d1117; color:#e6edf3; }
+  [data-theme="dark"] .ct { background:#161b22; border-color:#30363d; box-shadow:none; }
+  [data-theme="dark"] .ct__head { border-bottom-color:#30363d; }
+  [data-theme="dark"] .ct__official { color:#8d96a0; }
+  [data-theme="dark"] .ct__native { color:#e6edf3; }
+  [data-theme="dark"] .ct__native-code { background:#0d1117; color:#8d96a0; border-color:#30363d; }
+  [data-theme="dark"] .ct__flag-img { border-color:#30363d; }
+  [data-theme="dark"] .ct__row { background:#30363d; border-bottom-color:#30363d; }
+  [data-theme="dark"] .ct__metric { background:#161b22; }
+  [data-theme="dark"] .ct__metric-label { color:#8d96a0; }
+  [data-theme="dark"] .ct__metric-value { color:#e6edf3; }
+  [data-theme="dark"] .ct__metric-unit { color:#8d96a0; }
+  [data-theme="dark"] .ct__panel { border-bottom-color:#30363d; }
+  [data-theme="dark"] .ct__h2 { color:#8d96a0; }
+  [data-theme="dark"] .ct__chip { background:#0d1117; border-color:#30363d; }
+  [data-theme="dark"] .ct__chip--muted { color:#8d96a0; }
+  [data-theme="dark"] .ct__chip-key { background:rgba(47,129,247,.16); color:#2f81f7; }
+  [data-theme="dark"] .ct__foot { background:#0d1117; }
+  [data-theme="dark"] .ct__foot a { color:#2f81f7; }
+</style>
