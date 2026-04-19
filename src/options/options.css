@@ -621,6 +621,7 @@ input:focus, select:focus, textarea:focus {
   min-height: 0;
   overflow: hidden;
 }
+.pj-templates-right > .pj-templates-col { flex: 1 1 auto; }
 .pj-templates-col > button.pj-templates-label { flex: 0 0 auto; }
 .pj-templates-col > .pj-cm-box,
 .pj-templates-col > .pj-preview-iframe {
