@@ -1,7 +1,8 @@
 import type { JSX } from 'preact';
 import { useEffect, useRef } from 'preact/hooks';
 import { render as renderTemplate } from '../../engine/engine';
-import { useDebounce } from '../../ui';
+import { useDebounce, useStorage } from '../../ui';
+import { resolveTheme, type ThemePreference } from '../../ui/theme';
 import type { Variables } from '../../shared/types';
 
 export interface PreviewIframeProps {
@@ -18,6 +19,11 @@ export function PreviewIframe({
   const frame = useRef<HTMLIFrameElement>(null);
   const debouncedTpl = useDebounce(template, 250);
   const debouncedJson = useDebounce(sampleJsonText, 250);
+  const [settings] = useStorage<'settings', { themePreference: ThemePreference }>(
+    'settings',
+    { themePreference: 'system' },
+  );
+  const theme = resolveTheme(settings.themePreference);
 
   useEffect(() => {
     let data: unknown = {};
@@ -30,23 +36,26 @@ export function PreviewIframe({
       }
     }
 
-    let html: string;
+    let body: string;
     if (jsonError) {
-      html = `<pre style="color:#b91c1c;font-family:ui-monospace,Menlo,monospace;padding:8px">Sample JSON parse error: ${escapeHtml(
+      body = `<pre style="color:#b91c1c;font-family:ui-monospace,Menlo,monospace;padding:8px">Sample JSON parse error: ${escapeHtml(
         jsonError,
       )}</pre>`;
     } else {
       try {
-        html = renderTemplate(debouncedTpl, data, vars);
+        body = renderTemplate(debouncedTpl, data, vars);
       } catch (err) {
-        html = `<pre style="color:#b91c1c;font-family:ui-monospace,Menlo,monospace;padding:8px">Template error: ${escapeHtml(
+        body = `<pre style="color:#b91c1c;font-family:ui-monospace,Menlo,monospace;padding:8px">Template error: ${escapeHtml(
           (err as Error).message,
         )}</pre>`;
       }
     }
 
-    if (frame.current) frame.current.srcdoc = html;
-  }, [debouncedTpl, debouncedJson, vars]);
+    // Wrap in a doc with data-theme so templates that ship light + dark
+    // variants render in the user's chosen Freshet theme inside the preview.
+    const doc = `<!doctype html><html data-theme="${theme}"><body>${body}</body></html>`;
+    if (frame.current) frame.current.srcdoc = doc;
+  }, [debouncedTpl, debouncedJson, vars, theme]);
 
   return (
     <iframe

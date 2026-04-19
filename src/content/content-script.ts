@@ -3,6 +3,7 @@ import { match } from '../matcher/matcher';
 import { createStorage } from '../storage/storage';
 import { promoteStorageToLocal } from '../storage/promoteStorageToLocal';
 import { mountTopStrip } from './mountTopStrip';
+import { resolveTheme, type ThemePreference } from '../ui/theme';
 import type { Rule } from '../shared/types';
 
 async function main(): Promise<void> {
@@ -18,10 +19,13 @@ async function main(): Promise<void> {
 
   await promoteStorageToLocal();
   const storage = await createStorage(chrome.storage);
-  const [rules, templates, skip] = await Promise.all([
+  const [rules, templates, skip, settings] = await Promise.all([
     storage.getRules(),
     storage.getTemplates(),
     storage.getHostSkipList(),
+    chrome.storage.local
+      .get(['settings'])
+      .then((r) => (r as { settings?: { themePreference?: ThemePreference } }).settings),
   ]);
 
   const host = window.location.hostname;
@@ -44,7 +48,8 @@ async function main(): Promise<void> {
     return;
   }
 
-  renderSuccess(rendered, rawText, rule);
+  const theme = resolveTheme(settings?.themePreference ?? 'system');
+  renderSuccess(rendered, rawText, rule, theme);
 }
 
 function signal(kind: 'pj:rendered' | 'pj:render-error'): void {
@@ -55,10 +60,11 @@ function signal(kind: 'pj:rendered' | 'pj:render-error'): void {
   }
 }
 
-function renderSuccess(html: string, raw: string, rule: Rule): void {
+function renderSuccess(html: string, raw: string, rule: Rule, theme: 'light' | 'dark'): void {
   const titleEsc = escHtml(window.location.href);
   document.documentElement.innerHTML =
     '<head><meta charset="utf-8"><title>' + titleEsc + '</title></head><body></body>';
+  document.documentElement.setAttribute('data-theme', theme);
   // Strip is position:fixed at viewport top. Put the padding on #pj-root (our
   // own injected wrapper) rather than body — user templates can't target an ID
   // they don't know, so the shim survives hostile template CSS.
