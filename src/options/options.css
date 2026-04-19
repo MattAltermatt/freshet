@@ -750,6 +750,62 @@ button.pj-templates-label:focus-visible .pj-disclosure-arrow {
   border-radius: var(--pj-radius);
 }
 
+/* ───── Toast host (success/info/danger) ─────
+   Fixed top-right under the header. Save/undo confirmations belong near
+   the action surface, not at the page bottom where the macOS dock can
+   clip them. */
+.pj-toast-host {
+  position: fixed;
+  top: calc(var(--pj-space-3) + 36px);  /* clear the ~52px header */
+  right: var(--pj-space-4);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: var(--pj-space-2);
+  pointer-events: none;                  /* let stacked toasts not block clicks */
+  max-width: 360px;
+}
+.pj-toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--pj-space-3);
+  min-width: 220px;
+  padding: var(--pj-space-2) var(--pj-space-3);
+  background: var(--pj-bg-elevated);
+  color: var(--pj-fg);
+  border: 1px solid var(--pj-border);
+  border-left-width: 3px;
+  border-radius: var(--pj-radius-lg);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  font-size: var(--pj-font-size-sm);
+  animation: pj-toast-slide-in 180ms ease-out;
+}
+.pj-toast--success { border-left-color: var(--pj-success); }
+.pj-toast--info    { border-left-color: var(--pj-accent); }
+.pj-toast--danger  { border-left-color: var(--pj-danger); }
+.pj-toast__message { flex: 1 1 auto; min-width: 0; }
+.pj-toast__action {
+  flex: 0 0 auto;
+  background: transparent;
+  border: 0;
+  padding: 2px var(--pj-space-2);
+  font: inherit;
+  font-weight: 600;
+  color: var(--pj-accent-strong);
+  cursor: pointer;
+  border-radius: var(--pj-radius);
+}
+.pj-toast__action:hover { background: var(--pj-accent-overlay); }
+.pj-toast__action:focus-visible {
+  outline: 2px solid var(--pj-accent);
+  outline-offset: 1px;
+}
+@keyframes pj-toast-slide-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 /* ───── Keyboard shortcuts footer ───── */
 .pj-shortcuts {
   padding: var(--pj-space-3) var(--pj-space-4);
