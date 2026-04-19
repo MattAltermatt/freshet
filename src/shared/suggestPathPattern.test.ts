@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { suggestPathPattern } from './suggestPathPattern';
+import { compileGlob } from '../matcher/glob';
 
 describe('suggestPathPattern', () => {
   it('keeps root as /', () => {
@@ -24,5 +25,21 @@ describe('suggestPathPattern', () => {
 
   it('ignores empty segments produced by double slashes', () => {
     expect(suggestPathPattern('//foo//bar')).toBe('/foo/bar/**');
+  });
+
+  // Regression: popup's "+ Add rule for this host" for `https://httpbin.org/json`
+  // must produce a path pattern that matches `/json` — the URL that spawned it.
+  it('regression: suggested pattern for /json actually matches /json', () => {
+    const pattern = suggestPathPattern('/json');
+    const re = compileGlob(pattern, { caseInsensitive: false });
+    expect(re.test('/json')).toBe(true);
+  });
+
+  it('regression: suggested pattern matches origin URL for deeper paths too', () => {
+    for (const path of ['/api/users', '/a/b/c', '/foo']) {
+      const pattern = suggestPathPattern(path);
+      const re = compileGlob(pattern, { caseInsensitive: false });
+      expect(re.test(path)).toBe(true);
+    }
   });
 });

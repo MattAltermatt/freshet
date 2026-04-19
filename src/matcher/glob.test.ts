@@ -29,6 +29,16 @@ describe('compileGlob — globs', () => {
     expect(pathRe.test('/api/users')).toBe(true);
   });
 
+  it('trailing /** also matches the bare base path with no trailing slash', () => {
+    const re = compileGlob('/json/**', { caseInsensitive: false });
+    expect(re.test('/json')).toBe(true);
+    expect(re.test('/json/')).toBe(true);
+    expect(re.test('/json/foo')).toBe(true);
+    expect(re.test('/json/foo/bar')).toBe(true);
+    expect(re.test('/jsonx')).toBe(false);
+    expect(re.test('/other')).toBe(false);
+  });
+
   it('escapes regex meta characters in literal text', () => {
     const re = compileGlob('foo.bar+baz(qux)', { caseInsensitive: true });
     expect(re.test('foo.bar+baz(qux)')).toBe(true);

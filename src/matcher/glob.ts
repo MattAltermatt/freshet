@@ -9,9 +9,15 @@ function escapeForRegex(literal: string): string {
 }
 
 function globToRegexBody(pattern: string): string {
+  // A trailing `/**` suffix is zero-segment-optional: `/foo/**` matches `/foo`
+  // as well as `/foo/`, `/foo/bar`, etc. Without this the popup's suggested
+  // pattern (e.g. `/json/**` for `https://host/json`) can't match the URL that
+  // spawned the rule.
+  const trailingDoubleStar = pattern.endsWith('/**');
+  const end = trailingDoubleStar ? pattern.length - 3 : pattern.length;
   let out = '';
   let i = 0;
-  while (i < pattern.length) {
+  while (i < end) {
     if (pattern[i] === '*' && pattern[i + 1] === '*') {
       out += '.*';
       i += 2;
@@ -25,6 +31,7 @@ function globToRegexBody(pattern: string): string {
     out += escapeForRegex(pattern[i]!);
     i += 1;
   }
+  if (trailingDoubleStar) out += '(?:/.*)?';
   return out;
 }
 
