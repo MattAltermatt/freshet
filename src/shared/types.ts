@@ -25,3 +25,15 @@ export interface StorageShape {
   templates: Templates;
   hostSkipList: HostSkipList;
 }
+
+/** Known JSON-viewer fingerprints Freshet can identify by name. */
+export type KnownViewer = 'jsonview' | 'json-formatter' | 'json-viewer-pro';
+
+/** Persisted per-host entry in `chrome.storage.local[pj_conflicts]`. */
+export interface ConflictEntry {
+  viewer: KnownViewer | 'unknown';
+  displayName: string;
+  extensionId: string | null;
+  detectedAt: string; // ISO-8601 UTC
+}
+export type ConflictMap = Record<string /* hostname */, ConflictEntry>;
