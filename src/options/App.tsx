@@ -87,7 +87,7 @@ export function App(): JSX.Element {
     void writeRules(rules.filter((_, i) => i !== index));
     toast.push({
       variant: 'info',
-      message: `Deleted rule ${index + 1} · Undo`,
+      message: `Deleted rule ${index + 1}`,
       ttlMs: 8000,
       action: {
         label: 'Undo',
@@ -103,7 +103,7 @@ export function App(): JSX.Element {
     void writeRules(next);
     toast.push({
       variant: 'info',
-      message: `Disabled ${ruleIds.length} rule${ruleIds.length === 1 ? '' : 's'} · Undo`,
+      message: `Disabled ${ruleIds.length} rule${ruleIds.length === 1 ? '' : 's'}`,
       ttlMs: 8000,
       action: {
         label: 'Undo',

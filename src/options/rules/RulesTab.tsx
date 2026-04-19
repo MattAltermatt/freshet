@@ -117,7 +117,7 @@ export function RulesTab({
     }
     toast.push({
       variant: 'success',
-      message: isNew ? 'Rule added · Saved ✓' : 'Rule saved ✓',
+      message: isNew ? 'Rule added' : 'Rule saved',
       ttlMs: 2000,
     });
   };
