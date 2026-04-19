@@ -195,7 +195,7 @@ chrome.runtime.onMessage.addListener((message, sender) => {
     void chrome.tabs.create({ url });
     return;
   }
-  if (kind === 'pj:rendered' || kind === 'pj:render-error') {
+  if (kind === 'pj:rendered' || kind === 'pj:render-error' || kind === 'pj:conflict') {
     const tabId = sender.tab?.id;
     if (tabId === undefined) return;
     const appearance = appearanceFor(kind as BadgeSignal);
