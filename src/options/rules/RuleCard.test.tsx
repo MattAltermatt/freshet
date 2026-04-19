@@ -32,7 +32,9 @@ describe('<RuleCard>', () => {
   it('shows order badge, pattern, template chip, var count', () => {
     renderCard();
     expect(screen.getByLabelText('Rule 1')).toBeInTheDocument();
-    expect(screen.getByText(/api\.example\.com/)).toBeInTheDocument();
+    // Hostname appears both as the fallback name (row 1 italic) and as its own
+    // row 2 line. One or more matches is fine — we just care it's present.
+    expect(screen.getAllByText(/api\.example\.com/).length).toBeGreaterThan(0);
     expect(screen.getByText('user-details')).toBeInTheDocument();
     expect(screen.getByText('2 vars')).toBeInTheDocument();
   });

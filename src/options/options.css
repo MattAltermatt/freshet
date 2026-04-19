@@ -225,7 +225,10 @@ input:focus, select:focus, textarea:focus {
   min-width: 0;
 }
 /* Shared rule identity — used by rule cards + URL tester so they scan alike.
-   Layout: row 1 = name (or hostPattern fallback), row 2 = host/path + pill. */
+   Three rows, positionally consistent:
+     row 1 — name (or hostPattern italic fallback) + TemplatePill right-justified
+     row 2 — hostPattern
+     row 3 — pathPattern */
 .pj-rule-identity {
   display: flex;
   flex-direction: column;
@@ -233,34 +236,33 @@ input:focus, select:focus, textarea:focus {
   min-width: 0;
   width: 100%;
 }
-.pj-rule-identity-primary {
-  font-weight: 600;
-  color: var(--pj-fg);
-  overflow-wrap: anywhere;
-}
-.pj-rule-identity--card .pj-rule-identity-primary { font-size: var(--pj-font-size-md); }
-.pj-rule-identity--row  .pj-rule-identity-primary { font-size: var(--pj-font-size-sm); }
-.pj-rule-identity-secondary {
+.pj-rule-identity-header {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: var(--pj-space-2);
-  flex-wrap: wrap;
   min-width: 0;
 }
-.pj-rule-identity-pattern {
-  font-family: var(--pj-font-mono);
+.pj-rule-identity-primary {
+  font-weight: 600;
+  color: var(--pj-fg);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.pj-rule-identity-primary--fallback {
+  font-style: italic;
   color: var(--pj-fg-muted);
+}
+.pj-rule-identity--card .pj-rule-identity-primary { font-size: var(--pj-font-size-md); }
+.pj-rule-identity--row  .pj-rule-identity-primary { font-size: var(--pj-font-size-sm); }
+.pj-rule-identity-host,
+.pj-rule-identity-path {
+  font-family: var(--pj-font-mono);
   font-size: var(--pj-font-size-sm);
   overflow-wrap: anywhere;
   min-width: 0;
 }
 .pj-rule-identity-host { color: var(--pj-fg); }
-.pj-rule-identity-slash {
-  color: var(--pj-accent-strong);
-  font-weight: 700;
-  margin: 0 2px;
-}
 .pj-rule-identity-path { color: var(--pj-fg-muted); }
 
 /* Back-compat aliases — some old callers still hand-render rule names/patterns.
