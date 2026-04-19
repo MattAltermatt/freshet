@@ -2,6 +2,8 @@ import type { JSX } from 'preact';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { useAutosave, useStorage } from '../../ui';
 import type { Rule, Templates } from '../../shared/types';
+import type { ImportFlagMap } from '../../storage/storage';
+import { NeedsAttention } from '../badges/NeedsAttention';
 import { TemplatesToolbar } from './TemplatesToolbar';
 import { TemplateEditor } from './TemplateEditor';
 import { SampleJsonEditor } from './SampleJsonEditor';
@@ -16,6 +18,8 @@ export interface TemplatesTabProps {
   onDeactivateRules: (ruleIds: string[]) => void;
   directive?: OptionsDirective | null;
   onDirectiveHandled?: () => void;
+  importFlags?: ImportFlagMap;
+  onDismissFlag?: (key: string) => void;
 }
 
 const DEFAULT_SAMPLE = `{
@@ -75,6 +79,8 @@ export function TemplatesTab({
   onDeactivateRules,
   directive,
   onDirectiveHandled,
+  importFlags,
+  onDismissFlag,
 }: TemplatesTabProps): JSX.Element {
   const [samples, writeSamples] = useStorage<'pj_sample_json', Record<string, string>>(
     'pj_sample_json',
@@ -193,6 +199,12 @@ export function TemplatesTab({
         onChange={onTemplatesChange}
         onDeactivateRules={onDeactivateRules}
       />
+      {active !== null && importFlags?.[active] && onDismissFlag ? (
+        <NeedsAttention
+          entry={importFlags[active]!}
+          onDismiss={() => onDismissFlag(active)}
+        />
+      ) : null}
       {active === null ? (
         <div class="pj-empty">
           <p>No template selected.</p>

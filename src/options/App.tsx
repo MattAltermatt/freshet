@@ -70,6 +70,12 @@ export function App(): JSX.Element {
     'pj_import_flags',
     {},
   );
+
+  const dismissFlag = (key: string): void => {
+    const next = { ...importFlags };
+    delete next[key];
+    void writeImportFlags(next);
+  };
   const toast = useToast();
 
   const [tab, setTab] = useState<Tab>('rules');
@@ -156,6 +162,8 @@ export function App(): JSX.Element {
             onRequestEditTemplate={requestEditTemplate}
             directive={directive}
             onDirectiveHandled={() => setDirective(null)}
+            importFlags={importFlags}
+            onDismissFlag={dismissFlag}
           />
         ) : (
           <TemplatesTab
@@ -165,6 +173,8 @@ export function App(): JSX.Element {
             onDeactivateRules={handleDeactivateRules}
             directive={directive}
             onDirectiveHandled={() => setDirective(null)}
+            importFlags={importFlags}
+            onDismissFlag={dismissFlag}
           />
         )}
       </main>

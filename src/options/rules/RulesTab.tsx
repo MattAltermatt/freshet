@@ -2,6 +2,7 @@ import type { JSX } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import { useToast } from '../../ui';
 import type { Rule, Templates } from '../../shared/types';
+import type { ImportFlagMap } from '../../storage/storage';
 import { RuleStack } from './RuleStack';
 import { UrlTester } from './UrlTester';
 import { RuleEditModal } from './RuleEditModal';
@@ -18,6 +19,8 @@ export interface RulesTabProps {
   onRequestEditTemplate: (name: string) => void;
   directive?: OptionsDirective | null;
   onDirectiveHandled?: () => void;
+  importFlags?: ImportFlagMap;
+  onDismissFlag?: (key: string) => void;
 }
 
 export function RulesTab({
@@ -29,6 +32,8 @@ export function RulesTab({
   onRequestEditTemplate,
   directive,
   onDirectiveHandled,
+  importFlags,
+  onDismissFlag,
 }: RulesTabProps): JSX.Element {
   // editing:
   //   undefined = modal closed
@@ -131,6 +136,8 @@ export function RulesTab({
           onChange={onChange}
           onEdit={(idx) => setEditing(idx)}
           onDelete={(idx) => onDelete(idx)}
+          {...(importFlags ? { importFlags } : {})}
+          {...(onDismissFlag ? { onDismissFlag } : {})}
         />
       </section>
       <section class="pj-rules-right">

@@ -1,6 +1,8 @@
 import type { JSX } from 'preact';
 import { Toggle } from '../../ui';
 import type { Rule } from '../../shared/types';
+import type { ImportFlagEntry } from '../../storage/storage';
+import { NeedsAttention } from '../badges/NeedsAttention';
 
 export interface RuleCardProps {
   rule: Rule;
@@ -11,6 +13,8 @@ export interface RuleCardProps {
   onMoveUp: () => void;
   onMoveDown: () => void;
   onDelete: () => void;
+  flagEntry?: ImportFlagEntry;
+  onDismissFlags?: () => void;
 }
 
 export function RuleCard({
@@ -22,6 +26,8 @@ export function RuleCard({
   onMoveUp,
   onMoveDown,
   onDelete,
+  flagEntry,
+  onDismissFlags,
 }: RuleCardProps): JSX.Element {
   const varCount = Object.keys(rule.variables).length;
   return (
@@ -61,6 +67,9 @@ export function RuleCard({
           </span>
         ) : null}
       </button>
+      {flagEntry && onDismissFlags ? (
+        <NeedsAttention entry={flagEntry} onDismiss={onDismissFlags} />
+      ) : null}
       <div class="pj-rule-controls" onClick={(e) => e.stopPropagation()}>
         <Toggle label="Active" checked={rule.active} onChange={onToggle} />
         <button

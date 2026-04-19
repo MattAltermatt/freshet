@@ -1,5 +1,6 @@
 import type { JSX } from 'preact';
 import type { Rule, Templates } from '../../shared/types';
+import type { ImportFlagMap } from '../../storage/storage';
 import { RuleCard } from './RuleCard';
 
 export interface RuleStackProps {
@@ -8,6 +9,8 @@ export interface RuleStackProps {
   onChange: (next: Rule[]) => void;
   onEdit: (index: number | null) => void;
   onDelete: (index: number) => void;
+  importFlags?: ImportFlagMap;
+  onDismissFlag?: (key: string) => void;
 }
 
 export function RuleStack({
@@ -15,6 +18,8 @@ export function RuleStack({
   onChange,
   onEdit,
   onDelete,
+  importFlags,
+  onDismissFlag,
 }: RuleStackProps): JSX.Element {
   const swap = (i: number, j: number): void => {
     if (i < 0 || j < 0 || i >= rules.length || j >= rules.length) return;
@@ -50,19 +55,24 @@ export function RuleStack({
         </div>
       ) : (
         <div class="pj-rule-cards">
-          {rules.map((r, i) => (
-            <RuleCard
-              key={r.id}
-              rule={r}
-              index={i}
-              total={rules.length}
-              onToggle={(a) => patch(i, { active: a })}
-              onEdit={() => onEdit(i)}
-              onMoveUp={() => swap(i, i - 1)}
-              onMoveDown={() => swap(i, i + 1)}
-              onDelete={() => onDelete(i)}
-            />
-          ))}
+          {rules.map((r, i) => {
+            const entry = importFlags?.[r.id];
+            return (
+              <RuleCard
+                key={r.id}
+                rule={r}
+                index={i}
+                total={rules.length}
+                onToggle={(a) => patch(i, { active: a })}
+                onEdit={() => onEdit(i)}
+                onMoveUp={() => swap(i, i - 1)}
+                onMoveDown={() => swap(i, i + 1)}
+                onDelete={() => onDelete(i)}
+                {...(entry ? { flagEntry: entry } : {})}
+                {...(onDismissFlag ? { onDismissFlags: () => onDismissFlag(r.id) } : {})}
+              />
+            );
+          })}
         </div>
       )}
     </div>
