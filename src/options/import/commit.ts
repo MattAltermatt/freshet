@@ -85,7 +85,11 @@ export function applyImport(input: ApplyImportInput): ApplyImportResult {
       const ruleIdx = Number(m[1]);
       const br = input.plan.bundle.rules[ruleIdx];
       if (!br || input.plan.skipRuleIds.has(br.id)) continue;
-      const key = br.id;
+      // Key must match the id the rule is actually written under — keepBoth
+      // rewrites the id to `${br.id}-imported`, so the flag entry must follow.
+      // Otherwise NeedsAttention looks up the wrong key and the flag orphans.
+      const ruleRes = input.plan.ruleCollisionResolution.get(br.id);
+      const key = ruleRes === 'keepBoth' ? `${br.id}-imported` : br.id;
       const entry: ImportFlagEntry = flagsDelta[key] ?? {
         source: input.plan.mode,
         importedAt: input.now,
@@ -149,10 +153,26 @@ export async function commitImport(
     existingSample: ctx.sampleJson,
     now: new Date().toISOString(),
   });
-  // Templates first, then sample JSON, then rules, then flags.
-  await ctx.setTemplates(result.templates);
-  await ctx.setSampleJson(result.sample);
-  await ctx.setRules(result.rules);
-  const mergedFlags = { ...ctx.existingFlags, ...result.flagsDelta };
-  await ctx.setImportFlags(mergedFlags);
+  // Atomic-ish: snapshot every key we plan to touch, then write in order.
+  // On any failure, restore all four snapshots before throwing. Matches the
+  // batch-atomic pattern in `src/storage/migration.ts`.
+  const snapTemplates = { ...ctx.templates };
+  const snapSample = { ...ctx.sampleJson };
+  const snapRules = [...ctx.rules];
+  const snapFlags = { ...ctx.existingFlags };
+  try {
+    await ctx.setTemplates(result.templates);
+    await ctx.setSampleJson(result.sample);
+    await ctx.setRules(result.rules);
+    await ctx.setImportFlags({ ...ctx.existingFlags, ...result.flagsDelta });
+  } catch (err) {
+    // Roll back in reverse order; ignore rollback failures (best-effort).
+    await Promise.allSettled([
+      ctx.setImportFlags(snapFlags),
+      ctx.setRules(snapRules),
+      ctx.setSampleJson(snapSample),
+      ctx.setTemplates(snapTemplates),
+    ]);
+    throw err;
+  }
 }

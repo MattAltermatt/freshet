@@ -59,7 +59,8 @@ export function ImportDialog(props: ImportDialogProps): JSX.Element {
                 <ul>
                   {hits.map((h) => (
                     <li key={h.field + h.patternId}>
-                      Matched <code>{h.patternRegex}</code> on <code>{h.field}</code>
+                      Matched <code>{h.patternRegex}</code> on <code>{h.field}</code>.
+                      Matched text: <code>{h.matchedText}</code>
                     </li>
                   ))}
                 </ul>

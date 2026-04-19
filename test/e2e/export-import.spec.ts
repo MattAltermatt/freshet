@@ -186,6 +186,68 @@ test.describe('Export / Import', () => {
     }
   });
 
+  test('scrub strips sampleJson: exported bundle omits it + re-import leaves recipient pj_sample_json untouched', async () => {
+    const { ctx, extId } = await launch();
+    try {
+      await seedStorage(ctx, {
+        templates: { t1: '<div>{{x}}</div>' },
+        pj_sample_json: { t1: '{"secret":"xyz"}' },
+        rules: [
+          {
+            id: 'r1',
+            name: 'demo',
+            hostPattern: 'a',
+            pathPattern: 'b',
+            templateName: 't1',
+            variables: {},
+            active: true,
+          },
+        ],
+        schemaVersion: 2,
+      });
+      const page = await openOptions(ctx, extId);
+
+      await page.getByRole('button', { name: /⬇ Export/ }).click();
+      await page.getByLabel(/demo/).check();
+      await page.getByRole('button', { name: /next: scrub/i }).click();
+      // Strip the sample JSON for this template
+      await page.getByLabel(/strip sample json for t1/i).check();
+      await page.getByRole('button', { name: /next: output/i }).click();
+
+      const [download] = await Promise.all([
+        page.waitForEvent('download'),
+        page.getByRole('button', { name: /^Download$/ }).click(),
+      ]);
+      const fs = await import('node:fs/promises');
+      const bundleText = await fs.readFile((await download.path())!, 'utf8');
+      const parsed = JSON.parse(bundleText);
+      // The exported bundle must omit sampleJson for the stripped template.
+      expect(parsed.templates[0].sampleJson).toBeUndefined();
+
+      // Close export, clear recipient storage, import the stripped bundle.
+      await page.getByRole('button', { name: /^Done$/ }).click();
+      await seedStorage(ctx, {
+        templates: {},
+        pj_sample_json: { preserved: '{"kept":true}' },
+        rules: [],
+        schemaVersion: 2,
+      });
+      await page.reload();
+      await page.getByRole('button', { name: /⬆ Import/ }).click();
+      await page.getByPlaceholder(/paste bundle json/i).fill(bundleText);
+      await page.getByRole('button', { name: /next: review/i }).click();
+      await page.getByRole('button', { name: /just append all/i }).click();
+      await page.getByRole('button', { name: /^Append all$/ }).click();
+
+      const sample = await readStorage<Record<string, string>>(ctx, 'pj_sample_json');
+      // Recipient's unrelated entry preserved, and no entry written for t1
+      expect(sample?.['preserved']).toBe('{"kept":true}');
+      expect(sample?.['t1']).toBeUndefined();
+    } finally {
+      await ctx.close();
+    }
+  });
+
   test('file picker path opens review on valid file', async () => {
     const { ctx, extId } = await launch();
     try {
