@@ -19,6 +19,14 @@ import samplePokemon from '../starter/pokemon.sample.json?raw';
 import sampleCountry from '../starter/country.sample.json?raw';
 import { appearanceFor, type BadgeSignal } from './badge';
 
+// Tab can close between an event firing and the chrome.action.* promise
+// settling -- Chrome rejects with "No tab with id: N". Badge paint is
+// best-effort, so swallow instead of leaking an unhandled rejection into
+// the Errors panel.
+function safeAction(fn: () => Promise<unknown>): void {
+  void fn().catch(() => {});
+}
+
 async function main(): Promise<void> {
   await maybeStorageAreaMigration();
   await maybeSchemaMigration();
@@ -199,8 +207,8 @@ chrome.runtime.onMessage.addListener((message, sender) => {
     const tabId = sender.tab?.id;
     if (tabId === undefined) return;
     const appearance = appearanceFor(kind as BadgeSignal);
-    void chrome.action.setBadgeText({ tabId, text: appearance.text });
-    void chrome.action.setBadgeBackgroundColor({ tabId, color: appearance.color });
+    safeAction(() => chrome.action.setBadgeText({ tabId, text: appearance.text }));
+    safeAction(() => chrome.action.setBadgeBackgroundColor({ tabId, color: appearance.color }));
     if (sender.tab?.url) lastSignaledUrl.set(tabId, sender.tab.url);
   }
 });
@@ -215,7 +223,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
   // it. Otherwise the tab is genuinely navigating away; clear.
   if (changeInfo.url && changeInfo.url === lastSignaledUrl.get(tabId)) return;
   lastSignaledUrl.delete(tabId);
-  void chrome.action.setBadgeText({ tabId, text: '' });
+  safeAction(() => chrome.action.setBadgeText({ tabId, text: '' }));
 });
 
 chrome.tabs.onRemoved.addListener((tabId) => {
