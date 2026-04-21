@@ -68,7 +68,6 @@
   pointer-events: none;
   animation: pj-toast-in 180ms ease-out;
 }
-.pj-toast--skip { background: var(--pj-accent-strong); color: var(--pj-accent-fg); }
 @keyframes pj-toast-in {
   from { opacity: 0; transform: translateY(-4px); }
   to { opacity: 1; transform: translateY(0); }
