@@ -47,8 +47,10 @@ test('popup shows matched-rule chip for a seeded rule', async () => {
   });
   await popup.goto(`chrome-extension://${extId}/src/popup/popup.html`);
 
-  await expect(popup.locator('.pj-rule-chip')).toBeVisible({ timeout: 5000 });
-  await expect(popup.locator('.pj-rule-chip')).toHaveText('Example');
+  // Rule has a templateName → renders as a TemplatePill (brand `{name>` shape).
+  const pill = popup.locator('.pj-popup-match-row .pj-tpl-pill');
+  await expect(pill).toBeVisible({ timeout: 5000 });
+  await expect(pill).toContainText('Example');
 
   await ctx.close();
 });
@@ -122,7 +124,7 @@ test('popup "Test in options" opens options page with url tester pre-filled', as
   });
   await popup.goto(`chrome-extension://${extId}/src/popup/popup.html`);
 
-  await popup.getByRole('button', { name: 'Test in options' }).click();
+  await popup.getByRole('button', { name: /test this url in options/i }).click();
 
   const opened = await popup.evaluate(
     () => (window as unknown as { __opened: string }).__opened,
