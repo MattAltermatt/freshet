@@ -171,11 +171,8 @@ test.describe('Options page CRUD', () => {
       const page = await openOptions(ctx, extId);
       await page.getByRole('button', { name: 'Templates' }).click();
 
-      // Sample JSON editor is the first CodeMirror editor in the side column.
-      const jsonEditor = page
-        .locator('.pj-templates-side-block')
-        .first()
-        .locator('.cm-content');
+      // Sample JSON editor lives in the left column under [data-area="sample"].
+      const jsonEditor = page.locator('[data-area="sample"] .cm-content');
       await expect(jsonEditor).toContainText('stored-alpha');
 
       // Switch template → the side editor should swap to beta's sample.
