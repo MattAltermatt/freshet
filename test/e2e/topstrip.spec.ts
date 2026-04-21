@@ -14,7 +14,7 @@ test.afterAll(async () => {
   await stopServer();
 });
 
-test('top-strip renders with rule name + env chip + toggle-group + menu on a matched page', async () => {
+test('top-strip renders rule-link + template-link + flat-action buttons on a matched page', async () => {
   const ctx = await chromium.launchPersistentContext('', {
     headless: false,
     args: [`--disable-extensions-except=${extensionPath}`, `--load-extension=${extensionPath}`],
@@ -27,6 +27,7 @@ test('top-strip renders with rule name + env chip + toggle-group + menu on a mat
       pj_storage_area: 'local',
       rules: [{
         id: 'rule-e2e',
+        name: 'E2E rule',
         hostPattern: '127.0.0.1',
         pathPattern: '/**',
         templateName: 'Example',
@@ -46,18 +47,38 @@ test('top-strip renders with rule name + env chip + toggle-group + menu on a mat
   const probe = await page.evaluate(() => {
     const host = document.getElementById('pj-topstrip-host');
     const root = host?.shadowRoot;
-    if (!root) return { ruleName: null, env: null, hasGroup: false, hasMenuTrigger: false };
-    const ruleName = root.querySelector('[data-testid="pj-rule-name"]')?.textContent ?? null;
-    const env = root.querySelector('[data-testid="pj-env-chip"]')?.textContent ?? null;
-    const hasGroup = Boolean(root.querySelector('[role="group"]'));
-    const hasMenuTrigger = Boolean(root.querySelector('[data-testid="pj-menu-trigger"]'));
-    return { ruleName, env, hasGroup, hasMenuTrigger };
+    if (!root) {
+      return {
+        ruleLink: null,
+        templateLink: null,
+        env: null,
+        hasGroup: false,
+        hasCopyUrl: false,
+        hasCopyJson: false,
+        hasThemeTrigger: false,
+        hasMenuTrigger: false,
+      };
+    }
+    return {
+      ruleLink: root.querySelector('[data-testid="pj-rule-link"]')?.textContent ?? null,
+      templateLink: root.querySelector('[data-testid="pj-rule-name"]')?.textContent ?? null,
+      env: root.querySelector('[data-testid="pj-env-chip"]')?.textContent ?? null,
+      hasGroup: Boolean(root.querySelector('[role="group"]')),
+      hasCopyUrl: Boolean(root.querySelector('[data-testid="pj-copy-url"]')),
+      hasCopyJson: Boolean(root.querySelector('[data-testid="pj-copy-json"]')),
+      hasThemeTrigger: Boolean(root.querySelector('[data-testid="pj-theme-trigger"]')),
+      hasMenuTrigger: Boolean(root.querySelector('[data-testid="pj-menu-trigger"]')),
+    };
   });
 
-  expect(probe.ruleName).toBe('Example');
+  expect(probe.ruleLink).toContain('E2E rule');
+  expect(probe.templateLink).toContain('Example');
   expect(probe.env).toBe('staging');
   expect(probe.hasGroup).toBe(true);
-  expect(probe.hasMenuTrigger).toBe(true);
+  expect(probe.hasCopyUrl).toBe(true);
+  expect(probe.hasCopyJson).toBe(true);
+  expect(probe.hasThemeTrigger).toBe(true);
+  expect(probe.hasMenuTrigger).toBe(false);
 
   await ctx.close();
 });
@@ -103,48 +124,3 @@ test('toggle-raw message flips the strip into raw mode', async () => {
   await ctx.close();
 });
 
-test('skip this host adds hostname to hostSkipList', async () => {
-  const ctx = await chromium.launchPersistentContext('', {
-    headless: false,
-    args: [`--disable-extensions-except=${extensionPath}`, `--load-extension=${extensionPath}`],
-  });
-  const [sw] = ctx.serviceWorkers();
-  const worker = sw ?? (await ctx.waitForEvent('serviceworker'));
-
-  await worker.evaluate(async () => {
-    await chrome.storage.local.set({
-      pj_storage_area: 'local',
-      rules: [{
-        id: 'r-s', hostPattern: '127.0.0.1', pathPattern: '/**',
-        templateName: 'S', variables: {}, active: true,
-      }],
-      templates: { S: '<h1 id="pj-rendered">rendered</h1>' },
-      hostSkipList: [],
-      settings: { themePreference: 'light' },
-    });
-  });
-
-  const page = await ctx.newPage();
-  await page.goto('http://127.0.0.1:4391/internal/user/1234');
-  await page.waitForSelector('#pj-topstrip-host');
-
-  await page.evaluate(() => {
-    const root = document.getElementById('pj-topstrip-host')?.shadowRoot;
-    (root!.querySelector('[data-testid="pj-menu-trigger"]') as HTMLButtonElement).click();
-  });
-  await page.evaluate(() => {
-    const root = document.getElementById('pj-topstrip-host')?.shadowRoot;
-    const items = root!.querySelectorAll('.pj-menu-item');
-    const skip = Array.from(items).find((el) => el.textContent?.includes('Skip this host'));
-    (skip as HTMLButtonElement).click();
-  });
-
-  // The handler writes storage then reloads — verify from the SW side.
-  await page.waitForLoadState('load').catch(() => {});
-  const stored = await worker.evaluate(
-    async () => (await chrome.storage.local.get('hostSkipList')) as { hostSkipList: string[] },
-  );
-  expect(stored.hostSkipList).toContain('127.0.0.1');
-
-  await ctx.close();
-});
