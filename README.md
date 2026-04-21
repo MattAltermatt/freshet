@@ -8,10 +8,11 @@
 
 > **Thaw any JSON URL into a more useful page.** A Chrome extension that pays you back time on every JSON URL you revisit. Write one small Liquid template per URL pattern; from then on, the response renders as a real dashboard — fields surfaced, statuses colored, IDs turned into clickable links to whatever they reference.
 
+[![Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-install-4285F4?logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/freshet/mpclplhdencffbilobpcapccnihpelcg)
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Manifest V3](https://img.shields.io/badge/Chrome-MV3-brightgreen.svg)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6.svg)
-![Tests](https://img.shields.io/badge/tests-373%20unit%20%2B%2041%20E2E-success.svg)
+![Tests](https://img.shields.io/badge/tests-383%20unit%20%2B%2044%20E2E-success.svg)
 
 Paste a JSON URL into Chrome, get a table instead of a `<pre>`. Works against any host you configure — internal tooling, public APIs, webhooks you're debugging. Templates are small HTML snippets with `{{placeholders}}`; rules map URL patterns to templates.
 
@@ -72,11 +73,13 @@ Each starter rule carries an `Example ↗` pill on its rule card — click to op
 
 ### Chrome Web Store
 
-**v1.0.0 submitted 2026-04-19** — currently in compliance review. Listing link will replace this line once it's live.
+**[Install Freshet from the Chrome Web Store →](https://chromewebstore.google.com/detail/freshet/mpclplhdencffbilobpcapccnihpelcg)**
+
+One click, no unpacked-extension dance. Updates auto-apply from the store.
 
 ### From source (unpacked)
 
-Until the Web Store listing is live, load the latest build unpacked:
+If you'd rather run a local build (to try a fork, test a PR, or stay on a specific commit):
 
 1. Clone the repo and build:
    ```bash
