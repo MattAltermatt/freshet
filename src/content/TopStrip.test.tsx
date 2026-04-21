@@ -88,6 +88,19 @@ test('rule link falls back to (unnamed rule) when name and hostPattern empty', (
   expect(screen.getByTestId('pj-rule-link')).toHaveTextContent('(unnamed rule)');
 });
 
+test('clicking the rule link sends an open-options edit-rule message', () => {
+  const sendMessage = vi.fn();
+  (globalThis as unknown as { chrome: { runtime: { sendMessage: typeof sendMessage } } })
+    .chrome.runtime.sendMessage = sendMessage;
+  render(<TopStrip {...baseProps()} />);
+  fireEvent.click(screen.getByTestId('pj-rule-link'));
+  expect(sendMessage).toHaveBeenCalledTimes(1);
+  const arg = sendMessage.mock.calls[0]![0] as { kind: string; hash: string };
+  expect(arg.kind).toBe('pj:open-options');
+  expect(arg.hash).toContain('#edit-rule=');
+  expect(decodeURIComponent(arg.hash.split('=')[1]!)).toBe('r1');
+});
+
 test('clicking the template name sends an open-options edit-template message', () => {
   const sendMessage = vi.fn();
   (globalThis as unknown as { chrome: { runtime: { sendMessage: typeof sendMessage } } })
