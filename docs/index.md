@@ -11,6 +11,8 @@ description: Thaw any JSON URL into a more useful page. Liquid templates per URL
 
 **Thaw any JSON URL into a more useful page.** A Chrome extension that pays you back time on every JSON URL you revisit. Write one small Liquid template per URL pattern; from then on, the response renders as a real dashboard — fields surfaced, statuses colored, IDs turned into clickable links.
 
+[**Install from the Chrome Web Store →**](https://chromewebstore.google.com/detail/freshet/mpclplhdencffbilobpcapccnihpelcg)
+
 [**See live demos →**](try/)
 
 - [Privacy policy](privacy/)

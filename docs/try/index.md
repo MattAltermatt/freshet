@@ -240,7 +240,7 @@ description: Thaw any JSON URL into a more useful page. Five live demos — raw 
   These demos render through the extension running in your browser. Without it, the
   "Try it live" links open raw JSON — Freshet is what turns it into the styled dashboard
   on the right.
-  <br><a class="try-install-link" href="https://github.com/MattAltermatt/freshet#install">Install Freshet (from source) →</a>
+  <br><a class="try-install-link" href="https://chromewebstore.google.com/detail/freshet/mpclplhdencffbilobpcapccnihpelcg">Install Freshet from the Chrome Web Store →</a>
 </aside>
 
 <!-- ─── Service Health (self-hosted, active by default) ─── -->
