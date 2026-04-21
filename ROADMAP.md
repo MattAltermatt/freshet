@@ -1,23 +1,27 @@
 # Freshet — Roadmap
 
-## Now — Awaiting Chrome Web Store review
+## Shipped — v1.0.0 live on the Chrome Web Store
 
-v1.0.0 submitted on 2026-04-19. CWS flagged `<all_urls>` for in-depth review; realistic turnaround 1–4 weeks.
-
-- **Don't upload another zip until v1.0.0 is resolved** — a new upload restarts the clock.
-- **Don't edit listing fields during review** (description, screenshots, promo tiles, permission justifications). All listing changes wait until the version is live.
-- If bounced: read the reviewer note, fix surgically, bump to v1.0.1 in `vite.config.ts` + `package.json`, rebuild + re-zip, resubmit.
-
-Artifacts: `freshet-v1.0.0.zip` (gitignored; rebuild with `pnpm build && zip -r freshet-v1.0.0.zip dist`) · `docs/assets/cws-screenshots/*.png` · `docs/superpowers/cws-listing.md`.
+v1.0.0 submitted 2026-04-19 → approved and published **2026-04-21**.
+Live at <https://chromewebstore.google.com/detail/freshet/mpclplhdencffbilobpcapccnihpelcg>.
 
 ---
 
-## Post-launch — once v1.0.0 goes live
+## Now — v1.1.0 release-cutting
 
-1. **README.** Replace the *"Submission in progress"* line in `README.md` with the live CWS listing URL and announce.
-2. **Official URL in the CWS listing.** Paste `https://mattaltermatt.github.io/freshet/` into the listing's **Official URL** field — the domain is already GSC-verified (file at `docs/googleb699e27e48b22e41.html`, stays in-repo indefinitely; removing it un-verifies).
-3. **Small promo tile (440×280).** The only CWS listing asset Google uses on homepage / category / search tiles. Regenerate via the existing `scripts/cws-screenshots.mjs` Chromium-composite approach.
-4. **Marquee promo image (1400×560).** Optional — only surfaces if Google picks Freshet for the homepage carousel. Skippable.
+Accumulated on main since v1.0.0: top-strip redesign (right-cluster flat-action buttons, theme dropdown, rule/template kind prefixes), a11y fixes on rule cards, live `<html data-theme>` updates on rendered pages, E2E green baseline restored (44/44). Follow the checklist in the `feedback_release_process` memory.
+
+Active punch list:
+1. Update **Official URL** in the CWS listing to `https://mattaltermatt.github.io/freshet/` — the domain is already GSC-verified via `docs/googleb699e27e48b22e41.html`.
+2. Add a "Get it on Chrome Web Store" CTA to the `docs/try/` marketing page.
+3. Regenerate `docs/assets/cws-screenshots/*.png` — all 5 shots drifted against the post-submission UI changes. Rerun `node scripts/cws-screenshots.mjs` before uploading.
+4. Upload refreshed screenshots to CWS dashboard.
+5. **Small promo tile (440×280).** Only CWS listing asset Google uses on homepage / category / search tiles.
+6. **Marquee promo image (1400×560).** Optional — only surfaces if Google picks Freshet for the homepage carousel. Skippable.
+7. Refine listing description copy (now unfrozen).
+8. Cut v1.1.0 release per `feedback_release_process` memory: bump `package.json` + `vite.config.ts`, `pnpm build`, zip from inside `dist/`, tag + GH release + CWS upload.
+
+Freeze note: uploading a new v1.1.0 zip re-engages the CWS review freeze — batch listing edits with the submission instead of spreading them across review windows.
 
 ---
 
