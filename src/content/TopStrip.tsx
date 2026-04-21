@@ -5,7 +5,7 @@ import { useStorage } from '../ui/hooks/useStorage';
 import { useTheme } from '../ui/hooks/useTheme';
 import type { ThemePreference } from '../ui/theme';
 import { directiveHash } from '../options/directives';
-import type { HostSkipList, Rule } from '../shared/types';
+import type { Rule } from '../shared/types';
 
 export interface TopStripProps {
   rule: Rule;
@@ -30,11 +30,7 @@ export function TopStrip({
 }: TopStripProps): JSX.Element {
   const env = rule.variables['env'];
   const [mode, setMode] = useState<ViewMode>('rendered');
-  const [toast, setToast] = useState<{ kind: 'copy' | 'skip'; text: string } | null>(null);
-  const [skipList, writeSkipList] = useStorage<'hostSkipList', HostSkipList>(
-    'hostSkipList',
-    [],
-  );
+  const [toast, setToast] = useState<{ kind: 'copy'; text: string } | null>(null);
   const [settings, writeSettings] = useStorage<
     'settings',
     { themePreference: ThemePreference }
@@ -90,6 +86,16 @@ export function TopStrip({
     }
   };
 
+  const copyJson = async (): Promise<void> => {
+    try {
+      await navigator.clipboard.writeText(rawJsonText);
+      setToast({ kind: 'copy', text: 'Copied JSON to clipboard' });
+      setTimeout(() => setToast(null), 1600);
+    } catch {
+      /* silent — clipboard may be unavailable in some contexts. */
+    }
+  };
+
   // Content scripts cannot call chrome.tabs.create in MV3 — route through background.
   const openEditRule = (): void => {
     void chrome.runtime.sendMessage({
@@ -103,18 +109,6 @@ export function TopStrip({
       kind: 'pj:open-options',
       hash: directiveHash.editTemplate(rule.templateName),
     });
-  };
-
-  const skipHost = async (): Promise<void> => {
-    const host = window.location.hostname;
-    if (!host) return;
-    const next = Array.from(new Set([...skipList, host]));
-    await writeSkipList(next);
-    setToast({
-      kind: 'skip',
-      text: `Skipped ${host} — undo from the popup`,
-    });
-    setTimeout(() => window.location.reload(), 1600);
   };
 
   // Same labels + icons as the options-page Header theme control so the two
@@ -136,27 +130,6 @@ export function TopStrip({
     if (active) item.trailingIcon = <span aria-hidden="true">✓</span>;
     return item;
   });
-
-  const menuItems: MenuItem[] = [
-    {
-      label: 'Copy URL',
-      icon: <span aria-hidden="true">⧉</span>,
-      onSelect: () => void copyUrl(),
-    },
-    {
-      label: 'Edit rule',
-      icon: <span aria-hidden="true">✎</span>,
-      trailingIcon: <span aria-hidden="true">↗</span>,
-      onSelect: openEditRule,
-    },
-    ...themeItems,
-    {
-      label: 'Skip this host',
-      icon: <span aria-hidden="true">✕</span>,
-      danger: true,
-      onSelect: () => void skipHost(),
-    },
-  ];
 
   return (
     <div class="pj-topstrip" data-testid="pj-topstrip">
@@ -197,43 +170,78 @@ export function TopStrip({
           ⚠ {degraded.reason}
         </span>
       ) : (
-        <>
-      <div class="pj-toggle-group" role="group" aria-label="View mode">
-        <button
-          type="button"
-          aria-pressed={mode === 'rendered'}
-          onClick={() => setMode('rendered')}
-        >
-          Rendered
-        </button>
-        <button
-          type="button"
-          aria-pressed={mode === 'raw'}
-          onClick={() => setMode('raw')}
-          title="Toggle raw JSON (⌘⇧J)"
-        >
-          Raw<span class="pj-toggle-hint"> ⌘⇧J</span>
-        </button>
-      </div>
-      <Menu
-        align="right"
-        items={menuItems}
-        trigger={
+        <div class="pj-right">
+          <div class="pj-toggle-group" role="group" aria-label="View mode">
+            <button
+              type="button"
+              aria-pressed={mode === 'rendered'}
+              onClick={() => setMode('rendered')}
+            >
+              Rendered
+            </button>
+            <button
+              type="button"
+              aria-pressed={mode === 'raw'}
+              onClick={() => setMode('raw')}
+              title="Toggle raw JSON (⌘⇧J)"
+            >
+              Raw<span class="pj-toggle-hint"> ⌘⇧J</span>
+            </button>
+          </div>
           <button
             type="button"
-            class="pj-menu-trigger-btn"
-            aria-label="More actions"
-            data-testid="pj-menu-trigger"
+            class="pj-btn"
+            data-testid="pj-copy-url"
+            title="Copy URL to clipboard"
+            onClick={() => void copyUrl()}
           >
-            ⋯
+            <span class="pj-btn-icon" aria-hidden="true">⧉</span>
+            <span>Copy URL</span>
           </button>
-        }
-      />
-        </>
+          <button
+            type="button"
+            class="pj-btn"
+            data-testid="pj-copy-json"
+            title="Copy raw JSON to clipboard"
+            onClick={() => void copyJson()}
+          >
+            <span class="pj-btn-icon" aria-hidden="true">{'{}'}</span>
+            <span>Copy JSON</span>
+          </button>
+          <Menu
+            align="right"
+            items={themeItems}
+            trigger={
+              <button
+                type="button"
+                class="pj-btn pj-theme-trigger"
+                data-testid="pj-theme-trigger"
+                aria-label="Theme"
+                title="Theme"
+              >
+                <span class="pj-btn-icon" aria-hidden="true">
+                  {settings.themePreference === 'dark'
+                    ? '☾'
+                    : settings.themePreference === 'light'
+                      ? '☀'
+                      : '◐'}
+                </span>
+                <span>
+                  {settings.themePreference === 'dark'
+                    ? 'Dark'
+                    : settings.themePreference === 'light'
+                      ? 'Light'
+                      : 'Auto'}
+                </span>
+                <span class="pj-btn-chev" aria-hidden="true">▾</span>
+              </button>
+            }
+          />
+        </div>
       )}
       {toast ? (
         <div
-          class={toast.kind === 'skip' ? 'pj-toast pj-toast--skip' : 'pj-toast'}
+          class="pj-toast"
           role="status"
           aria-live="polite"
           data-testid="pj-toast"

@@ -34,16 +34,24 @@ function baseProps() {
   const contentRoot = document.createElement('div');
   contentRoot.id = 'pj-root';
   document.body.appendChild(contentRoot);
+  const rule: {
+    id: string;
+    name?: string;
+    hostPattern: string;
+    pathPattern: string;
+    templateName: string;
+    variables: Record<string, string>;
+    active: boolean;
+  } = {
+    id: 'r1',
+    hostPattern: '*',
+    pathPattern: '/**',
+    templateName: 'internal-user',
+    variables: {},
+    active: true,
+  };
   return {
-    rule: {
-      id: 'r1',
-      name: undefined as string | undefined,
-      hostPattern: '*',
-      pathPattern: '/**',
-      templateName: 'internal-user',
-      variables: {} as Record<string, string>,
-      active: true,
-    },
+    rule,
     renderedHtml: '<h1>hi</h1>',
     rawJsonText: '{"a":1}',
     contentRoot,
