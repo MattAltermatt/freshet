@@ -204,13 +204,30 @@ input:focus, select:focus, textarea:focus {
   position: relative;
 }
 .pj-rule-card--active { border-left-color: var(--pj-accent); }
-.pj-rule-card--inactive { opacity: 0.65; border-left-color: var(--pj-border); }
+.pj-rule-card--inactive {
+  background: var(--pj-bg-subtle);
+  border-left-color: var(--pj-border);
+}
+.pj-rule-card--inactive .pj-rule-num,
+.pj-rule-card--inactive .pj-rule-identity-primary,
+.pj-rule-card--inactive .pj-rule-identity-host,
+.pj-rule-card--inactive .pj-rule-identity-path,
+.pj-rule-card--inactive .pj-rule-vars {
+  color: var(--pj-fg-muted);
+}
 
 .pj-rule-num {
   font: 600 var(--pj-font-size-md) var(--pj-font-mono);
   color: var(--pj-fg-subtle);
   min-width: 22px;
   text-align: center;
+}
+.pj-rule-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--pj-space-2);
+  min-width: 0;
 }
 .pj-rule-body {
   display: flex;
@@ -325,7 +342,7 @@ input:focus, select:focus, textarea:focus {
   padding: 2px var(--pj-space-2);
   border-radius: 10px;
   background: var(--pj-bg-subtle);
-  color: var(--pj-fg-subtle);
+  color: var(--pj-fg-muted);
   border: 1px solid var(--pj-border);
   font-size: 10px;
   font-weight: 600;

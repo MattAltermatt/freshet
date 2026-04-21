@@ -36,32 +36,32 @@ export function RuleCard({
       class={`pj-rule-card${rule.active ? ' pj-rule-card--active' : ' pj-rule-card--inactive'}`}
     >
       <div class="pj-rule-num" aria-label={`Rule ${index + 1}`}>{index + 1}</div>
-      <button type="button" class="pj-rule-body" onClick={onEdit}>
-        <RuleIdentity rule={rule} density="card" />
-        {rule.isExample ? (
-          rule.exampleUrl ? (
-            <a
-              class="pj-example-pill pj-example-pill--link"
-              href={rule.exampleUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              title={`Example: ${rule.exampleUrl}`}
-              onClick={(e) => e.stopPropagation()}
-            >
-              Example <span class="pj-example-pill-arrow" aria-hidden="true">↗</span>
-            </a>
-          ) : (
+      <div class="pj-rule-main">
+        <button type="button" class="pj-rule-body" onClick={onEdit}>
+          <RuleIdentity rule={rule} density="card" />
+          {rule.isExample && !rule.exampleUrl ? (
             <span class="pj-example-pill" title="Bundled with Freshet">
               Example
             </span>
-          )
+          ) : null}
+          {varCount > 0 ? (
+            <span class="pj-rule-vars" title={`${varCount} variables`}>
+              {varCount} {varCount === 1 ? 'var' : 'vars'}
+            </span>
+          ) : null}
+        </button>
+        {rule.isExample && rule.exampleUrl ? (
+          <a
+            class="pj-example-pill pj-example-pill--link"
+            href={rule.exampleUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={`Example: ${rule.exampleUrl}`}
+          >
+            Example <span class="pj-example-pill-arrow" aria-hidden="true">↗</span>
+          </a>
         ) : null}
-        {varCount > 0 ? (
-          <span class="pj-rule-vars" title={`${varCount} variables`}>
-            {varCount} {varCount === 1 ? 'var' : 'vars'}
-          </span>
-        ) : null}
-      </button>
+      </div>
       {flagEntry && onDismissFlags ? (
         <NeedsAttention entry={flagEntry} onDismiss={onDismissFlags} />
       ) : null}
