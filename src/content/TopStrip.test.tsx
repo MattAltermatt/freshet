@@ -145,24 +145,60 @@ test('rendered toggle restores the renderedHtml', () => {
   expect(live).toContain('<h1>hi</h1>');
 });
 
-test('degraded state hides the toggle-group + menu and shows the reason', () => {
+test('degraded state hides the toggle-group + right-cluster actions and shows the reason', () => {
   render(
     <TopStrip {...baseProps()} degraded={{ reason: 'Another viewer handled this page' }} />,
   );
   expect(screen.getByTestId('pj-degraded')).toBeInTheDocument();
   expect(screen.queryByRole('group', { name: 'View mode' })).toBeNull();
+  expect(screen.queryByTestId('pj-copy-url')).toBeNull();
+  expect(screen.queryByTestId('pj-copy-json')).toBeNull();
+  expect(screen.queryByTestId('pj-theme-trigger')).toBeNull();
+});
+
+test('Copy JSON button writes rawJsonText verbatim to the clipboard', () => {
+  const writeText = vi.fn().mockResolvedValue(undefined);
+  (navigator as unknown as { clipboard: { writeText: typeof writeText } }).clipboard = {
+    writeText,
+  };
+  const p = baseProps();
+  p.rawJsonText = '{"a":1,"b":2}';
+  render(<TopStrip {...p} />);
+  fireEvent.click(screen.getByTestId('pj-copy-json'));
+  expect(writeText).toHaveBeenCalledWith('{"a":1,"b":2}');
+});
+
+test('renders inline Copy URL button (not in an overflow menu)', () => {
+  render(<TopStrip {...baseProps()} />);
+  expect(screen.getByTestId('pj-copy-url')).toBeInTheDocument();
+});
+
+test('renders theme dropdown button showing the current theme label', () => {
+  render(<TopStrip {...baseProps()} />);
+  const btn = screen.getByTestId('pj-theme-trigger');
+  expect(btn).toHaveTextContent('Light');
+});
+
+test('no ⋯ overflow menu trigger exists on the strip', () => {
+  render(<TopStrip {...baseProps()} />);
   expect(screen.queryByTestId('pj-menu-trigger')).toBeNull();
 });
 
-test('menu exposes a theme submenu with the active preference checked', async () => {
+test('clicking the theme dropdown opens a menu with three theme items', async () => {
+  render(<TopStrip {...baseProps()} />);
+  fireEvent.click(screen.getByTestId('pj-theme-trigger'));
+  expect(await screen.findByText('Theme: Auto')).toBeInTheDocument();
+  expect(screen.getByText('Theme: Light')).toBeInTheDocument();
+  expect(screen.getByText('Theme: Dark')).toBeInTheDocument();
+});
+
+test('theme dropdown shows a checkmark next to the active preference', async () => {
   // Mock chrome default seeds themePreference: 'light' — active should be Light.
   render(<TopStrip {...baseProps()} />);
-  fireEvent.click(screen.getByTestId('pj-menu-trigger'));
-  // All three theme options render
+  fireEvent.click(screen.getByTestId('pj-theme-trigger'));
   expect(await screen.findByText('Theme: Auto')).toBeInTheDocument();
   const lightItem = screen.getByText('Theme: Light').closest('button')!;
   const darkItem = screen.getByText('Theme: Dark').closest('button')!;
-  // Only the active one has the ✓ trailing icon
   expect(lightItem.textContent).toContain('✓');
   expect(darkItem.textContent).not.toContain('✓');
 });
