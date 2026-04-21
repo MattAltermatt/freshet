@@ -179,3 +179,5 @@ Load `dist/` unpacked to try your build. With `pnpm dev` running, @crxjs hot-rel
 ## License
 
 [MIT](./LICENSE) © 2026 Matt Altermatt
+
+<p align="right">🖤 Love you Uncle Rocky</p>
