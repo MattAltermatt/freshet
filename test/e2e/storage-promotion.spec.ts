@@ -16,11 +16,32 @@ async function launch(): Promise<{ ctx: BrowserContext; extId: string }> {
   return { ctx, extId };
 }
 
+/**
+ * Seeds chrome.storage.sync *only* — mimics a legacy install whose data still
+ * lives in sync without the `pj_storage_area` sentinel.
+ *
+ * The SW's initial `main()` (seed/migrate/stamp) runs concurrently with the
+ * test harness, so we first wait for its writes to settle (`pj_storage_area`
+ * landing in local is the last-write marker of `seedStartersIfEmpty`). Clearing
+ * before that completes lets `migrateTemplatesToV2` overwrite our seed with an
+ * empty `templates` map.
+ */
 async function seedSyncOnly(
   ctx: BrowserContext,
   payload: Record<string, unknown>,
 ): Promise<void> {
   const sw = ctx.serviceWorkers()[0]!;
+  await expect
+    .poll(
+      async () => {
+        const rec = await sw.evaluate(() =>
+          chrome.storage.local.get('pj_storage_area'),
+        );
+        return (rec as { pj_storage_area?: string }).pj_storage_area;
+      },
+      { timeout: 5000 },
+    )
+    .toBe('local');
   await sw.evaluate(async (p: Record<string, unknown>) => {
     await chrome.storage.local.clear();
     await chrome.storage.sync.clear();
