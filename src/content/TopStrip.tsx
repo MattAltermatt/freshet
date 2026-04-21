@@ -171,13 +171,26 @@ export function TopStrip({
       ) : null}
       <button
         type="button"
-        class="pj-rule-name"
+        class="pj-link"
+        data-testid="pj-rule-link"
+        title="Edit this rule"
+        onClick={openEditRule}
+      >
+        <span class="pj-link-label">
+          {rule.name || rule.hostPattern || '(unnamed rule)'}
+        </span>
+        <span class="pj-link-arrow" aria-hidden="true">↗</span>
+      </button>
+      <span class="pj-sep" aria-hidden="true">·</span>
+      <button
+        type="button"
+        class="pj-link"
         data-testid="pj-rule-name"
         title={`Edit template "${rule.templateName}"`}
         onClick={openEditTemplate}
       >
-        <span class="pj-rule-name-label">{rule.templateName}</span>
-        <span class="pj-rule-name-arrow" aria-hidden="true">↗</span>
+        <span class="pj-link-label">{rule.templateName}</span>
+        <span class="pj-link-arrow" aria-hidden="true">↗</span>
       </button>
       {degraded ? (
         <span class="pj-degraded" data-testid="pj-degraded">

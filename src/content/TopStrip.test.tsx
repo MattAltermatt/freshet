@@ -37,6 +37,7 @@ function baseProps() {
   return {
     rule: {
       id: 'r1',
+      name: undefined as string | undefined,
       hostPattern: '*',
       pathPattern: '/**',
       templateName: 'internal-user',
@@ -64,6 +65,27 @@ beforeEach(() => {
 test('renders rule name', () => {
   render(<TopStrip {...baseProps()} />);
   expect(screen.getByTestId('pj-rule-name')).toHaveTextContent('internal-user');
+});
+
+test('renders rule link with rule.name when set', () => {
+  const p = baseProps();
+  p.rule.name = 'Prod incidents';
+  render(<TopStrip {...p} />);
+  expect(screen.getByTestId('pj-rule-link')).toHaveTextContent('Prod incidents');
+});
+
+test('rule link falls back to hostPattern when rule.name is unset', () => {
+  const p = baseProps();
+  p.rule.hostPattern = 'api.github.com';
+  render(<TopStrip {...p} />);
+  expect(screen.getByTestId('pj-rule-link')).toHaveTextContent('api.github.com');
+});
+
+test('rule link falls back to (unnamed rule) when name and hostPattern empty', () => {
+  const p = baseProps();
+  p.rule.hostPattern = '';
+  render(<TopStrip {...p} />);
+  expect(screen.getByTestId('pj-rule-link')).toHaveTextContent('(unnamed rule)');
 });
 
 test('clicking the template name sends an open-options edit-template message', () => {
