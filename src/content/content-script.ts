@@ -3,7 +3,7 @@ import { match } from '../matcher/matcher';
 import { createStorage } from '../storage/storage';
 import { promoteStorageToLocal } from '../storage/promoteStorageToLocal';
 import { mountTopStrip } from './mountTopStrip';
-import { resolveTheme, type ThemePreference } from '../ui/theme';
+import { applyTheme, resolveTheme, type ThemePreference } from '../ui/theme';
 import { detectConflict } from './conflictDetect';
 import type { Rule, Templates, ConflictEntry } from '../shared/types';
 
@@ -141,6 +141,16 @@ function renderSuccess(html: string, raw: string, rule: Rule, theme: 'light' | '
     renderedHtml: html,
     rawJsonText: raw,
     contentRoot: root,
+  });
+  // Keep the rendered page in sync with settings.themePreference — the strip
+  // updates via useTheme, but <html data-theme> needs its own listener since
+  // the content script runs outside Preact.
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area !== 'local') return;
+    const change = changes['settings'];
+    if (!change) return;
+    const next = change.newValue as { themePreference?: ThemePreference } | undefined;
+    applyTheme(resolveTheme(next?.themePreference ?? 'system'));
   });
   signal('pj:rendered');
 }

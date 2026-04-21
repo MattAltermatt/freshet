@@ -124,3 +124,49 @@ test('toggle-raw message flips the strip into raw mode', async () => {
   await ctx.close();
 });
 
+test('theme preference change live-updates <html data-theme> on a rendered page', async () => {
+  const ctx = await chromium.launchPersistentContext('', {
+    headless: false,
+    args: [`--disable-extensions-except=${extensionPath}`, `--load-extension=${extensionPath}`],
+  });
+  const [sw] = ctx.serviceWorkers();
+  const worker = sw ?? (await ctx.waitForEvent('serviceworker'));
+
+  await worker.evaluate(async () => {
+    await chrome.storage.local.set({
+      pj_storage_area: 'local',
+      rules: [{
+        id: 'r-theme', hostPattern: '127.0.0.1', pathPattern: '/**',
+        templateName: 'T', variables: {}, active: true,
+      }],
+      templates: { T: '<h1 id="pj-rendered">rendered</h1>' },
+      hostSkipList: [],
+      settings: { themePreference: 'light' },
+    });
+  });
+
+  const page = await ctx.newPage();
+  await page.goto('http://127.0.0.1:4391/internal/user/1234');
+  await page.waitForSelector('#pj-root');
+
+  // Initial render honors settings.themePreference.
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+
+  // Flip the preference via storage — the strip writes this on dropdown
+  // select; driving the storage key directly isolates the content-script
+  // listener from the strip UI.
+  await worker.evaluate(async () => {
+    await chrome.storage.local.set({ settings: { themePreference: 'dark' } });
+  });
+
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark', { timeout: 2000 });
+
+  await worker.evaluate(async () => {
+    await chrome.storage.local.set({ settings: { themePreference: 'light' } });
+  });
+
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light', { timeout: 2000 });
+
+  await ctx.close();
+});
+
