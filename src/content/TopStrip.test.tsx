@@ -105,12 +105,12 @@ test('rule link falls back to (unnamed rule) when name and hostPattern empty', (
   );
 });
 
-test('"rule" prefix renders inside the rule-link button but not the template-link', () => {
+test('rule-link carries a "rule" kind prefix and template-link carries a "template" kind prefix', () => {
   render(<TopStrip {...baseProps()} />);
   const ruleLink = screen.getByTestId('pj-rule-link');
   const templateLink = screen.getByTestId('pj-rule-name');
   expect(ruleLink.querySelector('.pj-link-kind')?.textContent).toBe('rule');
-  expect(templateLink.querySelector('.pj-link-kind')).toBeNull();
+  expect(templateLink.querySelector('.pj-link-kind')?.textContent).toBe('template');
 });
 
 test('clicking the rule link sends an open-options edit-rule message', () => {
