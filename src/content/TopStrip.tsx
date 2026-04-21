@@ -149,7 +149,15 @@ export function TopStrip({
         title="Edit this rule"
         onClick={openEditRule}
       >
-        <span class="pj-link-label">
+        <span class="pj-link-kind" aria-hidden="true">rule</span>
+        <span
+          class={
+            rule.name
+              ? 'pj-link-label'
+              : 'pj-link-label pj-link-label--fallback'
+          }
+          data-testid="pj-rule-link-label"
+        >
           {rule.name || rule.hostPattern || '(unnamed rule)'}
         </span>
         <span class="pj-link-arrow" aria-hidden="true">↗</span>

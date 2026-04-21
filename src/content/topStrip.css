@@ -105,10 +105,21 @@
   align-items: baseline;
   gap: 4px;
 }
+.pj-link-kind {
+  font-style: italic;
+  color: var(--pj-fg-muted);
+  opacity: 0.75;
+  font-size: 10px;
+  flex: 0 0 auto;
+}
 .pj-link-label {
   overflow: hidden;
   text-overflow: ellipsis;
   min-width: 0;
+}
+.pj-link-label--fallback {
+  font-style: italic;
+  color: var(--pj-fg-muted);
 }
 .pj-link-arrow {
   flex: 0 0 auto;

@@ -75,18 +75,24 @@ test('renders rule name', () => {
   expect(screen.getByTestId('pj-rule-name')).toHaveTextContent('internal-user');
 });
 
-test('renders rule link with rule.name when set', () => {
+test('renders rule link with rule.name when set (no --fallback modifier)', () => {
   const p = baseProps();
   p.rule.name = 'Prod incidents';
   render(<TopStrip {...p} />);
   expect(screen.getByTestId('pj-rule-link')).toHaveTextContent('Prod incidents');
+  expect(screen.getByTestId('pj-rule-link-label').className).not.toContain(
+    'pj-link-label--fallback',
+  );
 });
 
-test('rule link falls back to hostPattern when rule.name is unset', () => {
+test('rule link falls back to hostPattern (with --fallback modifier) when rule.name is unset', () => {
   const p = baseProps();
   p.rule.hostPattern = 'api.github.com';
   render(<TopStrip {...p} />);
   expect(screen.getByTestId('pj-rule-link')).toHaveTextContent('api.github.com');
+  expect(screen.getByTestId('pj-rule-link-label').className).toContain(
+    'pj-link-label--fallback',
+  );
 });
 
 test('rule link falls back to (unnamed rule) when name and hostPattern empty', () => {
@@ -94,6 +100,17 @@ test('rule link falls back to (unnamed rule) when name and hostPattern empty', (
   p.rule.hostPattern = '';
   render(<TopStrip {...p} />);
   expect(screen.getByTestId('pj-rule-link')).toHaveTextContent('(unnamed rule)');
+  expect(screen.getByTestId('pj-rule-link-label').className).toContain(
+    'pj-link-label--fallback',
+  );
+});
+
+test('"rule" prefix renders inside the rule-link button but not the template-link', () => {
+  render(<TopStrip {...baseProps()} />);
+  const ruleLink = screen.getByTestId('pj-rule-link');
+  const templateLink = screen.getByTestId('pj-rule-name');
+  expect(ruleLink.querySelector('.pj-link-kind')?.textContent).toBe('rule');
+  expect(templateLink.querySelector('.pj-link-kind')).toBeNull();
 });
 
 test('clicking the rule link sends an open-options edit-rule message', () => {
