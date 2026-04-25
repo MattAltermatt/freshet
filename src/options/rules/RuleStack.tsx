@@ -1,4 +1,5 @@
 import type { JSX } from 'preact';
+import { useCallback, useState } from 'preact/hooks';
 import type { Rule, Templates } from '../../shared/types';
 import type { ImportFlagMap } from '../../storage/storage';
 import { RuleCard } from './RuleCard';
@@ -34,9 +35,24 @@ export function RuleStack({
     onChange(next);
   };
 
+  const [announcement, setAnnouncement] = useState('');
+
+  const handleReorder = useCallback((next: Rule[]): void => {
+    for (let i = 0; i < next.length; i++) {
+      if (rules[i]?.id !== next[i]?.id) {
+        const moved = next[i]!;
+        setAnnouncement(
+          `Moved ${moved.name || moved.hostPattern || 'rule'} to position ${i + 1}.`,
+        );
+        break;
+      }
+    }
+    onChange(next);
+  }, [rules, onChange]);
+
   const sortable = useSortable<Rule>({
     items: rules,
-    onReorder: onChange,
+    onReorder: handleReorder,
     renderClone: (rule, index) => (
       <RuleCard
         rule={rule}
@@ -65,6 +81,7 @@ export function RuleStack({
           + Add rule
         </button>
       </div>
+      <div class="pj-rule-aria-live" aria-live="polite" role="status">{announcement}</div>
       {rules.length === 0 ? (
         <div class="pj-empty">
           <p>No rules yet.</p>
