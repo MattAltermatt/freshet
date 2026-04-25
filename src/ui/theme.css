@@ -32,6 +32,10 @@
   --pj-danger-fg:     #ffffff;
   --pj-danger-text:   #b91c1c;   /* darker red for foreground text — WCAG AA on light surfaces */
 
+  /* Editor selection — neutral wash so it stays visible over saturated syntax-highlighted tokens */
+  --pj-selection:          rgba(0, 0, 0, 0.20);
+  --pj-selection-inactive: rgba(0, 0, 0, 0.10);
+
   /* Layout */
   --pj-radius:        4px;
   --pj-radius-lg:     6px;
@@ -232,4 +236,7 @@
   --pj-success:       #10b981;
   --pj-danger:        #f87171;
   --pj-danger-text:   #fca5a5;   /* lighter red for foreground text — readable on dark surfaces */
+
+  --pj-selection:          rgba(255, 255, 255, 0.24);
+  --pj-selection-inactive: rgba(255, 255, 255, 0.12);
 }

@@ -1,7 +1,7 @@
 import type { JSX } from 'preact';
 import { useEffect, useRef } from 'preact/hooks';
 import { EditorState, type Extension } from '@codemirror/state';
-import { EditorView, lineNumbers, keymap } from '@codemirror/view';
+import { EditorView, lineNumbers, keymap, drawSelection } from '@codemirror/view';
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
 
 export interface CodeMirrorBoxProps {
@@ -48,10 +48,16 @@ export function CodeMirrorBox({
       },
       '.cm-activeLine': { backgroundColor: 'transparent' },
       '.cm-activeLineGutter': { backgroundColor: 'transparent' },
-      '.cm-selectionBackground, ::selection': {
-        backgroundColor: 'var(--pj-accent-wash)',
+      '.cm-selectionBackground': {
+        backgroundColor: 'var(--pj-selection-inactive)',
       },
-      '.cm-cursor': { borderLeftColor: 'var(--pj-accent)' },
+      '&.cm-focused .cm-selectionBackground, ::selection': {
+        backgroundColor: 'var(--pj-selection)',
+      },
+      '.cm-cursor, .cm-dropCursor': {
+        borderLeftColor: 'var(--pj-fg)',
+        borderLeftWidth: '2px',
+      },
     });
     const updater = EditorView.updateListener.of((u) => {
       if (!u.docChanged) return;
@@ -62,6 +68,7 @@ export function CodeMirrorBox({
       lineNumbers(),
       history(),
       keymap.of([...defaultKeymap, ...historyKeymap]),
+      drawSelection(),
       theme,
       updater,
     ];
