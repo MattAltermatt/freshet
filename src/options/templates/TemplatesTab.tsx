@@ -58,6 +58,7 @@ const DEFAULT_SPLIT_RATIO = 0.5;
 
 const PLAYGROUND_URL = 'https://liquidjs.com/playground.html';
 const LIQUID_REFERENCE_URL = 'https://liquidjs.com/tutorials/intro-to-liquid.html';
+const DEBUG_HELPERS_URL = 'https://mattaltermatt.github.io/freshet/debug/';
 
 // Matches the LiquidJS playground's hash format — base64-of-UTF-8 for
 // template, then a comma, then base64-of-UTF-8 for context. Reverse-engineered
@@ -291,6 +292,15 @@ export function TemplatesTab({
                         title="Pre-fills the playground with the current Template + Sample JSON"
                       >
                         Open with current values
+                        <span class="pj-ext-arrow" aria-hidden="true">↗</span>
+                      </a>
+                      <a
+                        href={DEBUG_HELPERS_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="How to use __root, json, json: 2, and tree to inspect a payload while authoring"
+                      >
+                        Debugging templates
                         <span class="pj-ext-arrow" aria-hidden="true">↗</span>
                       </a>
                     </p>
