@@ -135,7 +135,11 @@ export function useSortable<T extends { id: string }>(
     ? (() => {
         const item = items.find((it) => it.id === drag.itemId);
         if (!item) return null;
-        const top = drag.pointerY - drag.initialOffsetY;
+        // pointerY is viewport-relative; the floating layer is
+        // position: absolute inside .pj-rule-cards, so we subtract the
+        // container's viewport top to get container-relative coords.
+        const containerTop = drag.cardEl.parentElement?.getBoundingClientRect().top ?? 0;
+        const top = drag.pointerY - drag.initialOffsetY - containerTop;
         const cloneDisplayNumber = Math.min(drag.targetIndex, items.length - 1) + 1;
         return (
           <div class="pj-rule-card-floating-layer" aria-hidden="true">
