@@ -53,12 +53,12 @@ export function RuleStack({
   const sortable = useSortable<Rule>({
     items: rules,
     onReorder: handleReorder,
-    renderClone: (rule, index) => (
+    renderClone: (rule, index, displayNumber) => (
       <RuleCard
         rule={rule}
         index={index}
         total={rules.length}
-        displayNumber={sortable.displayNumber(index)}
+        displayNumber={displayNumber}
         onToggle={() => {}}
         onEdit={() => {}}
         onMoveUp={() => {}}

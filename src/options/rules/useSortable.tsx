@@ -31,8 +31,11 @@ export interface UseSortableReturn {
 export interface UseSortableOpts<T extends { id: string }> {
   items: readonly T[];
   onReorder: (next: T[]) => void;
-  /** Called to render the floating clone of the dragged card. */
-  renderClone: (item: T, index: number) => JSX.Element;
+  /** Called to render the floating clone of the dragged card. The third
+   *  argument is the predicted display number at the current target index —
+   *  the hook computes this so the caller doesn't have to close over
+   *  the not-yet-bound sortable return value. */
+  renderClone: (item: T, index: number, displayNumber: number) => JSX.Element;
 }
 
 export function useSortable<T extends { id: string }>(
@@ -133,15 +136,20 @@ export function useSortable<T extends { id: string }>(
         const item = items.find((it) => it.id === drag.itemId);
         if (!item) return null;
         const top = drag.pointerY - drag.initialOffsetY;
+        const cloneDisplayNumber = Math.min(drag.targetIndex, items.length - 1) + 1;
         return (
-          <div class="pj-rule-card-floating-layer">
+          <div class="pj-rule-card-floating-layer" aria-hidden="true">
             <div
               class="pj-rule-card-floating"
               data-floating-clone
               style={`top: ${top}px`}
-              aria-hidden="true"
+              ref={(el) => {
+                // The floating clone is purely visual — no interaction allowed.
+                // `inert` removes descendants from focus order AND the a11y tree.
+                if (el) el.inert = true;
+              }}
             >
-              {renderClone(item, drag.fromIndex)}
+              {renderClone(item, drag.fromIndex, cloneDisplayNumber)}
             </div>
           </div>
         );
