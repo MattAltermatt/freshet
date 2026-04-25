@@ -112,18 +112,27 @@ export function useSortable<T extends { id: string }>(
 
   const cardProps = useCallback((index: number): JSX.HTMLAttributes<HTMLElement> => {
     if (!drag?.active) return {};
-    if (drag.fromIndex === index) {
-      return { 'data-dragging-slot': '' } as unknown as JSX.HTMLAttributes<HTMLElement>;
-    }
-    // Sibling shift: cards between the dragged origin and the target translate
-    // toward the origin to make visual room for the slot at the target position.
     const cardHeight = drag.cardRects[drag.fromIndex]?.height ?? 0;
     const gap = 8; // matches --pj-space-2 used by .pj-rule-cards
+    const step = cardHeight + gap;
+
+    if (drag.fromIndex === index) {
+      // Slot — translateY toward the target position so the dashed box visually
+      // sits where the card would land. Sibling cards in [origin..target] shift
+      // in the opposite direction to make room.
+      const slotShift = (drag.targetIndex - drag.fromIndex) * step;
+      return {
+        'data-dragging-slot': '',
+        'data-drag-active': '',
+        style: slotShift ? `transform: translateY(${slotShift}px)` : undefined,
+      } as unknown as JSX.HTMLAttributes<HTMLElement>;
+    }
+
     let dy = 0;
     if (drag.fromIndex < drag.targetIndex && index > drag.fromIndex && index <= drag.targetIndex) {
-      dy = -(cardHeight + gap);
+      dy = -step;
     } else if (drag.fromIndex > drag.targetIndex && index >= drag.targetIndex && index < drag.fromIndex) {
-      dy = cardHeight + gap;
+      dy = step;
     }
     return {
       'data-drag-active': '',
@@ -220,9 +229,13 @@ export function reorder<T>(items: readonly T[], from: number, to: number): T[] {
 }
 
 /** Given pointer Y in viewport coords, the cached card rects, and the index
- *  the user is currently dragging, returns the slot index where a drop would land.
- *  Returns 0..rects.length (inclusive). Returns `draggedIndex` when the pointer
- *  is inside the card's own slot (no-op drop). */
+ *  the user is currently dragging, returns the slot index where a drop would land
+ *  when passed to `reorder(items, draggedIndex, target)`. Returns 0..rects.length-1.
+ *
+ *  The caller's reorder semantics use splice: items at draggedIndex are removed
+ *  first, then re-inserted at `target`. So "drop above visual card i" maps to
+ *  target i when i <= draggedIndex, and target i-1 when i > draggedIndex
+ *  (because removing the dragged card shifts subsequent indices down by one). */
 export function computeTargetIndex(
   pointerY: number,
   rects: readonly Pick<DOMRect, 'top' | 'bottom'>[],
@@ -231,13 +244,13 @@ export function computeTargetIndex(
   for (let i = 0; i < rects.length; i++) {
     const midpoint = (rects[i]!.top + rects[i]!.bottom) / 2;
     if (pointerY < midpoint) {
-      // Hovering within own slot or its immediate top edge → no-op.
-      if (i === draggedIndex || i === draggedIndex + 1) return draggedIndex;
+      if (i === draggedIndex) return draggedIndex; // hovering own slot → no-op
+      if (i > draggedIndex) return i - 1;
       return i;
     }
   }
-  // Past every midpoint — insert at end. If origin was the last slot, no-op.
-  return draggedIndex === rects.length - 1 ? draggedIndex : rects.length;
+  // Past every midpoint — drop at end. After splice removal, last index is length-1.
+  return rects.length - 1;
 }
 
 const SCROLL_TRIGGER_PX = 50;

@@ -22,20 +22,30 @@ describe('computeTargetIndex()', () => {
     { top: 200, bottom: 280 },
   ] as Pick<DOMRect, 'top' | 'bottom'>[];
 
-  it('returns 0 when pointer is above the first midpoint (and origin is not 0)', () => {
-    expect(computeTargetIndex(20, rects, /* draggedIndex */ 2)).toBe(0);
+  // Verifies semantics in tandem with reorder(): the returned index, when fed
+  // into reorder(items, draggedIndex, returned), produces the visually expected
+  // final ordering.
+
+  it('drag-up: dragged=2, pointer above card 0 → drop at index 0', () => {
+    expect(computeTargetIndex(20, rects, 2)).toBe(0);
+    // reorder([a,b,c], 2, 0) → [c, a, b]
   });
-  it('returns 1 when pointer is between midpoint 0 and midpoint 1', () => {
+  it('drag-up: dragged=2, pointer between cards 0 and 1 → drop at index 1', () => {
     expect(computeTargetIndex(80, rects, 2)).toBe(1);
+    // reorder([a,b,c], 2, 1) → [a, c, b]
   });
-  it('returns 2 when pointer is between midpoint 1 and midpoint 2', () => {
-    expect(computeTargetIndex(180, rects, 0)).toBe(2);
+  it('drag-down: dragged=0, pointer between cards 1 and 2 → drop at index 1', () => {
+    expect(computeTargetIndex(180, rects, 0)).toBe(1);
+    // reorder([a,b,c], 0, 1) → [b, a, c]   ← a between b and c, as expected
   });
-  it('returns N (insert at end) when pointer is below the last midpoint', () => {
-    expect(computeTargetIndex(300, rects, 0)).toBe(3);
+  it('drag-down: dragged=0, pointer past last → drop at index N-1 (end)', () => {
+    expect(computeTargetIndex(300, rects, 0)).toBe(2);
+    // reorder([a,b,c], 0, 2) → [b, c, a]
   });
-  it('returns the same index when pointer hovers within own slot (no-op)', () => {
-    // dragged is index 1, pointer near its midpoint → no change
+  it('drag-up: dragged=2, pointer past last → no-op (already at end)', () => {
+    expect(computeTargetIndex(300, rects, 2)).toBe(2);
+  });
+  it('hovering within own slot → no-op', () => {
     expect(computeTargetIndex(140, rects, 1)).toBe(1);
   });
 });
