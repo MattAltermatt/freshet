@@ -1,0 +1,70 @@
+{%- comment -%}
+  Freshet starter — JSON debug template. Liquid syntax.
+
+  This template is NOT bound to a rule by default. It exists so you can:
+    1. Open the Templates tab
+    2. Pick "json-debug"
+    3. Paste any JSON into the Sample JSON pane
+    4. See three different debug views side-by-side in the preview
+
+  When authoring a real template against an unfamiliar API response, copy any
+  of the patterns below into your own template to inspect the data.
+
+  Three debug forms:
+    {{ __root | json }}       compact one-liner — best for tiny payloads
+    {{ __root | json: 2 }}    pretty-printed — best for medium payloads
+    {{ __root | tree }}       collapsible tree — best for large/nested
+
+  __root is a special handle that always points at the parsed JSON,
+  regardless of root shape. It works for both object and array roots.
+{%- endcomment -%}
+<style>
+  :root {
+    --jd-bg: #fafaf9;
+    --jd-fg: #1f2937;
+    --jd-muted: #6b7280;
+    --jd-border: #e5e7eb;
+    --jd-card: #ffffff;
+    --jd-accent: #c2410c;
+  }
+  [data-theme="dark"] {
+    --jd-bg: #18181b;
+    --jd-fg: #e5e7eb;
+    --jd-muted: #9ca3af;
+    --jd-border: #27272a;
+    --jd-card: #1f1f23;
+    --jd-accent: #fb923c;
+  }
+  body { background: var(--jd-bg); color: var(--jd-fg); font-family: ui-sans-serif, system-ui, sans-serif; margin: 0; padding: 24px; line-height: 1.55; }
+  .jd { max-width: 920px; margin: 0 auto; }
+  .jd h1 { margin: 0 0 8px; font-size: 22px; }
+  .jd h1 small { color: var(--jd-muted); font-weight: 400; font-size: 13px; margin-left: 8px; }
+  .jd p.jd__hint { color: var(--jd-muted); margin: 0 0 24px; font-size: 14px; }
+  .jd section { background: var(--jd-card); border: 1px solid var(--jd-border); border-radius: 8px; padding: 16px 20px; margin: 0 0 16px; }
+  .jd section h2 { margin: 0 0 4px; font-size: 14px; font-weight: 600; color: var(--jd-accent); text-transform: uppercase; letter-spacing: 0.04em; }
+  .jd section p { margin: 0 0 12px; color: var(--jd-muted); font-size: 13px; }
+  .jd code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; background: var(--jd-bg); padding: 1px 6px; border-radius: 4px; border: 1px solid var(--jd-border); }
+  .jd pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; background: var(--jd-bg); border: 1px solid var(--jd-border); border-radius: 6px; padding: 12px; overflow-x: auto; margin: 0; }
+</style>
+<div class="jd">
+  <h1>JSON Debug <small>{{ __root | json | size }} chars</small></h1>
+  <p class="jd__hint">Apply this template to any rule (or paste JSON into the Templates-tab Sample pane) to inspect the parsed payload three different ways.</p>
+
+  <section>
+    <h2>Tree <small style="text-transform:none;font-weight:400;font-size:12px;">— <code>{% raw %}{{ __root | tree }}{% endraw %}</code></small></h2>
+    <p>Collapsible tree. Click the triangles to expand/collapse. Best for large or deeply-nested payloads.</p>
+    {{ __root | tree }}
+  </section>
+
+  <section>
+    <h2>Pretty <small style="text-transform:none;font-weight:400;font-size:12px;">— <code>{% raw %}{{ __root | json: 2 }}{% endraw %}</code></small></h2>
+    <p>Indented text. Best for medium payloads when you want to copy/paste fragments.</p>
+    <pre>{{ __root | json: 2 }}</pre>
+  </section>
+
+  <section>
+    <h2>Compact <small style="text-transform:none;font-weight:400;font-size:12px;">— <code>{% raw %}{{ __root | json }}{% endraw %}</code></small></h2>
+    <p>One-line dump. Best for tiny payloads or quick "what's the exact shape?" checks.</p>
+    <pre>{{ __root | json }}</pre>
+  </section>
+</div>

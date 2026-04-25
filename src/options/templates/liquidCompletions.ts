@@ -1,6 +1,6 @@
 import type { CompletionContext, CompletionResult } from '@codemirror/autocomplete';
 
-const HELPERS = ['date', 'link', 'num', 'raw', 'json'];
+const HELPERS = ['date', 'link', 'num', 'raw', 'json', 'tree'];
 const ROOT_HANDLE = '__root';
 // Format tokens understood by the `date` filter (see src/engine/helpers.ts formatDate).
 const DATE_FORMAT_TOKENS = ['yyyy', 'MM', 'dd', 'HH', 'mm', 'ss'];

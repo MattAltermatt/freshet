@@ -73,6 +73,98 @@ export function formatDate(input: unknown, fmt: string | undefined): string {
     .replace(/ss/g, pad2(d.getSeconds()));
 }
 
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// Light/dark are scoped via an attribute selector on the host page (`<html data-theme="dark">`),
+// matching how the engine's other styled output works (see content-script + PreviewIframe).
+const TREE_STYLE =
+  '<style>' +
+  '.pj-tree{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.55;color:#1f2937;}' +
+  '.pj-tree details{margin-left:1em;}' +
+  '.pj-tree>details{margin-left:0;}' +
+  '.pj-tree summary{cursor:pointer;user-select:none;}' +
+  '.pj-tree summary::marker{color:#6b7280;}' +
+  '.pj-tree summary::-webkit-details-marker{color:#6b7280;}' +
+  '.pj-tree-leaf{margin-left:1em;padding-left:1em;border-left:1px dashed transparent;}' +
+  '.pj-tree .k{color:#c2410c;}' +
+  '.pj-tree .v-str{color:#047857;}' +
+  '.pj-tree .v-num{color:#1d4ed8;}' +
+  '.pj-tree .v-bool{color:#7c3aed;font-weight:600;}' +
+  '.pj-tree .v-null{color:#6b7280;font-style:italic;}' +
+  '.pj-tree .t{color:#6b7280;font-size:11px;}' +
+  '[data-theme="dark"] .pj-tree{color:#e5e7eb;}' +
+  '[data-theme="dark"] .pj-tree .k{color:#fb923c;}' +
+  '[data-theme="dark"] .pj-tree .v-str{color:#6ee7b7;}' +
+  '[data-theme="dark"] .pj-tree .v-num{color:#93c5fd;}' +
+  '[data-theme="dark"] .pj-tree .v-bool{color:#c4b5fd;}' +
+  '[data-theme="dark"] .pj-tree .v-null{color:#9ca3af;}' +
+  '[data-theme="dark"] .pj-tree .t{color:#9ca3af;}' +
+  '</style>';
+
+const DEFAULT_TREE_OPEN_DEPTH = 2;
+
+function leafHtml(key: string | null, valueHtml: string): string {
+  if (key === null) return `<div class="pj-tree-leaf">${valueHtml}</div>`;
+  return `<div class="pj-tree-leaf"><span class="k">${escapeHtml(key)}</span>: ${valueHtml}</div>`;
+}
+
+function renderTreeNode(
+  key: string | null,
+  value: unknown,
+  depth: number,
+  maxDepth: number,
+  seen: WeakSet<object>,
+): string {
+  if (value === null || value === undefined) {
+    return leafHtml(key, '<span class="v-null">null</span>');
+  }
+  if (typeof value === 'boolean') {
+    return leafHtml(key, `<span class="v-bool">${value}</span>`);
+  }
+  if (typeof value === 'number') {
+    return leafHtml(key, `<span class="v-num">${Number.isFinite(value) ? value : 'null'}</span>`);
+  }
+  if (typeof value === 'string') {
+    return leafHtml(key, `<span class="v-str">${escapeHtml(JSON.stringify(value))}</span>`);
+  }
+  if (typeof value !== 'object') {
+    return leafHtml(key, `<span class="t">${escapeHtml(typeof value)}</span>`);
+  }
+  if (seen.has(value as object)) {
+    return leafHtml(key, '<span class="t">⟳ cycle</span>');
+  }
+  if (depth >= maxDepth) {
+    const label = Array.isArray(value) ? `[${(value as unknown[]).length}]` : `{${Object.keys(value as object).length}}`;
+    return leafHtml(key, `<span class="t">${label} …</span>`);
+  }
+  seen.add(value as object);
+  const isArr = Array.isArray(value);
+  const entries: Array<[string, unknown]> = isArr
+    ? (value as unknown[]).map((v, i) => [String(i), v])
+    : Object.entries(value as Record<string, unknown>);
+  const count = isArr ? `[${entries.length}]` : `{${entries.length}}`;
+  const open = depth < DEFAULT_TREE_OPEN_DEPTH ? ' open' : '';
+  const summaryKey = key === null ? '' : `<span class="k">${escapeHtml(key)}</span> `;
+  const body = entries
+    .map(([k, v]) => renderTreeNode(isArr ? `[${k}]` : k, v, depth + 1, maxDepth, seen))
+    .join('');
+  return `<details${open}><summary>${summaryKey}<span class="t">${count}</span></summary>${body}</details>`;
+}
+
+export function renderTree(value: unknown, maxDepth = 50): string {
+  const cap = Number.isFinite(maxDepth) && maxDepth > 0 ? Math.floor(maxDepth) : 50;
+  const seen = new WeakSet<object>();
+  const inner = renderTreeNode(null, value, 0, cap, seen);
+  return `${TREE_STYLE}<div class="pj-tree">${inner}</div>`;
+}
+
 export function registerFilters(engine: Liquid): void {
   engine.registerFilter('date', (value: unknown, fmt?: unknown) =>
     formatDate(value, typeof fmt === 'string' ? fmt : undefined),
@@ -88,6 +180,14 @@ export function registerFilters(engine: Liquid): void {
     const s = value === undefined || value === null ? '' : String(value);
     // eslint-disable-next-line @typescript-eslint/ban-types
     const w = new String(s) as String & { __pjRaw?: true };
+    w.__pjRaw = true;
+    return w;
+  });
+  engine.registerFilter('tree', (value: unknown, maxDepth?: unknown) => {
+    const md = typeof maxDepth === 'number' ? maxDepth : 50;
+    const html = renderTree(value, md);
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    const w = new String(html) as String & { __pjRaw?: true };
     w.__pjRaw = true;
     return w;
   });

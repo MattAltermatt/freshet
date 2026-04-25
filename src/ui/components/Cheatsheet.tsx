@@ -10,8 +10,9 @@ const ROWS: Array<[string, string]> = [
   ['Date', '{{ ts | date: "yyyy-MM-dd" }}'],
   ['Link (URL-safe)', '{{ "https://h/{{id}}" | link }}'],
   ['Number', '{{ n | num }}'],
-  ['Debug field', '<pre>{{ field | json }}</pre>'],
-  ['Debug full root', '<pre>{{ __root | json }}</pre>'],
+  ['Debug compact', '<pre>{{ __root | json }}</pre>'],
+  ['Debug pretty', '<pre>{{ __root | json: 2 }}</pre>'],
+  ['Debug tree', '{{ __root | tree }}'],
 ];
 
 export interface CheatsheetProps {

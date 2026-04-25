@@ -136,8 +136,23 @@ Templates are [Liquid](https://shopify.github.io/liquid/). Placeholders resolve 
 | `{{ timestamp \| date: "yyyy-MM-dd HH:mm" }}` | Custom date format. |
 | `{{ "https://host/{{id}}" \| link }}` | URL-safe interpolation (query values percent-encoded). |
 | `{{ value \| num }}` | Compact number format (234567 → 235k, 1.2M, 1.2B). |
+| `{{ __root \| json }}` | **Debug:** dump the full parsed payload as a one-line JSON string. |
+| `{{ __root \| json: 2 }}` | **Debug:** dump as pretty-printed JSON (2-space indent). Wrap in `<pre>`. |
+| `{{ __root \| tree }}` | **Debug:** dump as a clickable, collapsible tree with type-colored values. |
 
 All standard Liquid builtins also work: `{% unless %}`, `{% capture %}`, `{% comment %}`, etc. Missing values render as the empty string.
+
+### Debugging templates
+
+`__root` is a special handle that always points at the parsed JSON regardless of root shape (object, array, or primitive). Pair it with one of the three debug filters above to inspect what you're working with:
+
+| Payload size | Reach for |
+|---|---|
+| ≤ 10 fields | `\| json` — compact one-liner |
+| 10–50 fields | `\| json: 2` — pretty-printed text |
+| 50+ fields or deeply nested | `\| tree` — collapsible, color-coded |
+
+A built-in template named **`json-debug`** ships on every install. Open the **Templates** tab → pick `json-debug` → paste any JSON into the **Sample JSON** pane to see all three debug views side-by-side. Full guide: [**Debugging templates →**](https://mattaltermatt.github.io/freshet/debug/).
 
 Existing templates written in the pre-Phase-2 hand-rolled syntax (`{{#when}}`, `{{@var}}`, `{{{raw}}}`, etc.) are **auto-migrated** to Liquid on first load after update.
 

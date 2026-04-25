@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { formatDate, buildLink, formatNumber } from './helpers';
+import { formatDate, buildLink, formatNumber, renderTree } from './helpers';
 
 describe('formatDate', () => {
   it('default format renders localized month/day/time', () => {
@@ -52,6 +52,60 @@ describe('formatNumber', () => {
     expect(formatNumber(NaN)).toBe('');
     expect(formatNumber('abc')).toBe('');
     expect(formatNumber({})).toBe('');
+  });
+});
+
+describe('renderTree', () => {
+  it('emits a <div class="pj-tree"> wrapper and a scoped <style>', () => {
+    const out = renderTree({ a: 1 });
+    expect(out).toContain('<style>');
+    expect(out).toContain('.pj-tree{');
+    expect(out).toContain('<div class="pj-tree">');
+  });
+  it('wraps an object root in a <details open> with key+count', () => {
+    const out = renderTree({ a: 1, b: 2 });
+    expect(out).toMatch(/<details open><summary><span class="t">\{2\}<\/span><\/summary>/);
+  });
+  it('wraps an array root with [N] count', () => {
+    const out = renderTree([10, 20, 30]);
+    expect(out).toMatch(/<details open><summary><span class="t">\[3\]<\/span><\/summary>/);
+  });
+  it('renders nested objects two levels open by default, deeper closed', () => {
+    const out = renderTree({ a: { b: { c: 1 } } });
+    // Top + first nested = open
+    const opens = out.match(/<details open>/g) ?? [];
+    expect(opens.length).toBe(2);
+    // Third level closed
+    expect(out).toMatch(/<details><summary><span class="k">b<\/span>/);
+  });
+  it('classes primitives by type', () => {
+    expect(renderTree({ s: 'hi' })).toContain('<span class="v-str">&quot;hi&quot;</span>');
+    expect(renderTree({ n: 42 })).toContain('<span class="v-num">42</span>');
+    expect(renderTree({ b: true })).toContain('<span class="v-bool">true</span>');
+    expect(renderTree({ z: null })).toContain('<span class="v-null">null</span>');
+  });
+  it('HTML-escapes string values and keys', () => {
+    const out = renderTree({ '<key>': '<script>x</script>' });
+    expect(out).toContain('&lt;key&gt;');
+    expect(out).toContain('&lt;script&gt;');
+    expect(out).not.toContain('<script>x</script>');
+  });
+  it('truncates with … when maxDepth is reached', () => {
+    const out = renderTree({ a: { b: { c: { d: 1 } } } }, 1);
+    expect(out).toContain('…');
+    // No <details> for the truncated branch
+    expect(out).not.toContain('<span class="k">d</span>');
+  });
+  it('handles cycles without infinite recursion', () => {
+    const obj: Record<string, unknown> = { a: 1 };
+    obj.self = obj;
+    const out = renderTree(obj);
+    expect(out).toContain('⟳ cycle');
+  });
+  it('renders array element keys as [0], [1] …', () => {
+    const out = renderTree([{ x: 1 }, { x: 2 }]);
+    expect(out).toContain('<span class="k">[0]</span>');
+    expect(out).toContain('<span class="k">[1]</span>');
   });
 });
 

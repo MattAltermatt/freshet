@@ -12,11 +12,13 @@ import starterIncidentDetail from '../starter/incident-detail.html?raw';
 import starterGithubRepo from '../starter/github-repo.html?raw';
 import starterPokemon from '../starter/pokemon.html?raw';
 import starterCountry from '../starter/country.html?raw';
+import starterJsonDebug from '../starter/json-debug.html?raw';
 import sampleServiceHealth from '../starter/service-health.sample.json?raw';
 import sampleIncidentDetail from '../starter/incident-detail.sample.json?raw';
 import sampleGithubRepo from '../starter/github-repo.sample.json?raw';
 import samplePokemon from '../starter/pokemon.sample.json?raw';
 import sampleCountry from '../starter/country.sample.json?raw';
+import sampleJsonDebug from '../starter/json-debug.sample.json?raw';
 import { appearanceFor, type BadgeSignal } from './badge';
 
 // Tab can close between an event firing and the chrome.action.* promise
@@ -36,13 +38,17 @@ async function main(): Promise<void> {
     console.warn('[freshet] rules enabled→active migration skipped:', err);
   }
   await seedStartersIfEmpty();
+  await ensureJsonDebugStarter();
 }
 
 interface Starter {
   name: string;
   template: string;
   sample: string;
-  rule: Omit<Rule, 'id' | 'isExample'>;
+  // Optional: a debug-only template (e.g. json-debug) ships without a rule
+  // so it lives in the Templates list as a copyable playground without
+  // hijacking any URL.
+  rule?: Omit<Rule, 'id' | 'isExample'>;
 }
 
 const STARTERS: Starter[] = [
@@ -111,6 +117,12 @@ const STARTERS: Starter[] = [
       exampleUrl: 'https://restcountries.com/v3.1/name/japan',
     },
   },
+  {
+    name: 'json-debug',
+    template: starterJsonDebug,
+    sample: sampleJsonDebug,
+    // No rule — debug-only template lives in the Templates list as a playground.
+  },
 ];
 
 async function seedStartersIfEmpty(): Promise<void> {
@@ -139,13 +151,38 @@ async function seedStartersIfEmpty(): Promise<void> {
     Object.fromEntries(STARTERS.map((s) => [s.name, s.template])),
   );
   await localStorage.setRules(
-    STARTERS.map((s, i) => ({
-      ...s.rule,
-      id: `starter-${s.name}-${i}`,
-      isExample: true,
-    })),
+    STARTERS.flatMap((s, i) =>
+      s.rule
+        ? [{
+            ...s.rule,
+            id: `starter-${s.name}-${i}`,
+            isExample: true,
+          }]
+        : [],
+    ),
   );
   await localStorage.setSchemaVersion(2);
+}
+
+// Idempotent: ensures the bundled json-debug template + sample exist for
+// existing users on every install/update. Skips silently if the user already
+// has a template named `json-debug` (we never overwrite their authored copy).
+// New in v1.2.0 alongside #10 — older installs got their starters seeded
+// before json-debug existed, so the regular `seedStartersIfEmpty` path can't
+// retroactively deliver it.
+async function ensureJsonDebugStarter(): Promise<void> {
+  try {
+    const storage = await createStorage(chrome.storage);
+    const templates = await storage.getTemplates();
+    if (Object.prototype.hasOwnProperty.call(templates, 'json-debug')) return;
+    const samples = (await chrome.storage.local.get('pj_sample_json')).pj_sample_json ?? {};
+    await storage.setTemplates({ ...templates, 'json-debug': starterJsonDebug });
+    await chrome.storage.local.set({
+      pj_sample_json: { ...samples, 'json-debug': sampleJsonDebug },
+    });
+  } catch (err) {
+    console.warn('[freshet] json-debug ensure skipped:', err);
+  }
 }
 
 async function maybeStorageAreaMigration(): Promise<void> {

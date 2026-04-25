@@ -15,6 +15,7 @@ description: Thaw any JSON URL into a more useful page. Liquid templates per URL
 
 [**See live demos →**](try/)
 
+- [Debugging templates (`__root`, `json`, `tree`) →](debug/)
 - [Privacy policy](privacy/)
 - [Source code on GitHub](https://github.com/MattAltermatt/freshet)
 - [Report an issue](https://github.com/MattAltermatt/freshet/issues)
