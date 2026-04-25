@@ -28,3 +28,22 @@ export function computeTargetIndex(
   // Past every midpoint — insert at end. If origin was the last slot, no-op.
   return draggedIndex === rects.length - 1 ? draggedIndex : rects.length;
 }
+
+const SCROLL_TRIGGER_PX = 50;
+const SCROLL_MAX_PER_FRAME = 12;
+
+/** Auto-scroll pixels-per-frame for a drag in flight. Negative = scroll up,
+ *  positive = scroll down, 0 = no scroll. Ramps from 0 to ±SCROLL_MAX_PER_FRAME
+ *  as the pointer enters the trigger zone near each edge. */
+export function clampScrollDelta(pointerY: number, viewportHeight: number): number {
+  if (pointerY < SCROLL_TRIGGER_PX) {
+    const ratio = (SCROLL_TRIGGER_PX - pointerY) / SCROLL_TRIGGER_PX;
+    return -Math.round(SCROLL_MAX_PER_FRAME * ratio);
+  }
+  const bottomBoundary = viewportHeight - SCROLL_TRIGGER_PX;
+  if (pointerY > bottomBoundary) {
+    const ratio = (pointerY - bottomBoundary) / SCROLL_TRIGGER_PX;
+    return Math.round(SCROLL_MAX_PER_FRAME * Math.min(ratio, 1));
+  }
+  return 0;
+}

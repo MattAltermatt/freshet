@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { reorder, computeTargetIndex } from './useSortable';
+import { reorder, computeTargetIndex, clampScrollDelta } from './useSortable';
 
 describe('reorder()', () => {
   it('moves an item from a lower index to a higher index', () => {
@@ -37,5 +37,31 @@ describe('computeTargetIndex()', () => {
   it('returns the same index when pointer hovers within own slot (no-op)', () => {
     // dragged is index 1, pointer near its midpoint → no change
     expect(computeTargetIndex(140, rects, 1)).toBe(1);
+  });
+});
+
+describe('clampScrollDelta()', () => {
+  // Viewport height 800. Trigger zone 50px from each edge. Max 12 px/frame.
+  const v = 800;
+
+  it('returns 0 when pointer is in the middle of the viewport', () => {
+    expect(clampScrollDelta(400, v)).toBe(0);
+  });
+  it('returns 0 just outside the top trigger zone (>= 50px from top)', () => {
+    expect(clampScrollDelta(50, v)).toBe(0);
+  });
+  it('returns negative (scroll up) inside the top zone', () => {
+    expect(clampScrollDelta(20, v)).toBeLessThan(0);
+    expect(clampScrollDelta(20, v)).toBeGreaterThanOrEqual(-12);
+  });
+  it('returns full -12 at the very top', () => {
+    expect(clampScrollDelta(0, v)).toBe(-12);
+  });
+  it('returns positive (scroll down) inside the bottom zone', () => {
+    expect(clampScrollDelta(780, v)).toBeGreaterThan(0);
+    expect(clampScrollDelta(780, v)).toBeLessThanOrEqual(12);
+  });
+  it('returns full +12 at the very bottom', () => {
+    expect(clampScrollDelta(800, v)).toBe(12);
   });
 });
