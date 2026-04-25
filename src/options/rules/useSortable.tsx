@@ -103,12 +103,19 @@ export function useSortable<T extends { id: string }>(
     });
   }, [onReorder]);
 
+  const onPointerCancel = useCallback((): void => {
+    // Browser forcibly interrupted the gesture (system dialog, touch stolen by
+    // scroll, device sleep). Cancel — never commit a drop the user didn't make.
+    dragOccurredRef.current = false;
+    setDrag(null);
+  }, []);
+
   const gripProps = useCallback((index: number): JSX.HTMLAttributes<HTMLSpanElement> => ({
     onPointerDown: (e) => onPointerDown(index, e as unknown as PointerEvent),
     onPointerMove: (e) => onPointerMove(e as unknown as PointerEvent),
     onPointerUp: (e) => onPointerUp(e as unknown as PointerEvent),
-    onPointerCancel: (e) => onPointerUp(e as unknown as PointerEvent),
-  }), [onPointerDown, onPointerMove, onPointerUp]);
+    onPointerCancel: () => onPointerCancel(),
+  }), [onPointerDown, onPointerMove, onPointerUp, onPointerCancel]);
 
   const cardProps = useCallback((index: number): JSX.HTMLAttributes<HTMLElement> => {
     if (!drag?.active) return {};
@@ -173,7 +180,10 @@ export function useSortable<T extends { id: string }>(
   useEffect(() => {
     if (!drag?.active) return;
     const onKey = (e: KeyboardEvent): void => {
-      if (e.key === 'Escape') setDrag(null);
+      if (e.key === 'Escape') {
+        dragOccurredRef.current = false;
+        setDrag(null);
+      }
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
