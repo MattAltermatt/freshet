@@ -1,6 +1,7 @@
 import type { CompletionContext, CompletionResult } from '@codemirror/autocomplete';
 
-const HELPERS = ['date', 'link', 'num', 'raw'];
+const HELPERS = ['date', 'link', 'num', 'raw', 'json'];
+const ROOT_HANDLE = '__root';
 // Format tokens understood by the `date` filter (see src/engine/helpers.ts formatDate).
 const DATE_FORMAT_TOKENS = ['yyyy', 'MM', 'dd', 'HH', 'mm', 'ss'];
 const TAGS = [
@@ -80,6 +81,7 @@ export function liquidCompletions(ctx: LiquidCompletionContext) {
     } else if (inOutput) {
       for (const p of ctx.sampleJsonPaths) options.push({ label: p, type: 'variable', detail: 'json' });
       for (const v of ctx.ruleVars) options.push({ label: `vars.${v}`, type: 'variable', detail: 'rule var' });
+      options.push({ label: ROOT_HANDLE, type: 'variable', detail: 'full root (debug)' });
       for (const h of HELPERS) options.push({ label: h, type: 'function', detail: 'filter' });
     } else if (inTag) {
       for (const t of TAGS) options.push({ label: t, type: 'keyword' });

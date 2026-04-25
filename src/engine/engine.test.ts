@@ -109,6 +109,29 @@ describe('render — array-root JSON', () => {
   });
 });
 
+describe('render — __root debug handle', () => {
+  it('dumps an object root via {{ __root | json }}', () => {
+    const t = '<pre>{{ __root | json }}</pre>';
+    expect(render(t, { id: 1, name: 'Ada' }, {})).toBe('<pre>{&quot;id&quot;:1,&quot;name&quot;:&quot;Ada&quot;}</pre>');
+  });
+  it('dumps an array root via {{ __root | json }}', () => {
+    const t = '{{ __root | json }}';
+    expect(render(t, [1, 2, 3], {})).toBe('[1,2,3]');
+  });
+  it('exposes a primitive root via __root', () => {
+    expect(render('{{ __root }}', 42 as unknown, {})).toBe('42');
+  });
+  it('keeps top-level field access working alongside __root', () => {
+    const t = '{{ id }}|{{ __root | json }}';
+    expect(render(t, { id: 7 }, {})).toBe('7|{&quot;id&quot;:7}');
+  });
+  it('shadows a literal __root key in the payload (debug handle wins)', () => {
+    const t = '{{ __root | json }}';
+    const payload = { id: 1, __root: 'should-be-shadowed' };
+    expect(render(t, payload, {})).toBe('{&quot;id&quot;:1,&quot;__root&quot;:&quot;should-be-shadowed&quot;}');
+  });
+});
+
 describe('render — sanitizer pass', () => {
   it('strips a <script> tag from the final output', () => {
     expect(render('<p>hi</p><script>alert(1)</script>', {}, {})).toBe('<p>hi</p>');

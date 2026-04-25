@@ -31,11 +31,15 @@ export function render(templateText: string, json: unknown, vars: Variables): st
   // When the root is an array (e.g. `restcountries.com/v3.1/name/{name}` returns
   // `[{...}]`), expose it as `items` so templates have a stable, identifier-safe
   // handle. Object roots continue to spread directly as before.
+  // `__root` is a debug handle that always points to the original parsed JSON
+  // regardless of root shape, so authors can write `{{ __root | json }}` to
+  // dump the full payload while exploring an unfamiliar response. Listed last
+  // in the spread so a payload with a literal `__root` key can't shadow it.
   const context = Array.isArray(json)
-    ? { items: json, vars }
+    ? { items: json, vars, __root: json }
     : typeof json === 'object' && json !== null
-      ? { ...(json as Record<string, unknown>), vars }
-      : { vars };
+      ? { ...(json as Record<string, unknown>), vars, __root: json }
+      : { vars, __root: json };
   const output = engine.parseAndRenderSync(templateText, context);
   return sanitize(output);
 }

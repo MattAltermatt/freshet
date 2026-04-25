@@ -10,6 +10,8 @@ const ROWS: Array<[string, string]> = [
   ['Date', '{{ ts | date: "yyyy-MM-dd" }}'],
   ['Link (URL-safe)', '{{ "https://h/{{id}}" | link }}'],
   ['Number', '{{ n | num }}'],
+  ['Debug field', '<pre>{{ field | json }}</pre>'],
+  ['Debug full root', '<pre>{{ __root | json }}</pre>'],
 ];
 
 export interface CheatsheetProps {
