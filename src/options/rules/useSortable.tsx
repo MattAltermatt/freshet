@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'preact/hooks';
+import { useState, useRef, useCallback, useEffect } from 'preact/hooks';
 import type { JSX } from 'preact';
 
 const DRAG_THRESHOLD_PX = 5;
@@ -147,6 +147,35 @@ export function useSortable<T extends { id: string }>(
         );
       })()
     : null;
+
+  // Escape-to-cancel
+  useEffect(() => {
+    if (!drag?.active) return;
+    const onKey = (e: KeyboardEvent): void => {
+      if (e.key === 'Escape') setDrag(null);
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [drag?.active]);
+
+  // Auto-scroll near viewport edges while dragging
+  useEffect(() => {
+    if (!drag?.active) return;
+    let frame = 0;
+    const tick = (): void => {
+      setDrag((d) => {
+        if (!d?.active) return d;
+        const delta = clampScrollDelta(d.pointerY, window.innerHeight);
+        if (delta !== 0) {
+          document.scrollingElement?.scrollBy({ top: delta, behavior: 'auto' });
+        }
+        return d;
+      });
+      frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [drag?.active]);
 
   const displayNumber = useCallback((index: number): number => {
     if (!drag?.active) return index + 1;
