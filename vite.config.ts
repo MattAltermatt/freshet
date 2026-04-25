@@ -5,7 +5,7 @@ import { crx, defineManifest } from '@crxjs/vite-plugin';
 const manifest = defineManifest({
   manifest_version: 3,
   name: 'Freshet',
-  version: '1.1.0',
+  version: '1.2.0',
   description: 'Thaw any JSON URL into a more useful page. Per-URL Liquid templates turn raw API responses into proper dashboards.',
   action: {
     default_popup: 'src/popup/popup.html',

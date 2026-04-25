@@ -237,13 +237,17 @@ async function main() {
     await p.close();
   }
 
-  // ── Shot 5: Rendered GitHub repo page (public API) ───────────────────
+  // ── Shot 5: Template debugging — `json-debug` starter showing __root tree dump ──
   {
     const p = await ctx.newPage();
     await p.setViewportSize(VIEWPORT);
-    await p.goto('https://api.github.com/repos/facebook/react');
-    await sleep(2500);
-    await shoot(p, '05-rendered-github.png');
+    await p.goto(optionsUrl);
+    await p.waitForSelector('.pj-app');
+    await p.click('button.pj-tab:has-text("Templates")');
+    await sleep(400);
+    await p.selectOption('.pj-templates-select select', 'json-debug');
+    await sleep(1100);
+    await shoot(p, '05-template-debug.png');
     await p.close();
   }
 
