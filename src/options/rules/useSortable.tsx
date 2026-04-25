@@ -148,7 +148,14 @@ export function useSortable<T extends { id: string }>(
       })()
     : null;
 
-  const displayNumber = useCallback((index: number) => index + 1, []);
+  const displayNumber = useCallback((index: number): number => {
+    if (!drag?.active) return index + 1;
+    const { fromIndex, targetIndex } = drag;
+    if (index === fromIndex) return Math.min(targetIndex, items.length - 1) + 1;
+    if (fromIndex < targetIndex && index > fromIndex && index <= targetIndex) return index;
+    if (fromIndex > targetIndex && index >= targetIndex && index < fromIndex) return index + 2;
+    return index + 1;
+  }, [drag, items.length]);
   const didDrag = useCallback(() => dragOccurredRef.current, []);
 
   return {
