@@ -112,7 +112,20 @@ export function useSortable<T extends { id: string }>(
     if (drag.fromIndex === index) {
       return { 'data-dragging-slot': '' } as unknown as JSX.HTMLAttributes<HTMLElement>;
     }
-    return { 'data-drag-active': '' } as unknown as JSX.HTMLAttributes<HTMLElement>;
+    // Sibling shift: cards between the dragged origin and the target translate
+    // toward the origin to make visual room for the slot at the target position.
+    const cardHeight = drag.cardRects[drag.fromIndex]?.height ?? 0;
+    const gap = 8; // matches --pj-space-2 used by .pj-rule-cards
+    let dy = 0;
+    if (drag.fromIndex < drag.targetIndex && index > drag.fromIndex && index <= drag.targetIndex) {
+      dy = -(cardHeight + gap);
+    } else if (drag.fromIndex > drag.targetIndex && index >= drag.targetIndex && index < drag.fromIndex) {
+      dy = cardHeight + gap;
+    }
+    return {
+      'data-drag-active': '',
+      style: dy ? `transform: translateY(${dy}px)` : undefined,
+    } as unknown as JSX.HTMLAttributes<HTMLElement>;
   }, [drag]);
 
   const floatingLayer = drag?.active && drag.itemId

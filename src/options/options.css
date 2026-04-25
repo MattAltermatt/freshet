@@ -189,7 +189,45 @@ input:focus, select:focus, textarea:focus {
 }
 .pj-empty-hint { font-size: var(--pj-font-size-sm); color: var(--pj-fg-subtle); }
 
-.pj-rule-cards { display: flex; flex-direction: column; gap: var(--pj-space-2); }
+.pj-rule-cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pj-space-2);
+  position: relative; /* anchor for the floating-card layer */
+}
+
+/* Insertion slot — the dragged card's original position during drag */
+.pj-rule-card[data-dragging-slot] {
+  background: var(--pj-accent-wash);
+  border-style: dashed;
+  border-color: var(--pj-accent);
+}
+.pj-rule-card[data-dragging-slot] > * { visibility: hidden; }
+
+/* Smooth sibling reflow */
+.pj-rule-card[data-drag-active] { transition: transform 180ms ease; }
+
+/* Floating-card overlay */
+.pj-rule-card-floating-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.pj-rule-card-floating {
+  position: absolute;
+  left: 0;
+  right: 0;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+  transform: rotate(-1.2deg);
+  z-index: 10;
+  cursor: grabbing;
+  transition: top 180ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pj-rule-card[data-drag-active] { transition: none; }
+  .pj-rule-card-floating { transform: none; box-shadow: none; transition: none; }
+}
 
 .pj-rule-card {
   display: grid;
