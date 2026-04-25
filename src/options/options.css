@@ -193,7 +193,7 @@ input:focus, select:focus, textarea:focus {
 
 .pj-rule-card {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto auto 1fr auto;
   align-items: center;
   gap: var(--pj-space-3);
   padding: var(--pj-space-3);
@@ -202,6 +202,32 @@ input:focus, select:focus, textarea:focus {
   border-radius: var(--pj-radius-lg);
   border-left-width: 3px;
   position: relative;
+}
+.pj-rule-grip {
+  cursor: grab;
+  user-select: none;
+  color: var(--pj-fg-subtle);
+  opacity: 0.55;
+  letter-spacing: -1px;
+  font-size: 12px;
+  line-height: 1;
+  padding: 4px 2px;
+  border-radius: var(--pj-radius);
+  transition: opacity 100ms ease, color 100ms ease, background 100ms ease;
+  touch-action: none; /* let Pointer Events do all the scrolling/panning logic */
+}
+.pj-rule-grip:hover {
+  opacity: 1;
+  color: var(--pj-accent-strong);
+  background: var(--pj-accent-wash);
+}
+.pj-rule-grip:active,
+.pj-rule-card[data-dragging] .pj-rule-grip {
+  cursor: grabbing;
+}
+.pj-rule-grip:focus-visible {
+  outline: 2px solid var(--pj-accent);
+  outline-offset: 2px;
 }
 .pj-rule-card--active { border-left-color: var(--pj-accent); }
 .pj-rule-card--inactive {

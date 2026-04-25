@@ -97,4 +97,11 @@ describe('<RuleCard>', () => {
     renderCard({ rule: { ...rule, isExample: true } });
     expect(screen.getByText('Example').closest('a')).toBeNull();
   });
+
+  it('renders a drag-handle grip with an aria-label naming the rule', () => {
+    renderCard({ rule: { ...rule, name: 'GitHub Repo' } });
+    expect(
+      screen.getByLabelText(/Drag to reorder rule 1: GitHub Repo/i),
+    ).toBeInTheDocument();
+  });
 });

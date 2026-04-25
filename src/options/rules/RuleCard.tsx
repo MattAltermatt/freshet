@@ -16,6 +16,10 @@ export interface RuleCardProps {
   onDelete: () => void;
   flagEntry?: ImportFlagEntry;
   onDismissFlags?: () => void;
+  gripProps?: JSX.HTMLAttributes<HTMLSpanElement>;
+  cardProps?: JSX.HTMLAttributes<HTMLElement>;
+  displayNumber?: number;
+  didDrag?: () => boolean;
 }
 
 export function RuleCard({
@@ -29,15 +33,35 @@ export function RuleCard({
   onDelete,
   flagEntry,
   onDismissFlags,
+  gripProps,
+  cardProps,
+  displayNumber,
+  didDrag,
 }: RuleCardProps): JSX.Element {
   const varCount = Object.keys(rule.variables).length;
+  const num = displayNumber ?? index + 1;
+  const ruleLabel = rule.name || rule.hostPattern || 'unnamed rule';
   return (
     <article
       class={`pj-rule-card${rule.active ? ' pj-rule-card--active' : ' pj-rule-card--inactive'}`}
+      {...cardProps}
     >
-      <div class="pj-rule-num" aria-label={`Rule ${index + 1}`}>{index + 1}</div>
+      <span
+        class="pj-rule-grip"
+        role="button"
+        tabIndex={-1}
+        aria-label={`Drag to reorder rule ${index + 1}: ${ruleLabel}`}
+        {...gripProps}
+      >
+        ⋮⋮
+      </span>
+      <div class="pj-rule-num" aria-label={`Rule ${num}`}>{num}</div>
       <div class="pj-rule-main">
-        <button type="button" class="pj-rule-body" onClick={onEdit}>
+        <button
+          type="button"
+          class="pj-rule-body"
+          onClick={() => { if (!didDrag?.()) onEdit(); }}
+        >
           <RuleIdentity rule={rule} density="card" />
           {rule.isExample && !rule.exampleUrl ? (
             <span class="pj-example-pill" title="Bundled with Freshet">
