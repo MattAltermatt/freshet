@@ -1,6 +1,7 @@
 ---
 title: Debugging templates
 description: How to inspect the parsed JSON while authoring a Freshet template — the __root handle and the json / tree filters.
+permalink: /debug/
 ---
 
 # Debugging templates
