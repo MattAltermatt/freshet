@@ -2,6 +2,7 @@ import type { JSX } from 'preact';
 import type { Rule, Templates } from '../../shared/types';
 import type { ImportFlagMap } from '../../storage/storage';
 import { RuleCard } from './RuleCard';
+import { useSortable } from './useSortable';
 
 export interface RuleStackProps {
   rules: Rule[];
@@ -33,6 +34,24 @@ export function RuleStack({
     onChange(next);
   };
 
+  const sortable = useSortable<Rule>({
+    items: rules,
+    onReorder: onChange,
+    renderClone: (rule, index) => (
+      <RuleCard
+        rule={rule}
+        index={index}
+        total={rules.length}
+        displayNumber={sortable.displayNumber(index)}
+        onToggle={() => {}}
+        onEdit={() => {}}
+        onMoveUp={() => {}}
+        onMoveDown={() => {}}
+        onDelete={() => {}}
+      />
+    ),
+  });
+
   return (
     <div class="pj-rule-stack">
       <div class="pj-rule-stack-header">
@@ -63,6 +82,10 @@ export function RuleStack({
                 rule={r}
                 index={i}
                 total={rules.length}
+                displayNumber={sortable.displayNumber(i)}
+                gripProps={sortable.gripProps(i)}
+                cardProps={sortable.cardProps(i)}
+                didDrag={sortable.didDrag}
                 onToggle={(a) => patch(i, { active: a })}
                 onEdit={() => onEdit(i)}
                 onMoveUp={() => swap(i, i - 1)}
@@ -73,6 +96,7 @@ export function RuleStack({
               />
             );
           })}
+          {sortable.floatingLayer}
         </div>
       )}
     </div>

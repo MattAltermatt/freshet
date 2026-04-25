@@ -1,3 +1,40 @@
+import { useState } from 'preact/hooks';
+import type { JSX } from 'preact';
+
+export interface UseSortableReturn {
+  gripProps: (index: number) => JSX.HTMLAttributes<HTMLSpanElement>;
+  cardProps: (index: number) => JSX.HTMLAttributes<HTMLElement>;
+  floatingLayer: JSX.Element | null;
+  isDragging: boolean;
+  /** Number that should display on card at the given index, accounting for any
+   *  in-flight drag's predicted reorder. Pre-drag this is just `index + 1`. */
+  displayNumber: (index: number) => number;
+  /** True if the most recent pointerdown produced a drag past the threshold.
+   *  Use to suppress edit-on-click after drag. */
+  didDrag: () => boolean;
+}
+
+export interface UseSortableOpts<T extends { id: string }> {
+  items: readonly T[];
+  onReorder: (next: T[]) => void;
+  /** Called to render the floating clone of the dragged card. */
+  renderClone: (item: T, index: number) => JSX.Element;
+}
+
+export function useSortable<T extends { id: string }>(
+  _opts: UseSortableOpts<T>,
+): UseSortableReturn {
+  const [isDragging] = useState(false);
+  return {
+    gripProps: () => ({}),
+    cardProps: () => ({}),
+    floatingLayer: null,
+    isDragging,
+    displayNumber: (i) => i + 1,
+    didDrag: () => false,
+  };
+}
+
 /** Pure array transform. Returns the same reference when from === to so callers
  *  can detect "no change" cheaply (`if (next === items) return`). */
 export function reorder<T>(items: readonly T[], from: number, to: number): T[] {
