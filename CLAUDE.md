@@ -110,7 +110,18 @@ User-created rules don't set either field; they fall through the `RuleCard` pill
 - **E2E (Playwright, headed Chrome)** covers any path that touches `chrome.tabs`, `chrome.storage`, `chrome.action`, service worker, or content-script injection. Seed storage via the service worker's `worker.evaluate(...)` rather than UI clicks when possible — faster and less flaky.
 - **axe-core** runs inside Playwright for WCAG 2.1 AA (options + popup, light + dark). New surfaces get an a11y spec.
 
-## Docs
+## Cutting a release
 
-- `ROADMAP.md` — launch status + post-launch checklist; future work lives in GitHub Issues
-- `docs/superpowers/cws-listing.md` — CWS listing text of record (frozen during review)
+When a feature lands and is ready to ship to the Chrome Web Store:
+
+1. Bump `package.json` + `vite.config.ts` `version` to the new SemVer.
+2. `pnpm typecheck && pnpm lint && pnpm test && pnpm build && pnpm test:e2e` — all green.
+3. Re-shoot CWS screenshots if any UI surface changed (`node scripts/cws-screenshots.mjs`).
+4. Update `docs/try/` if any starter changed (template, sample JSON, rule, pill text).
+5. Manual Chrome eyeball pass — verify on a real install of the unpacked `dist/`.
+6. Tag + GitHub Release: `git tag vX.Y.Z && gh release create vX.Y.Z`. Notes span the full `git log v<prev>..HEAD` diff.
+7. Build the zip (`zip -r freshet-vX.Y.Z.zip dist`) and upload to the CWS dashboard.
+8. While the review is in-flight, the listing fields + listing screenshots are frozen — the `cws-listing-freeze-check` skill audits this.
+9. Once approved, the listing freeze lifts; close out any release-tracking issues.
+
+Future work lives in [GitHub Issues](https://github.com/MattAltermatt/freshet/issues); shipped versions in [GitHub Releases](https://github.com/MattAltermatt/freshet/releases). CWS listing copy of record lives at `docs/superpowers/cws-listing.md`.

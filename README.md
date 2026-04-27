@@ -189,7 +189,7 @@ Load `dist/` unpacked to try your build. With `pnpm dev` running, @crxjs hot-rel
 
 **Before opening a PR** — run the full pipeline green: `pnpm typecheck && pnpm lint && pnpm test && pnpm build && pnpm test:e2e`. New features get a test; bug fixes get a regression test. Keep `src/engine/` and `src/matcher/` free of `chrome.*` calls — that purity is what makes the 400-plus unit tests possible in Node.
 
-**Architecture deep-dive** lives in [`CLAUDE.md`](./CLAUDE.md) (directory layout, storage schema, security model, and known gotchas). [`ROADMAP.md`](./ROADMAP.md) tracks what's next.
+**Architecture deep-dive** lives in [`CLAUDE.md`](./CLAUDE.md) (directory layout, storage schema, security model, known gotchas, release checklist). Future work is tracked in [GitHub Issues](https://github.com/MattAltermatt/freshet/issues); shipped versions are listed in [GitHub Releases](https://github.com/MattAltermatt/freshet/releases).
 
 ## License
 
