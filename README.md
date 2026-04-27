@@ -12,7 +12,7 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Manifest V3](https://img.shields.io/badge/Chrome-MV3-brightgreen.svg)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6.svg)
-![Tests](https://img.shields.io/badge/tests-383%20unit%20%2B%2044%20E2E-success.svg)
+![Tests](https://img.shields.io/badge/tests-413%20unit%20%2B%2044%20E2E-success.svg)
 
 Paste a JSON URL into Chrome, get a table instead of a `<pre>`. Works against any host you configure — internal tooling, public APIs, webhooks you're debugging. Templates are small HTML snippets with `{{placeholders}}`; rules map URL patterns to templates.
 
@@ -187,7 +187,7 @@ pnpm fixtures       # local JSON fixture server at :4391
 
 Load `dist/` unpacked to try your build. With `pnpm dev` running, @crxjs hot-reloads on save (service-worker changes may still need a manual **Reload** on the extension card).
 
-**Before opening a PR** — run the full pipeline green: `pnpm typecheck && pnpm lint && pnpm test && pnpm build && pnpm test:e2e`. New features get a test; bug fixes get a regression test. Keep `src/engine/` and `src/matcher/` free of `chrome.*` calls — that purity is what makes the 300-plus unit tests possible in Node.
+**Before opening a PR** — run the full pipeline green: `pnpm typecheck && pnpm lint && pnpm test && pnpm build && pnpm test:e2e`. New features get a test; bug fixes get a regression test. Keep `src/engine/` and `src/matcher/` free of `chrome.*` calls — that purity is what makes the 400-plus unit tests possible in Node.
 
 **Architecture deep-dive** lives in [`CLAUDE.md`](./CLAUDE.md) (directory layout, storage schema, security model, and known gotchas). [`ROADMAP.md`](./ROADMAP.md) tracks what's next.
 
